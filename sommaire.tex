@@ -6,6 +6,106 @@
 \usepackage{import}
 \usepackage{apacite}
 \usepackage{lipsum}
+\setlength{\headheight}{13.9186pt}
+
+\def\dataset{\ensuremath{\mathcal{D}}}
+\def\x{{\mathbf{x}}}
+\def\y{{\mathbf{y}}}
+\def\b{{\mathbf{b}}}
+\def\X{{\mathbf{X}}}
+\def\o{{\mathbf{o}}}
+\def\z{{\mathbf{z}}}
+\def\C{\ensuremath{\mathcal{C}}}
+\def\real{\mathbb{R}}
+\def\interger{\mathbb{N}}
+\def\E{\mathbb{E}}
+\def\localupdaterule{\mathrm{Local\_Update}}
+\def\dataset{\ensuremath{\mathcal{D}}}
+\def\localdataset{\dataset^u}
+\def\subclients{\ensuremath{\mathcal{C}_s}}
+\def\clients{\ensuremath{\mathcal{C}}}
+\def\model{\theta}
+\def\samplespace{{\mathcal{Z}}}
+\def\message{\ensuremath{\mathcal{M}}}
+\def\roundsclient{\ensuremath{\mathcal{T}_u}}
+\def\mimicfunction{{\obs}}
+\def\model{\boldsymbol{\theta}}
+\def\localmodel{\theta_c^*}
+\def\localmodelsen{\theta_c^{*,s}}
+\def\localmodelpub{\theta_c^{*,p}}
+\def\globallossfunction{{\loss}}
+\def\locallossfunction{{\loss^u}}
+\def\weights{w}
+\def\gradient{\mathbf{g}}
+\def\cc{\mathbf{c}}
+\def\locallossfunctioncc{{\loss_\cc}}
+\def\locallossfunctionbc{{\loss_{\bar c}}}
+\def\localmodelcc{\theta_\cc^*}
+\def\y{\mathbf{y}_c}
+\def\xhalf{\mathbf{Z}_c}
+\def\h{\mathbf{H}}
+\def\i{\mathbf{I}}
+\def\W{\mathbf{W}}
+\def\vv{\mathbf{v}}
+\def\a{\mathbf{A}}
+\def\u{\mathbf{U}}
+\def\g{\mathbf{g}}
+\def\trace{\mathbf{trace}}
+\def\e{\mathbf{\epsilon}}
+\def\ga{\mathbf{\gamma}}
+\def\var{\mathbb{V}\mathrm{ar}}
+\def\distribution{\ensuremath{\mathcal{D}}}
+\def\extacc{Acc^{Ext}_c}
+\def\acc{Acc_c}
+\def\algo{\ensuremath{\mathcal{A}}}
+\def\s{\mathbf{s}_c}
+\def\hats{\hat \s}
+\def\ham{d_{H}(\s,\hats)}
+\def\P{\mathbf{P}}
+\def\ei{\mathbf{e}(\model)}
+\def\e{\mathbf{e}}
+\def\h{\mathbf{h}}
+\def\prior{\rho}
+\def\truepositive{\ensuremath{\mathcal{P}}}
+\def\truenegative{\ensuremath{\mathcal{N}}}
+\def\domain{\mathbb{D}}
+\def\subtime{\mathbf{T}}
+\def\Win{\W^{(1)}}
+\def\Wout{\W^{(L)}}
+\def\bin{\b^{(1)}}
+\def\bout{\b^{(L)}}
+\def\oi{\mathbf{g}_{i}}
+\def\oj{\mathbf{g}_{j}}
+\def\ob{g_{b_{i}}}
+\def\intervals{\ensuremath{\mathcal{I}}}
+\def\obs{\ensuremath{\mathcal{G}}}
+\def\bini{b_i^{(1)}}
+\def\obsnew{\obs_{\mathrm{new}}}
+\def\loss{\ensuremath{\mathcal{L}}}
+\def\alphas{\mathbf{\alpha}}
+\def\batch{\ensuremath{\mathcal{B}}}
+\def\zini{z^{(1)}_i}
+\def\gradlossjwi{\frac{\partial \loss_j}{\partial \W_i^a}}
+\def\gradlossjbi{\frac{\partial \loss_j}{\partial b_i^a}}
+\def\gradlossjW{\frac{\partial \loss_j}{\partial \W}}
+\def\gradlossjb{\frac{\partial \loss_j}{\partial \b}}
+\def\gradlosswi{\frac{\partial \loss}{\partial \W_i}}
+\def\gradlossbi{\frac{\partial \loss}{\partial b_i^a}}
+\def\gradlossjzi{\frac{\partial \loss_j}{\partial z_i}}
+\def\gradzibi{\frac{\partial z_i}{\partial b_i^a}}
+\def\activeset{\mathcal{A}}
+\def\gradlosswiatt{\frac{\partial \loss}{\partial \W_i^a}}
+\def\gradlossbiatt{\frac{\partial \loss}{\partial b_i^a}}
+\def\slice{\mathbf{s}}
+\def\gradziwi{\frac{\partial z_i}{\partial \W_i^a}}
+
+
+% Redefine end statements to nothing
+
+\newcommand{\eps}{\ensuremath{\varepsilon}}
+\newcommand{\relu}{\textrm{ReLU}}
+
+\DeclareMathOperator*{\argmin}{argmin}
 
 % Biblio pour les pages webs
 \newcites{web}{Pages web}
