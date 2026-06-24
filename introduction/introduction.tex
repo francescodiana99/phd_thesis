@@ -57,34 +57,6 @@ The original algorithm proposed to solve this optimization problem is Federated 
 
 FedAvg represents the canonical algorithmic formulation of federated learning. Since its introduction, many variants have been proposed, modifying different components of the protocol, including the client optimizer, the server aggregation rule, the client sampling strategy, and the communication pattern \cite{reddi2021adaptivefederatedoptimization}. This line of work shows that federated learning should not be understood as a single fixed algorithm, but rather as a flexible framework for distributed optimization under data locality constraints. At the same time, this flexibility is needed because the federated setting departs from the assumptions of conventional centralized training. Clients may hold data drawn from different distributions \cite{Li2020On, marfoq2021federated, wang_client, scaffold}, operate under different computational \cite{li2019fedmdheterogenousfederatedlearning,FjORD} and network conditions \cite{caldas2019expandingreachfederatedlearning, chen_efficient, ALMANIFI2023100742}, participate intermittently \cite{ribeiro_client_corr, rodio_clients, sun_participation}, and have different privacy requirements \cite{brendan2018learning, Fu_dp_dl_review}. As a result, federated learning introduces a set of challenges that are either absent or less pronounced in centralized learning, including statistical and system heterogeneity \cite{ye_review_het_fl}, communication efficiency \cite{ALMANIFI2023100742}, fairness \cite{Vucinich_fairness, Shi_fairness}, personalization \cite{tan_personalization}, robustness \cite{Uddin_robustness}, and privacy \cite{fu_privacy}.
 
-% TODO: riprendi da qui e aggiungi citazioni
-\paragraph{Heterogeneity}
-Unlike centralized training, where data are typically collected in a single infrastructure and processed under relatively uniform computational conditions, federated learning operates over a population of clients that contribute both data and computation to the training process. This creates two closely related forms of heterogeneity: \textit{statistical heterogeneity}, which concerns differences in the local data distributions, and \textit{system heterogeneity}, which concerns differences in the computational and communication capabilities of the clients.
-
-Statistical heterogeneity arises because each client generates data through its own local interactions, environment, behavior, and preferences. As a result, the local datasets may differ in size, feature distribution, label distribution, or more generally in the relationship between inputs and outputs \cite{kairouz_open_problems, ye_review_het_fl}. Consequently, the data available at each client may not be representative of the overall population, and the local objectives optimized by different clients may point toward different or even conflicting solutions. Training a single global model under these conditions can therefore lead to a model that performs unevenly across clients, or poorly represents clients whose data differ substantially from the majority \citeA{marfoq2021federated}. 
-
-System heterogeneity arises from differences in clients' hardware, energy availability, memory, bandwidth, and availability over time. These factors determine whether a client can participate in a given communication round, how much local computation it can perform, and how quickly it can return its update to the server. Since such conditions are often outside the direct control of the server, client participation in federated learning is typically partial, intermittent, and uneven across the population.
-
-This uneven participation can affect the training process in several ways. If some clients are more likely to participate than others, the aggregated updates may overrepresent specific regions of the client population, potentially introducing bias in the global model \cite{wang_client}. Moreover, temporal or spatial correlations in client availability can affect convergence and increase the variability of model performance across rounds. System heterogeneity also exacerbates the \textit{straggler effect}, where slower clients delay the completion of a training round or must be dropped from aggregation \cite{kairouz_open_problems}.
-
-
-\paragraph{Fairness}
-\paragraph{Personalization}
-\paragraph{Robustness}
-\paragraph{Privacy}
-
-\section{The Privacy risks in Federated Learining}
-
-\section{Privacy mechanisms in Federated Learining}
-
-\section{The trust problem}
-
-\section{Thesis Contributions}
-
-
-
-
-
 \begin{algorithm2e}[ht]
 \caption[FedAvg: Federated Averaging]{FedAvg: Federated Averaging}
 \label{alg:fedavg}
@@ -130,3 +102,37 @@ This uneven participation can affect the training process in several ways. If so
     \Return{$\boldsymbol{\theta}$}\;
 }
 \end{algorithm2e}
+
+
+\subsection{Challenges in Federated Learning}
+% TODO: riprendi da qui e aggiungi citazioni
+\paragraph{Heterogeneity}
+Unlike centralized training, where data are typically collected in a single infrastructure and processed under relatively uniform computational conditions, federated learning operates over a population of clients that contribute both data and computation to the training process. This creates two closely related forms of heterogeneity: \textit{statistical heterogeneity}, which concerns differences in the local data distributions, and \textit{system heterogeneity}, which concerns differences in the computational and communication capabilities of the clients.
+
+
+System heterogeneity arises from differences in clients' hardware, energy availability, memory, bandwidth, and availability over time. These factors determine whether a client can participate in a given communication round, how much local computation it can perform, and how quickly it can return its update to the server. Since such conditions are often outside the direct control of the server, client participation in federated learning is typically partial, intermittent, and uneven across the population.
+
+This uneven participation can affect the training process in several ways. If some clients are more likely to participate than others, the aggregated updates may overrepresent specific regions of the client population, potentially introducing bias in the global model \cite{wang_client}. Moreover, temporal or spatial correlations in client availability can affect convergence and increase the variability of model performance across rounds. System heterogeneity also exacerbates the \textit{straggler effect}, where slower clients delay the completion of a training round or must be dropped from aggregation \cite{kairouz_open_problems}.
+
+
+Statistical heterogeneity arises because each client generates data through its own local interactions, environment, behavior, and preferences. As a result, the local datasets may differ in size, feature distribution, label distribution, or more generally in the relationship between inputs and outputs \cite{kairouz_open_problems, ye_review_het_fl}. Consequently, the data available at each client may not be representative of the overall population, and the local objectives optimized by different clients may point toward different or even conflicting solutions\cite{scaffold}. Training a single global model under these conditions can therefore lead to a model that performs unevenly across clients, or poorly represents clients whose data differ substantially from the majority \citeA{marfoq2021federated}. 
+
+\paragraph{Personalization}
+Closely related to statistical heterogeneity, personalization in federated learning addresses the fact that a single global model may not be equally suitable for all clients \cite{marfoq2021federated}. When clients have different data distributions, the model that performs best on average across the population may perform poorly for specific clients or subgroups. One possible solution would be for each client to train an entirely local model, without participating in the federated process. However, in many cases, individual clients do not have enough data to learn accurate and robust models in isolation. Conversely, participating in standard FL allows clients to benefit from the data indirectly contributed by others, but may produce a global model that fails to capture their local distribution.
+
+Personalized federated learning aims to address this trade-off. The goal is to exploit shared information across clients while still adapting the learned model to each client's local data and task. Several approaches have been proposed to achieve this balance. Some methods learn a common global representation and personalize only part of the model, such as the final layers or client-specific heads \cite{fedper, fedrep}. Others formulate personalization as a regularized optimization problem, where each client learns a local model constrained to remain close to a shared global model \cite{pfedme, ditto}. A further line of work uses clustering or mixture-based approaches, in which clients are grouped according to similarities in their data distributions or learned models, and each group is assigned a more specialized model \cite{marfoq2021federated, marfoq_memorization, fedGMM}
+\paragraph{Fairness}
+Personalization can improve local utility by adapting models to client-specific objectives and data distributions. Nevertheless, federated training should also ensure that this adaptation does not lead to systematically poor performance for under-represented clients, populations, or protected groups.
+Fairness is therefore a central challenge in FL, and different deployments may require different fairness guarantees. Accordingly, several notions of fairness have been considered in the literature \cite{Vucinich_fairness,Shi_fairness, salazar_fairness}. For instance, one may require the final model to satisfy group fairness \cite{salazar_fairness}, similarly to centralized machine learning \cite{dwork_fairness, zemel2013learning_fairness}, by avoiding systematic disparities across protected groups defined by attributes such as race, gender, or age. Beyond group fairness, FL also introduces notions of fairness that are specific to the federated setting. A first one is client-level fairness \cite{li2020fairresourceallocationfederated, erraji2026lossgapparityfairness}, which requires the global model to provide comparable utility across clients, so that no client systematically benefits at the expense of others. A second one concerns participation in the training process. Since only a subset of clients is typically selected at each communication round, frequently selected clients may have a stronger influence on the learned model, whereas rarely selected clients may remain poorly represented \cite{huang_fairness, fairness_shi_client_selection}. Finally, fairness may also be understood in terms of contribution: clients that provide more useful updates, data, or computational resources may need to be compensated or incentivized proportionally to their role in the training process \cite{shi_fairness_incentives, Chen_fairness_incentives}. These different fairness notions raise distinct challenges and can interact with privacy in non-trivial ways \cite{chen_privacy_fairness, fairness_fl_rafi}. In particular, enforcing or auditing group fairness often requires access to sensitive attributes or group-level statistics, which may conflict with the privacy-preserving motivation of FL. As discussed in Chapter~\ref{chap:aia}, sensitive attributes used to define fairness groups may themselves be vulnerable to inference attacks during FL training, and different distribution may impact on the vulnearability of the attribute.
+
+\paragraph{Robustness}
+
+\section{The Importance of Privacy}
+
+\section{Privacy Attacks in Federated Learning}
+
+\section{Privacy mechanisms in Federated Learining}
+
+\section{The trust problem}
+
+\section{Thesis Contributions}
