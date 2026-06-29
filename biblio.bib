@@ -966,6 +966,218 @@ author = {Taki Hasan Rafi and Faiza Anan Noor and Tahmid Hussain and Dong-Kyu Ch
 keywords = {Federated learning, Privacy-preserving, Fairness, Distributed machine learning},
 abstract = {Federated Learning (FL) is an increasingly popular form of distributed machine learning that addresses privacy concerns by allowing participants to collaboratively train machine learning models without exchanging their private data. Although FL emerged as a privacy-preserving alternative to centralized machine learning approaches, it faces significant challenges in preserving the privacy of its clients and mitigating potential bias against clients or disadvantaged groups. Most existing research in FL has addressed these two ethical notions separately, whereas ensuring privacy and fairness simultaneously in FL systems is of paramount importance. Moreover, current research efforts fail to balance privacy, fairness, and model performance, leaving systems vulnerable to various problems. To provide a comprehensive overview of these critical challenges, this work presents an integrated study of privacy and fairness concerns in the context of FL. In addition to providing an extensive review of the current literature on privacy and fairness issues, we also examine the existing approaches for achieving a balance between these two ethical notions to develop robust FL systems. Finally, we highlight potential research directions related to the challenges of implementing privacy-preserving and fairness-aware FL systems.}
 }
+@inproceedings{biggio_poisoning,
+author = {Biggio, Battista and Nelson, Blaine and Laskov, Pavel},
+title = {Poisoning attacks against support vector machines},
+year = {2012},
+isbn = {9781450312851},
+publisher = {Omnipress},
+address = {Madison, WI, USA},
+abstract = {We investigate a family of poisoning attacks against Support Vector Machines (SVM). Such attacks inject specially crafted training data that increases the SVM's test error. Central to the motivation for these attacks is the fact that most learning algorithms assume that their training data comes from a natural or well-behaved distribution. However, this assumption does not generally hold in security-sensitive settings. As we demonstrate, an intelligent adversary can, to some extent, predict the change of the SVM's decision function due to malicious input and use this ability to construct malicious data.The proposed attack uses a gradient ascent strategy in which the gradient is computed based on properties of the SVM's optimal solution. This method can be kernelized and enables the attack to be constructed in the input space even for non-linear kernels. We experimentally demonstrate that our gradient ascent procedure reliably identifies good local maxima of the non-convex validation error surface, which significantly increases the classifier's test error.},
+booktitle = {Proceedings of the 29th International Coference on International Conference on Machine Learning},
+pages = {1467–1474},
+numpages = {8},
+location = {Edinburgh, Scotland},
+series = {ICML'12}
+}
+
+@article{cina_poisoning,
+author = {Cin\`{a}, Antonio Emanuele and Grosse, Kathrin and Demontis, Ambra and Vascon, Sebastiano and Zellinger, Werner and Moser, Bernhard A. and Oprea, Alina and Biggio, Battista and Pelillo, Marcello and Roli, Fabio},
+title = {Wild Patterns Reloaded: A Survey of Machine Learning Security against Training Data Poisoning},
+year = {2023},
+issue_date = {December 2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {55},
+number = {13s},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3585385},
+doi = {10.1145/3585385},
+abstract = {The success of machine learning is fueled by the increasing availability of computing power and large training datasets. The training data is used to learn new models or update existing ones, assuming that it is sufficiently representative of the data that will be encountered at test time. This assumption is challenged by the threat of poisoning, an attack that manipulates the training data to compromise the model’s performance at test time. Although poisoning has been acknowledged as a relevant threat in industry applications, and a variety of different attacks and defenses have been proposed so far, a complete systematization and critical review of the field is still missing. In this survey, we provide a comprehensive systematization of poisoning attacks and defenses in machine learning, reviewing more than 100 papers published in the field in the past 15 years. We start by categorizing the current threat models and attacks and then organize existing defenses accordingly. While we focus mostly on computer-vision applications, we argue that our systematization also encompasses state-of-the-art attacks and defenses for other data modalities. Finally, we discuss existing resources for research in poisoning and shed light on the current limitations and open research questions in this research field.},
+journal = {ACM Comput. Surv.},
+month = jul,
+articleno = {294},
+numpages = {39},
+keywords = {Poisoning attacks, backdoor attacks, machine learning, computer vision, computer security}
+}
+
+@INPROCEEDINGS{jagielski_poisoning,
+  author={Jagielski, Matthew and Oprea, Alina and Biggio, Battista and Liu, Chang and Nita-Rotaru, Cristina and Li, Bo},
+  booktitle={2018 IEEE Symposium on Security and Privacy (SP)}, 
+  title={Manipulating Machine Learning: Poisoning Attacks and Countermeasures for Regression Learning}, 
+  year={2018},
+  volume={},
+  number={},
+  pages={19-35},
+  keywords={Training;Linear regression;Machine learning;Training data;Robustness;Data models;Predictive models;adversarial machine learning;poisoning attacks;robust linear regression},
+  doi={10.1109/SP.2018.00057}}
+
+  @inproceedings{biggio_evasion,
+author = {Biggio, Battista and Corona, Igino and Maiorca, Davide and Nelson, Blaine and \v{S}rndi\'{c}, Nedim and Laskov, Pavel and Giacinto, Giorgio and Roli, Fabio},
+title = {Evasion attacks against machine learning at test time},
+year = {2013},
+isbn = {9783642409936},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-3-642-40994-3_25},
+doi = {10.1007/978-3-642-40994-3_25},
+abstract = {In security-sensitive applications, the success of machine learning depends on a thorough vetting of their resistance to adversarial data. In one pertinent, well-motivated attack scenario, an adversary may attempt to evade a deployed system at test time by carefully manipulating attack samples. In this work, we present a simple but effective gradient-based approach that can be exploited to systematically assess the security of several, widely-used classification algorithms against evasion attacks. Following a recently proposed framework for security evaluation, we simulate attack scenarios that exhibit different risk levels for the classifier by increasing the attacker's knowledge of the system and her ability to manipulate attack samples. This gives the classifier designer a better picture of the classifier performance under evasion attacks, and allows him to perform a more informed model selection (or parameter setting). We evaluate our approach on the relevant security task of malware detection in PDF files, and show that such systems can be easily evaded. We also sketch some countermeasures suggested by our analysis.},
+booktitle = {Proceedings of the 2013th European Conference on Machine Learning and Knowledge Discovery in Databases - Volume Part III},
+pages = {387–402},
+numpages = {16},
+keywords = {support vector machines, neural networks, evasion attacks, adversarial machine learning},
+location = {Prague, Czech Republic},
+series = {ECMLPKDD'13}
+}
+
+@INPROCEEDINGS {carlini_wagner_robustness,
+author = { Carlini, Nicholas and Wagner, David },
+booktitle = { 2017 IEEE Symposium on Security and Privacy (SP) },
+title = {{ Towards Evaluating the Robustness of Neural Networks }},
+year = {2017},
+volume = {},
+ISSN = {2375-1207},
+pages = {39-57},
+abstract = { Neural networks provide state-of-the-art results for most machine learning tasks. Unfortunately, neural networks are vulnerable to adversarial examples: given an input x and any target classification t, it is possible to find a new input x' that is similar to x but classified as t. This makes it difficult to apply neural networks in security-critical areas. Defensive distillation is a recently proposed approach that can take an arbitrary neural network, and increase its robustness, reducing the success rate of current attacks' ability to find adversarial examples from 95% to 0.5%. In this paper, we demonstrate that defensive distillation does not significantly increase the robustness of neural networks by introducing three new attack algorithms that are successful on both distilled and undistilled neural networks with 100% probability. Our attacks are tailored to three distance metrics used previously in the literature, and when compared to previous adversarial example generation algorithms, our attacks are often much more effective (and never worse). Furthermore, we propose using high-confidence adversarial examples in a simple transferability test we show can also be used to break defensive distillation. We hope our attacks will be used as a benchmark in future defense attempts to create neural networks that resist adversarial examples. },
+keywords = {Neural networks;Robustness;Measurement;Speech recognition;Security;Malware;Resists},
+doi = {10.1109/SP.2017.49},
+url = {https://doi.ieeecomputersociety.org/10.1109/SP.2017.49},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+month =May}
+
+@inproceedings{blanchard_byz,
+ author = {Blanchard, Peva and El Mhamdi, El Mahdi and Guerraoui, Rachid and Stainer, Julien},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {I. Guyon and U. Von Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Machine Learning with Adversaries: Byzantine Tolerant Gradient Descent},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/f4b9ec30ad9f68f89b29639786cb62ef-Paper.pdf},
+ volume = {30},
+ year = {2017}
+}
+
+@InProceedings{pmlr-v108-bagdasaryan20a,
+  title = 	 {How To Backdoor Federated Learning},
+  author =       {Bagdasaryan, Eugene and Veit, Andreas and Hua, Yiqing and Estrin, Deborah and Shmatikov, Vitaly},
+  booktitle = 	 {Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics},
+  pages = 	 {2938--2948},
+  year = 	 {2020},
+  editor = 	 {Chiappa, Silvia and Calandra, Roberto},
+  volume = 	 {108},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {26--28 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v108/bagdasaryan20a/bagdasaryan20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v108/bagdasaryan20a.html},
+  abstract = 	 {Federated models are created by aggregating model updates submittedby participants.  To protect confidentiality of the training data,the aggregator by design has no visibility into how these updates aregenerated.  We show that this makes federated learning vulnerable to amodel-poisoning attack that is significantly more powerful than poisoningattacks that target only the training data.A single or multiple malicious participants can use modelreplacement to introduce backdoor functionality into the joint model,e.g., modify an image classifier so that it assigns an attacker-chosenlabel to images with certain features, or force a word predictor tocomplete certain sentences with an attacker-chosen word.  We evaluatemodel replacement under different assumptions for the standardfederated-learning tasks and show that it greatly outperformstraining-data poisoning.Federated learning employs secure aggregation to protect confidentialityof participants’ local models and thus cannot detect anomalies inparticipants’ contributions to the joint model.  To demonstrate thatanomaly detection would not have been effective in any case, we alsodevelop and evaluate a generic constrain-and-scale technique thatincorporates the evasion of defenses into the attacker’s loss functionduring training.}
+}
+
+
+@inbook{alie_attack,
+author = {Baruch, Moran and Baruch, Gilad and Goldberg, Yoav},
+title = {A little is enough: circumventing defenses for distributed learning},
+year = {2019},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+abstract = {Distributed learning is central for large-scale training of deep-learning models. However, it is exposed to a security threat in which Byzantine participants can interrupt or control the learning process. Previous attack models assume that the rogue participants (a) are omniscient (know the data of all other participants), and (b) introduce large changes to the parameters. Accordingly, most defense mechanisms make a similar assumption and attempt to use statistically robust methods to identify and discard values whose reported gradients are far from the population mean. We observe that if the empirical variance between the gradients of workers is high enough, an attacker could take advantage of this and launch a non-omniscient attack that operates within the population variance. We show that the variance is indeed high enough even for simple datasets such as MNIST, allowing an attack that is not only undetected by existing defenses, but also uses their power against them, causing those defense mechanisms to consistently select the byzantine workers while discarding legitimate ones. We demonstrate our attack method works not only for preventing convergence but also for repurposing of the model behavior ("backdooring"). We show that less than 25\% of colluding workers are sufficient to degrade the accuracy of models trained on MNIST, CIFAR10 and CIFAR100 by 50\%, as well as to introduce backdoors without hurting the accuracy for MNIST and CIFAR10 datasets, but with a degradation for CIFAR100.},
+booktitle = {Proceedings of the 33rd International Conference on Neural Information Processing Systems},
+articleno = {775},
+numpages = {11}
+}
+
+
+@InProceedings{foe_attack,
+  title = 	 {Fall of Empires: Breaking Byzantine-tolerant SGD by Inner Product Manipulation},
+  author =       {Xie, Cong and Koyejo, Oluwasanmi and Gupta, Indranil},
+  booktitle = 	 {Proceedings of The 35th Uncertainty in Artificial Intelligence Conference},
+  pages = 	 {261--270},
+  year = 	 {2020},
+  editor = 	 {Adams, Ryan P. and Gogate, Vibhav},
+  volume = 	 {115},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {22--25 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v115/xie20a/xie20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v115/xie20a.html},
+  abstract = 	 {Recently, new defense techniques have been developed to tolerate Byzantine failures for distributed machine learning. The Byzantine model captures  workers that behave arbitrarily, including malicious and compromised workers. In this paper, we  break two prevailing Byzantine-tolerant techniques. Specifically we show that two robust aggregation methods for synchronous SGD–namely, coordinate-wise median and Krum–can be broken using new attack strategies based on inner product manipulation. We prove our results theoretically, as well as show empirical validation.  }
+}
+
+@InProceedings{pmlr-v97-bhagoji19a,
+  title = 	 {Analyzing Federated Learning through an Adversarial Lens},
+  author =       {Bhagoji, Arjun Nitin and Chakraborty, Supriyo and Mittal, Prateek and Calo, Seraphin},
+  booktitle = 	 {Proceedings of the 36th International Conference on Machine Learning},
+  pages = 	 {634--643},
+  year = 	 {2019},
+  editor = 	 {Chaudhuri, Kamalika and Salakhutdinov, Ruslan},
+  volume = 	 {97},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {09--15 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v97/bhagoji19a/bhagoji19a.pdf},
+  url = 	 {https://proceedings.mlr.press/v97/bhagoji19a.html},
+  abstract = 	 {Federated learning distributes model training among a multitude of agents, who, guided by privacy concerns, perform training using their local data but share only model parameter updates, for iterative aggregation at the server to train an overall global model. In this work, we explore how the federated learning setting gives rise to a new threat, namely model poisoning, which differs from traditional data poisoning. Model poisoning is carried out by an adversary controlling a small number of malicious agents (usually 1) with the aim of causing the global model to misclassify a set of chosen inputs with high conﬁdence. We explore a number of strategies to carry out this attack on deep neural networks, starting with targeted model poisoning using a simple boosting of the malicious agent’s update to overcome the effects of other agents. We also propose two critical notions of stealth to detect malicious updates. We bypass these by including them in the adversarial objective to carry out stealthy model poisoning. We improve its stealth with the use of an alternating minimization strategy which alternately optimizes for stealth and the adversarial objective. We also empirically demonstrate that Byzantine-resilient aggregation strategies are not robust to our attacks. Our results indicate that highly constrained adversaries can carry out model poisoning attacks while maintaining stealth, thus highlighting the vulnerability of the federated learning setting and the need to develop effective defense strategies.}
+}
+
+@misc{mhamdi2018hiddenvulnerabilitydistributedlearning,
+      title={The Hidden Vulnerability of Distributed Learning in Byzantium}, 
+      author={El Mahdi El Mhamdi and Rachid Guerraoui and Sébastien Rouault},
+      year={2018},
+      eprint={1802.07927},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML},
+      url={https://arxiv.org/abs/1802.07927}, 
+}
+
+@inproceedings{
+gorbunov2023variance,
+title={Variance Reduction is an Antidote to Byzantines: Better Rates, Weaker Assumptions and Communication Compression as a Cherry on the Top},
+author={Eduard Gorbunov and Samuel Horv{\'a}th and Peter Richt{\'a}rik and Gauthier Gidel},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=pfuqQQCB34}
+}
+
+@inproceedings{Allouah_bounds,
+author = {Allouah, Youssef and Guerraoui, Rachid and Gupta, Nirupam and Pinot, Rafa\"{e}l and Rizk, Geovani},
+title = {Robust distributed learning: tight error bounds and breakdown point under data heterogeneity},
+year = {2023},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+abstract = {The theory underlying robust distributed learning algorithms, designed to resist adversarial machines, matches empirical observations when data is homogeneous. Under data heterogeneity however, which is the norm in practical scenarios, established lower bounds on the learning error are essentially vacuous and greatly mismatch empirical observations. This is because the heterogeneity model considered is too restrictive and does not cover basic learning tasks such as least-squares regression. We consider in this paper a more realistic heterogeneity model, namely (G, B)-gradient dissimilarity, and show that it covers a larger class of learning problems than existing theory. Notably, we show that the breakdown point under heterogeneity is lower than the classical fraction 1/2. We also prove a new lower bound on the learning error of any distributed learning algorithm. We derive a matching upper bound for a robust variant of distributed gradient descent, and empirically show that our analysis reduces the gap between theory and practice.},
+booktitle = {Proceedings of the 37th International Conference on Neural Information Processing Systems},
+articleno = {1982},
+numpages = {33},
+location = {New Orleans, LA, USA},
+series = {NIPS '23}
+}
+
+@inproceedings{Allouah_clipping,
+ author = {Allouah, Youssef and Guerraoui, Rachid and Gupta, Nirupam and Jellouli, Ahmed and Rizk, Geovani and Stephan, John},
+ booktitle = {International Conference on Learning Representations},
+ editor = {Y. Yue and A. Garg and N. Peng and F. Sha and R. Yu},
+ pages = {84251--84295},
+ title = {Adaptive Gradient Clipping for Robust Federated Learning},
+ url = {https://proceedings.iclr.cc/paper_files/paper/2025/file/d1d3cdc9e28b0c67b9df90fca4d1c1b3-Paper-Conference.pdf},
+ volume = {2025},
+ year = {2025}
+}
+
+@inproceedings {fang_poisoning,
+author = {Minghong Fang and Xiaoyu Cao and Jinyuan Jia and Neil Gong},
+title = {Local Model Poisoning Attacks to {Byzantine-Robust} Federated Learning},
+booktitle = {29th USENIX Security Symposium (USENIX Security 20)},
+year = {2020},
+isbn = {978-1-939133-17-5},
+pages = {1605--1622},
+url = {https://www.usenix.org/conference/usenixsecurity20/presentation/fang},
+publisher = {USENIX Association},
+month = aug
+}
+
+
+
 
 
 
