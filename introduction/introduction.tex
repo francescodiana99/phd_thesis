@@ -20,7 +20,7 @@ These concerns highlight two obstacles to the conventional centralized learning 
 
 The second obstacle concerns privacy and trust. Even when centralization is technically feasible, transferring raw records to a server increases the exposure of sensitive information and requires users or institutions to trust the entity that collects, stores, and processes the data. The problem is therefore not only how to learn from more data, but how to learn from distributed data without requiring all raw records to be pooled under the control of a single actor.
 
-\section{Federated Learning}
+\section{Federated Learning} \label{sec:fed_learning}
 
 Federated Learning (FL) has emerged as a response to this challenge \cite{konecny2015federatedoptimizationdistributedoptimizationdatacenter, pmlr-v54-mcmahan17a}. Instead of collecting raw data in a central repository, FL moves the training procedure closer to the data sources. Clients keep their datasets locally, compute model updates on their own devices, and communicate only these updates to a central server, whose role is to coordinate the training process and aggregate the received information. In the federated setting, the information exchanged with the server is limited, at least by design, to the updates required for collaborative model training.
 
@@ -53,7 +53,7 @@ The local objective is typically written as an Empirical Risk Minimization (ERM)
 \end{equation}
 where $\ell(\boldsymbol{\theta};\mathbf{x}_i^u,y_i^u)$ is the loss incurred by the model with parameters $\boldsymbol{\theta}$ on the $i$-th sample of client $u$.
 
-The original algorithm proposed to solve this optimization problem is Federated Averaging (FedAvg) \cite[Algorithm~1]{pmlr-v54-mcmahan17a}, an iterative procedure performed over $T$ communication rounds. Its main steps are summarized in Algorithm~\ref{alg:fedavg}. As discussed above, the training process is coordinated by a central server, which initializes the global model $\model$ (line 1). At each communication round $t$, the server selects a subset of participating clients, denoted by $\mathcal{U}^t \subseteq \mathcal{U}$ (line 3), and sends them the current global model (line 4). After receiving the model, each selected client performs local training on its private dataset (line 6), typically by running stochastic gradient descent for a fixed number of local epochs $E$. Once local training is completed, each client sends back an updated model $\model_u^{t+1} (line 7)$. The server then aggregates the received client models to obtain the next global model $\model^{t+1}$ (line 8).
+The original algorithm proposed to solve this optimization problem is Federated Averaging (FedAvg) \cite[Algorithm~1]{pmlr-v54-mcmahan17a}, an iterative procedure performed over $T$ communication rounds. Its main steps are summarized in Algorithm~\ref{alg:fedavg}. As discussed above, the training process is coordinated by a central server, which initializes the global model $\model$ (line 1). At each communication round $t$, the server selects a subset of participating clients, denoted by $\mathcal{U}^t \subseteq \mathcal{U}$ (line 3), and sends them the current global model (line 4). After receiving the model, each selected client performs local training on its private dataset (line 6), typically by running stochastic gradient descent for a fixed number of local epochs $E$. Once local training is completed, each client sends back an updated model $\model_u^{t+1}$ (line 7). The server then aggregates the received client models to obtain the next global model $\model^{t+1}$ (line 8).
 
 FedAvg represents the canonical algorithmic formulation of federated learning. Since its introduction, many variants have been proposed, modifying different components of the protocol, including the client optimizer, the server aggregation rule, the client sampling strategy, and the communication pattern \cite{reddi2021adaptivefederatedoptimization}. This line of work shows that federated learning should not be understood as a single fixed algorithm, but rather as a flexible framework for distributed optimization under data locality constraints. At the same time, this flexibility is needed because the federated setting departs from the assumptions of conventional centralized training. Clients may hold data drawn from different distributions \cite{Li2020On, marfoq2021federated, wang_client, scaffold}, operate under different computational \cite{li2019fedmdheterogenousfederatedlearning,FjORD} and network conditions \cite{caldas2019expandingreachfederatedlearning, chen_efficient, ALMANIFI2023100742}, participate intermittently \cite{ribeiro_client_corr, rodio_clients, sun_participation}, and have different privacy requirements \cite{brendan2018learning, Fu_dp_dl_review}. As a result, federated learning introduces a set of challenges that are either absent or less pronounced in centralized learning, including statistical and system heterogeneity \cite{ye_review_het_fl}, communication efficiency \cite{ALMANIFI2023100742}, fairness \cite{Vucinich_fairness, Shi_fairness}, personalization \cite{tan_personalization}, robustness \cite{Uddin_robustness}, and privacy \cite{fu_privacy}.
 
@@ -129,12 +129,241 @@ Fairness is therefore a central challenge in FL, and different deployments may r
 
 In federated learning, these threats are amplified by the distributed nature of the training process. Since the server aggregates updates produced by clients whose local data and computation are not directly observable, compromised participants can act as \textit{Byzantine} clients \cite{blanchard_byz}, i.e., clients that arbitrarily deviate from the protocol and submit malicious or corrupted updates. Such updates may aim to degrade the overall performance of the global model  \cite{pmlr-v97-bhagoji19a, alie_attack, foe_attack, fang_poisoning}, or implant a backdoor while preserving normal accuracy on clean validation data \cite{pmlr-v108-bagdasaryan20a}. Compared to centralized poisoning, the attacker does not need to contaminate a centrally collected dataset; it can directly influence the optimization process through the updates sent to the server. This has motivated a large body of work on Byzantine-resilient aggregation \cite{blanchard_byz, mhamdi2018hiddenvulnerabilitydistributedlearning} and robust distributed optimization \cite{GuerraouiGP24, Allouah_bounds, Allouah_clipping}. 
 
-\section{The Importance of Privacy}
+\section{Privacy in Federated Learning}
+In Section~\ref{sec:fed_learning}, we introduced the main motivations behind federated learning, including the intuitive privacy benefit of keeping data local. However, data locality should not be confused with a privacy guarantee. It reduces the need to transfer raw records to a central repository, but it does not by itself determine what information may still be inferred during training.Privacy depends not only on where data are stored, but also on who can access the information derived from them, how this information is processed, and for which purposes it is used. This is particularly relevant in light of legal frameworks that recognize privacy and data protection as fundamental rights \cite{eu_gdpr_2016,california_ccpa_cpra}. In this context, analyzing privacy risks means asking what information about clients or their data may be exposed to the actors involved in the learning process.
+This issue is not specific to federated learning. In centralized machine learning, previous work has shown that trained models may leak information about training data\cite{shokri_mia, aia_fredrikson, carlini_extract_data, feng2024privacy}. In federated learning, however, the training protocol introduces an additional source of leakage as the messages exchanged between clients and server can be intercepted. These updates are computed from local datasets and therefore may carry traces of the private information they are meant to protect. Depending on the adversary's capabilities, such information may be observed passively or amplified through active interference with the protocol.
+A large body of work has shown that, without additional safeguards, the messages exchanged during training can reveal private or sensitive information about clients and their local datasets \cite{lyu2020threatsfederatedlearningsurvey, zhao_fl_attacks_review}. The remainder of this section reviews these risks by discussing the main classes of privacy attacks considered in the FL literature, together with the defense strategies proposed to mitigate them.
 
-\section{Privacy Attacks in Federated Learning}
+\subsection{Threat Models}
 
-\section{Privacy mechanisms in Federated Learining}
+Before reviewing the main classes of privacy attacks in federated learning, it is useful to clarify the threat models under which such attacks are studied. A threat model specifies the adversary's position in the protocol, the information available to the adversary, the actions the adversary is allowed to perform, and the private information that the adversary aims to infer. In FL, a central distinction is between \textit{honest-but-curious}, or passive, adversaries and \textit{malicious}, or active, adversaries~\cite{Nasr2018ComprehensivePA}.
 
-\section{The trust problem}
+In the honest-but-curious setting~\cite{honest_but_curious}, the adversary follows the prescribed training protocol but attempts to infer private information from the information naturally revealed during training. This adversary may be, for instance, a curious server that inspects the updates received from clients, or a man-in-the-middle that silently eavesdrops on the communication between clients and the server. Since passive adversaries do not alter the training process, they are generally harder to detect: their attack surface is limited to the messages, models, or updates that are already exchanged as part of the protocol. Nevertheless, this setting can still be highly informative. Given the nature of FL systems, the adversary is often assumed to have white-box knowledge of the system, including the model architecture, current model parameters, loss function, and training algorithm. The passive nature of the adversary therefore refers to its behavior, not necessarily to a lack of knowledge.
+
+By contrast, a malicious adversary deviates from the prescribed protocol in order to amplify privacy leakage. Such an adversary may be a compromised client, a coalition of clients, or, more commonly in the privacy-attack literature \cite{Nasr2018ComprehensivePA, zhao_fl_attacks_review, carletti2025sok}, the federated learning server itself. A malicious server is particularly powerful because it orchestrates the training process, selecting clients and distributing model parameters. This position allows the server to modify the model or the messages sent to targeted clients, with the goal of inducing updates that reveal more information about their local datasets. Active attacks are therefore often stronger than passive attacks, but they also rely on stronger assumptions and may be more detectable if clients are able to verify the received model or monitor deviations from the expected protocol~\cite{mia_survey_bai, carletti2026detectability}.
+
+The black-box, grey-box, and white-box distinction can be used as a complementary axis of the threat model. Black-box access is more typical of post-training attacks, where the adversary only queries a trained model and observes its outputs. Grey-box settings capture intermediate cases, for example when the adversary knows the model architecture but observes only aggregated updates, or when some local training details are unknown. White-box access, instead, is common in training-time FL attacks, where the adversary observes model parameters and updates exchanged during the protocol \cite{Nasr2018ComprehensivePA, zhao_fl_attacks_review}. In this thesis, Chapter~\ref{chap:aia} considers both passive and active adversarial models, whereas the following chapters mainly focus on the privacy risks posed by active adversaries, with particular emphasis on malicious-server scenarios.
+
+\subsection{Membership Inference Attacks}
+
+% Membership inference attacks (MIA) tests models privicy leakage by aiming to determine whether a given data record was part of the training dataset \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Initially proposed in the centralized setting, it usually represents a good empirical lower bound to test the privacy guarantees of a model. In fact, many applications of MIAs inclide privacy breach evaluation of  a model, data censorship, testing unlearning,  or work as a foundation for other attacks that might reveal additional information \cite{xiao_mia}, for example if a person has a disease \cite{hu2021sourceinferenceattacksfederated}. The first attack specific to federated learning \cite{Nasr2018ComprehensivePA} works as follow: assuming the availability of an auxiliary dataset $\dataset_{aux}=\dataset_{member} \cup \dataset_{non-member}$ containing both member and non-member samples of the victim's training dataset, the attacker trains a shadow models that. Then, using the gradients of the shadow models and the training labels as features for a binary classification model, the attcker trains a binary classifier able to distinguish, from the gradients and from the known label, if a datapoint is part of the training set. Other techniques proposes the usage of GAN networks to generate diverse training data and augment the shadow dataset \cite{zhang_gan_mia}.  \citeA{zari2021efficientpassivemembershipinference} improved the efficiency of the attack training the discriminator only on model outputs. Similar approaches leveraging trends in the output of the model has been later proposed \cite{gu_mia} and in the bias parameters values of the model \cite{Zhang_mia}. \citeA{li2023effective} removed the requirement of shadow models and additional datasets and perfomed an attack by looking at the orthogonality of the gradients between consecutive rounds. \cite{Zhu_mia} designed an hypothesis test to improve the accuracy of the attack. Finally, active attacks considering the modifications in the model parameter or data have also been proposed. In the attack proposed by \citeA{Pichler_mia}, the attacker modifies the parameters of a ReLU-based fully connected layer such that, the gradient of the model will reveal if a sample has been used during training or not. \citeA{He_mia} propose to poison the training data before executing the attack to increase the gradient signal.
+
+% \paragraph{Membership inference attacks.}
+
+% MIAs were first studied in centralized learning \cite{shokri2017membershipinferenceattacksmachine, }, where the adversary typically interacts with a trained model after deployment and exploits differences between the model's behavior on training and non-training records, for example through prediction confidence, loss, or correctness. In federated learning, however, the attack surface is broader. Since training proceeds through repeated exchanges of model parameters or gradients, an adversary may observe not only the final model but also intermediate updates, hidden representations, losses, or several historical versions of the model \cite{mia_survey_bai}. The adversary may be the central server, a participating client, or an external eavesdropper, and may act either passively, by only observing the protocol, or actively, by modifying model parameters or data to amplify membership leakage \cite{mia_survey_bai}. Moreover, while record-level MIAs only decide whether a sample belongs to the global training set, source-level MIAs further attempt to identify the client that contributed the sample. In the latter case, the binary decision rule above can be extended to a multi-class inference problem,
+% \[
+%     \mathcal{A}_{\mathrm{source}}(z,\mathcal{O}) \in \{0,1,\ldots,K\},
+% \]
+% where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $z$ is inferred to belong to the local dataset of client $k$. This source-level notion is particularly relevant in cross-silo FL scenarios, where identifying the institution that contributed a record may reveal additional sensitive information \cite{hu2021sourceinferenceattacksfederated}.
+% The first FL-specific MIA of \citeA{Nasr2018ComprehensivePA} introduced a white-box attack against federated training in both passive and active settings. The adversary is assumed to know the target model architecture, parameters, and inference hyperparameters, and to know the true label of the candidate record. Given a candidate sample $(x,y)$, the attacker computes white-box features such as hidden-layer activations, the prediction vector, the loss, and the gradients of the loss with respect to the parameters of each layer. In the supervised variant, the attacker additionally relies on an auxiliary dataset containing both known members of the target training set and non-members drawn from the same distribution, which is used to train a binary attack classifier. In FL, these features may be observed over multiple communication rounds: a server can exploit individual client updates, whereas a participating client observes only aggregated updates. The same work also proposes active variants, where the adversary modifies uploaded parameters or the global parameters sent to clients, for instance by isolating a target client, to amplify membership leakage.
+
+% Subsequent work has reduced the amount of auxiliary information or computation required by the attacker. For example, \citeA{zhang_gan_mia} use generative adversarial networks to augment the attack data used for shadow training, while \citeA{zari2021efficientpassivemembershipinference} propose a more efficient passive attack based on the evolution of model outputs. This line of work was extended by attacks that exploit prediction-confidence series \cite{gu_mia} or trajectories of bias parameters \cite{Zhang_mia}. Other approaches remove the assumption of auxiliary data and the consequent shadow model training: \citeA{li2023effective} infer membership from the geometry of gradient updates across consecutive rounds, whereas \citeA{Zhu_mia} formulate the attack as a hypothesis test that leverages updates from multiple clients and communication rounds. Finally, active attacks show that membership leakage can be amplified when the adversary is allowed to interfere with the protocol. For instance, \citeA{Pichler_mia} modify the parameters of a ReLU-based fully connected layer so that the resulting gradients reveal whether a queried sample was used during training, while \citeA{He_mia} use data poisoning to increase the membership signal before launching the inference attack. 
+
+% \paragraph{Membership inference attacks.}
+% Membership inference attacks (MIAs) aim to determine whether a given data record is part of the training dataset of a model \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Formally, let $\dataset_{\mathrm{tr}}$ denote the training dataset and let $(\x,y)$ be a candidate record. Given an observation $\mathcal{O}$ available to the adversary, such as the final model, its outputs, gradients, model updates, or a sequence of intermediate models, an MIA is a binary decision rule
+% \[
+%     \mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O}) \in \{0,1\},
+% \]
+% where $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=1$ indicates that the adversary infers $(\x,y) \in \dataset_{\mathrm{tr}}$, while $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=0$ indicates that $(\x,y) \notin \dataset_{\mathrm{tr}}$. MIAs provide a standard empirical tool for assessing privacy leakage since a successful attack shows that the trained model, or the information exchanged during training, contains a distinguishable trace of individual training examples. This leakage can be sensitive even when the adversary learns only membership status. For instance, if a record is found to belong to the training set of a model trained on a specific medical condition, membership may already reveal information about the corresponding individual\cite{hu2021sourceinferenceattacksfederated}. Beyond privacy-risk assessment, MIAs have also been used to audit compliance with data deletion or unlearning requirements, and can serve as a preliminary step for stronger attacks, such as model extraction or attacks aiming to infer additional private information \cite{xiao_mia,hu2021sourceinferenceattacksfederated}.
+
+% MIAs were first studied in centralized learning \cite{shokri2017membershipinferenceattacksmachine, yeom2018privacyriskmachinelearning, carlini2022membershipinferenceattacksprinciples}, where the adversary typically interacts with a trained model after deployment and exploits differences between the model's behavior on training and non-training records, for example through prediction confidence, loss, or correctness. In federated learning, however, the attack surface is broader. Since training proceeds through repeated exchanges of model parameters or gradients, an adversary may observe not only the final model but also intermediate updates, hidden representations, losses, or several historical versions of the model~\cite{Nasr2018ComprehensivePA}. A foundational example of this risk is provided by \citeA{melis2019exploiting}, who showed that updates exchanged during collaborative learning can leak unintended information, including the presence of specific data points in other participants' training data. The adversary may be the central server, a participating client, or an external eavesdropper, and may act either passively, by only observing the protocol, or actively, by modifying model parameters or data to amplify membership leakage \cite{mia_survey_bai}.
+
+% The goal of the attack can also vary. While record-level MIAs only decide whether a sample belongs to the global training set, source-level MIAs further attempt to identify the client that contributed the sample. In this case, the binary decision rule above can be extended to a multi-class inference problem,
+% \[
+%     \mathcal{A}_{\mathrm{source}}(z,\mathcal{O}) \in \{0,1,\ldots,K\},
+% \]
+% where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $z$ is inferred to belong to the local dataset of client $k$. This source-level notion is particularly relevant in cross-silo FL scenarios, such in case of hospitals, where identifying the institution that contributed a record may reveal additional sensitive information \cite{hu2021sourceinferenceattacksfederated} like medical conditions of a patient. A related but distinct formulation is subject-level membership inference, introduced by \citeA{suri2022subject}, where the adversary aims to determine whether the data of a given individual, possibly represented by multiple records and distributed across several institutions, participated in the federation.
+
+% The first FL-specific MIA of \citeA{Nasr2018ComprehensivePA} introduced a white-box attack against federated training in both passive and active settings. In this threat model, the adversary is assumed to know the target model architecture, its parameters, and the hyperparameters needed to run inference. Therefore, for any candidate record $z=(x,y)$, the adversary can compute not only the model prediction $f(x;W)$, but also hidden-layer activations, the loss $L(f(x;W),y)$, and the gradients of this loss with respect to the parameters of each layer. In the supervised version of the attack, the adversary also has an auxiliary dataset $\dataset'$, containing some records known to be members of the target training set and some records sampled from the same distribution but known not to be members. These examples provide the membership labels needed to train the attack model. The attack model then takes, for each candidate record, a collection of white-box features as input: layer-wise gradients, hidden-layer outputs, the final prediction vector, the one-hot encoding of the true label, and the loss value. In the federated setting, these features can be collected over several training rounds, exploiting the fact that repeated updates on the same local data leave a stronger membership signal. The attack can be launched by a passive server, which observes individual client updates, or by a passive participant, which only observes aggregated global updates. Nasr et al. also consider active adversaries: a malicious participant can modify its uploaded parameters, while a malicious server can modify the parameters sent to selected clients or isolate a target client from the rest of the federation, thereby increasing the distinguishability between members and non-members.
+
+% Subsequent work has reduced the amount of auxiliary information or computation required by the attacker, and has explored different sources of membership signal. For example, \citeA{zhang_gan_mia} use generative adversarial networks to augment the attack data used for shadow training, while \citeA{zari2021efficientpassivemembershipinference} propose a more efficient passive attack based on the evolution of model outputs. This trend-based line of work was extended by attacks that exploit prediction-confidence series \cite{gu_mia}, trajectories of bias parameters \cite{Zhang_mia}, and the temporal evolution of adversarial robustness \cite{liu_mia}. Other approaches remove the necessity of training a shadow model: \citeA{li2023effective} infer membership from the geometry of gradient updates across consecutive rounds, whereas \citeA{Zhu_mia} formulate the attack as a hypothesis test that leverages updates from multiple clients and communication rounds. 
+% % MIAs have also been adapted to application-specific FL settings. For instance, \citeA{yuan2023interaction} study interaction-level membership inference in federated recommender systems, where the goal is to determine whether a user interacted with a particular item.
+
+% Finally, active attacks show that membership leakage can be amplified when the adversary is allowed to interfere with the protocol. For instance, \citeA{Pichler_mia} modify the parameters of a ReLU-based fully connected layer so that the resulting gradients reveal whether a queried sample was used during training. \citeA{nguyen2023active} show that active MIAs can also be mounted under local differential privacy by crafting malicious model parameters that increase the membership signal observed by the server. Similarly, \citeA{He_mia} use data poisoning to make the model memorize information about specific target classes before launching the inference attack.
+
+Membership inference attacks (MIAs) aim to determine whether a given data record is part of the training dataset of a model \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Formally, let $\dataset_{\mathrm{tr}}$ denote the training dataset and let $(\x,y)$ be a candidate record. Given an observation $\mathcal{O}$ available to the adversary, such as the final model, its outputs, gradients, model updates, or a sequence of intermediate models, an MIA is a binary decision rule
+\[
+    \mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O}) \in \{0,1\},
+\]
+where $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=1$ indicates that the adversary infers $(\x,y) \in \dataset_{\mathrm{tr}}$, while $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=0$ indicates that $(\x,y) \notin \dataset_{\mathrm{tr}}$. MIAs are commonly used as an empirical tool for assessing privacy leakage, since a successful attack shows that the trained model, or the information exchanged during training, contains a distinguishable trace of individual training examples. This leakage can be sensitive even when the adversary learns only membership status. For instance, if a record is found to belong to the training set of a model trained on a specific medical condition, membership may already reveal information about the corresponding individual. Beyond privacy-risk assessment, MIAs have also been used to audit compliance with data deletion or unlearning requirements, and can serve as a preliminary step for stronger attacks, such as model extraction or attacks aiming to infer additional private information \cite{xiao_mia,hu2021sourceinferenceattacksfederated}.
+
+\begin{figure}[tbp]
+    \centering
+    \resizebox{0.97\textwidth}{!}{%
+    \begin{tikzpicture}[
+        >=stealth,
+        font=\footnotesize,
+        stage/.style={
+            draw=bleu,
+            dashed,
+            line width=1pt,
+            rounded corners=3pt,
+            fill=bleu!2
+        },
+        card/.style={
+            draw=black!70,
+            thick,
+            rounded corners=3pt,
+            fill=white,
+            align=center,
+            inner sep=3pt
+        },
+        attackcard/.style={
+            draw=vertc!85!black,
+            thick,
+            rounded corners=3pt,
+            fill=vertc!6,
+            align=center,
+            inner sep=4pt
+        },
+        arrow/.style={->, line width=1pt, draw=black!75},
+        softarrow/.style={->, line width=0.8pt, draw=black!55},
+        title/.style={font=\bfseries\small, align=center},
+        tinylabel/.style={font=\scriptsize, align=center}
+    ]
+        \draw[stage] (0,0) rectangle (3.55,3.95);
+        \node[title] at (1.78,3.62) {Federated training};
+
+        \draw[stage] (4.35,0) rectangle (7.95,3.95);
+        \node[title] at (6.15,3.62) {Adversary's view};
+
+        \draw[stage] (8.65,0) rectangle (13.05,3.95);
+        \node[title] at (10.85,3.62) {Inference goal};
+
+        % Server icon.
+        \coordinate (server) at (1.78,2.40);
+        \draw[bleu, line width=1pt] (1.78,1.93) -- (1.36,2.82) -- (2.20,2.82) -- cycle;
+        \draw[bleu, line width=1pt] (1.78,1.93) -- (1.78,3.18);
+        \draw[bleu, line width=1pt] (1.50,2.38) -- (2.06,2.38);
+        \draw[bleu, line width=1pt] (1.42,2.62) -- (2.14,2.62);
+        \draw[bleu, line width=1pt] (1.60,2.86) arc[start angle=210,end angle=-30,radius=0.22];
+        \draw[bleu, line width=1pt] (1.44,2.86) arc[start angle=210,end angle=-30,radius=0.38];
+
+        % Client icons.
+        \foreach \xphone/\name in {0.54/$u_1$,1.54/$u_2$,2.54/$u_K$} {
+            \coordinate (client\xphone) at (\xphone+0.24,1.23);
+            \draw[black, line width=0.9pt, rounded corners=2pt, fill=white] (\xphone,0.72) rectangle ++(0.48,0.80);
+            \fill[black] (\xphone+0.05,0.82) rectangle ++(0.38,0.60);
+            \fill[white] (\xphone+0.24,0.90) circle (0.032);
+            \draw[softarrow] (server) -- (\xphone+0.24,1.56);
+            \draw[softarrow] (\xphone+0.24,1.56) -- (server);
+        }
+
+        \node[card, text width=2.62cm, minimum height=0.42cm] at (1.78,0.21)
+            {$\dataset_{\mathrm{tr}}=\bigcup_{k=1}^{K}\dataset_k$};
+
+        % Attacker icon.
+        \draw[pink!85!black, line width=0.95pt] (5.78,3.02) -- (6.15,3.40) -- (6.52,3.02);
+        \draw[pink!85!black, line width=0.95pt, rounded corners=2pt] (5.87,2.70) rectangle (6.43,3.02);
+        \draw[pink!85!black, line width=0.95pt] (5.97,2.70) -- (5.78,2.52) -- (6.52,2.52) -- (6.33,2.70);
+        \draw[pink!85!black, line width=0.95pt] (6.15,3.23) circle (0.09);
+
+        \node[card, text width=2.64cm, minimum height=0.78cm] (obs) at (6.15,1.70)
+            {$\mathcal{O}$\\[-0.5mm]\scriptsize outputs, losses,\\[-0.4mm]gradients, updates};
+        \node[card, text width=2.64cm, minimum height=0.58cm] (cand) at (6.15,0.74)
+            {\scriptsize candidate record\\[-0.4mm]$(\x,y)$};
+
+        \draw[arrow] (3.55,2.50) -- node[pos=0.48, above, font=\scriptsize, fill=white, inner sep=1pt] {observed signal} (4.50,2.50) |- (obs.west);
+        \draw[arrow] (6.15,2.52) -- (obs.north);
+
+        % Attack rule and goal.
+        \node[attackcard, text width=3.24cm, minimum height=0.86cm] (attack) at (10.85,2.70)
+            {\scriptsize attack rule\\[0.4mm]$\mathcal{A}_{\mathrm{MIA}}\bigl((\x,y),\mathcal{O}\bigr)$};
+        \node[card, text width=1.28cm, minimum height=0.58cm, fill=violet!8] (member) at (10.00,1.42)
+            {$1$\\[-0.5mm]\scriptsize member};
+        \node[card, text width=1.44cm, minimum height=0.58cm, fill=violet!8] (nonmember) at (11.70,1.42)
+            {$0$\\[-0.5mm]\scriptsize non-member};
+        \node[card, text width=3.72cm, minimum height=0.58cm, fill=pink!7] (goal) at (10.85,0.42)
+            {\scriptsize goal\\[-0.4mm]decide if $(\x,y)\in\dataset_{\mathrm{tr}}$};
+
+        \coordinate (attackObsIn) at (9.23,2.84);
+        \coordinate (attackCandIn) at (9.23,2.58);
+        \draw[arrow] (obs.east) -- ++(0.30,0) |- node[pos=0.72, above, font=\scriptsize, fill=white, inner sep=1pt] {features} (attackObsIn);
+        \draw[arrow] (cand.east) -- ++(0.52,0) |- (attackCandIn);
+        \draw[arrow] (attack.south) -- ++(0,-0.32) -| (member.north);
+        \draw[arrow] (attack.south) -- ++(0,-0.32) -| (nonmember.north);
+    \end{tikzpicture}%
+    }
+    \caption[Membership inference attack workflow]{Generic membership inference attack workflow. The adversary combines observations from the model or training protocol with a candidate record and tries to decide whether the record belongs to the training data.}
+    \label{fig:mia_workflow}
+\end{figure}
+
+MIAs were first studied in centralized learning \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,carlini2022membershipinferenceattacksprinciples}, where the adversary typically interacts with a trained model after deployment and exploits differences between the model's behavior on training and non-training records, for example through prediction confidence, loss, or correctness. In federated learning, however, the attack surface is broader, since the attacker has access not only to the final model, but also to all the intermediate update history. The adversary may be the central server, a participating client, or an external eavesdropper, and may act either passively, by only observing the protocol, or actively, by modifying model parameters or data to amplify membership leakage \cite{mia_survey_bai}.
+
+The first FL-specific MIA was introduced by \citeA{Nasr2018ComprehensivePA}, who proposed a white-box attack in both passive and active settings. In this threat model, the adversary is assumed to know the target model architecture, its parameters, and the hyperparameters needed to run inference. Therefore, for any candidate record $(\x,y)$, the adversary can compute not only the model prediction $f(\x;W)$, but also hidden-layer activations, the loss $L(f(\x;W),y)$, and the gradients of this loss with respect to the parameters of each layer. In the supervised version of the attack, the adversary also has an auxiliary dataset $\dataset_{\mathrm{aux}}$, containing examples with known membership status: some records are known members of the target training set, while others are non-members sampled from the same distribution. These examples provide the labels needed to train the attack model. The attack model then takes, for each candidate record, a collection of white-box features as input, including layer-wise gradients, hidden-layer outputs, the final prediction vector, the one-hot encoding of the true label, and the loss value, collected over multiple training rounds. 
+% The attack can be launched by a passive server, which observes individual client updates, or by a passive participant, which observes only aggregated global updates.
+
+Closely related work by \citeA{melis2018exploitingunintendedfeatureleakage} showed that updates exchanged during collaborative learning can leak unintended information about other participants' data, including the presence of specific data points and properties of the local training distribution. Subsequent work on MIAs in FL has reduced the amount of auxiliary information or computation required by the attacker, and has explored different sources of membership signal. For example, \citeA{zhang_gan_mia} use generative adversarial networks to augment the attack data used for shadow training, while \citeA{zari2021efficientpassivemembershipinference} propose a more efficient passive attack based on the evolution of model outputs. This trend-based line of work was extended by attacks that exploit prediction-confidence series \cite{gu_mia}, trajectories of bias parameters \cite{Zhang_mia}, and the temporal evolution of adversarial robustness \cite{liu_mia}. Other approaches remove the need to train a shadow model: \citeA{li2023effective} infer membership from the geometry of gradient updates across consecutive rounds, whereas \citeA{Zhu_mia} formulate the attack as a hypothesis test that leverages updates from multiple clients and communication rounds. 
+% MIAs have also been adapted to application-specific FL settings; for instance, \citeA{yuan2023interaction} study interaction-level membership inference in federated recommender systems, where the goal is to determine whether a user interacted with a particular item.
+
+Finally, active attacks show that membership leakage can be amplified when the adversary is allowed to interfere with the protocol. For instance, \citeA{Pichler_mia} modify the parameters of a ReLU-based fully connected layer so that the resulting gradients reveal whether a queried sample was used during training. \citeA{mia_nguyen} show that active MIAs can also be mounted under local differential privacy by crafting malicious model parameters that increase the membership signal observed by the server. Similarly, \citeA{He_mia} use data poisoning to make the model memorize information about specific target classes before launching the inference attack.
+
+In FL, the basic membership question can also be refined to account for the client structure of the training set. Instead of only deciding whether $(\x,y)$ belongs to the global training dataset, an adversary may attempt to infer which client contributed the record. If $\dataset_{\mathrm{tr}}=\bigcup_{k=1}^K \dataset_k$, this source-level variant can be written as
+\[
+    \mathcal{A}_{\mathrm{source}}((\x,y),\mathcal{O}) \in \{0,1,\ldots,K\},
+\]
+where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $(\x,y)$ is inferred to belong to the local dataset $\dataset_k$ of client $k$. This refinement is particularly relevant in cross-silo FL, for example when hospitals collaborate to train a model, because identifying the institution that contributed a record may reveal additional sensitive information about the corresponding individual \cite{hu2021sourceinferenceattacksfederated}.
+%  A related formulation is subject-level membership inference, where the adversary aims to determine whether the data of a given individual participated in the federation, possibly through multiple records distributed across several institutions \cite{suri2022subject}.
+\subsection{Attribute Inference Attacks}
+
+While membership inference attacks reveal whether a record was used during training, attribute inference attacks (AIAs) ask a complementary question: what sensitive information about a partially known record can be inferred from the model or from the training process? AIAs aim to infer a sensitive attribute of a target record from partial knowledge about that record and from information leaked by the learning procedure. Let a data point be decomposed as $(\x^p, s, y)$, where $\x^p$ denotes the public attributes, $s$ is a sensitive attribute, and $y$ is the associated label or target value. Given the public part of the record, possibly the target value, and an observation $\mathcal{O}$ available to the adversary, an AIA can be written as
+\[
+    \mathcal{A}_{\mathrm{AIA}}(\mathcal{O}, \x^p, y) \mapsto \hat{x}_s .
+\]
+The observation $\mathcal{O}$ depends on the setting and may correspond, for example, to the output of the trained model, its gradients, model updates, or a sequence of intermediate models.
+
+In the centralized setting, an early and influential instance of this type of attack was introduced by~\citeA{aia_fredrikson} in the medical domain. Their work studies a \textit{model inversion} attack in which the adversary uses access to a trained model, together with auxiliary information about an individual, to infer a missing sensitive attribute. A common model-based formulation of this attack consists in testing different candidate values for the sensitive attribute and selecting the one that makes the completed record most consistent with the trained model. This can be expressed as
+\begin{equation}\label{eq:aia_model_based}
+    \hat{s}
+    \in
+    \argmin_{s}
+    \ell\bigl(\theta,(\x^p, s, y)\bigr),
+\end{equation}
+where $\theta$ denotes the trained model and $\ell$ is the loss function used to measure the consistency between the completed record and the model prediction.
+
+
+The intuition behind this attack is that the learned model may encode information about how the sensitive attribute affects the prediction on records similar to those seen during training. As a result, when the adversary completes a partially known record with the correct sensitive value, the resulting input may be more consistent with the model behavior than completions based on incorrect candidate values. This form of leakage is closely related to the influence of individual features on the learned predictor, as well as to memorization, overfitting, and overlearning phenomena~\cite{yeom2018privacyriskmachinelearning,Song2020Overlearning}. This interpretation, however, requires a careful baseline. Since sensitive attributes may be statistically correlated with the public attributes, an adversary could sometimes infer them even without access to the trained model. For this reason, \citeA{Jayaraman_aia} compare attribute inference attacks with imputation baselines, showing that AIA performance should be interpreted in terms of the additional information provided by model access, rather than only through the raw reconstruction accuracy.
+
+Subsequent work refined both the attack objectives and the adversarial assumptions. For classification models, \citeA{mehnaz2022sensitiveattributesprivatenovel} propose black-box model inversion AIAs that use confidence scores to select the most likely sensitive attribute value, and also introduce a label-only variant that requires only the predicted class. Their work further considers a relaxed setting in which some non-sensitive attributes of the target record are also unknown to the adversary.
+
+In federated learning, the same inference goal can be pursued using information that is not available in the standard centralized setting. Since the server, or an eavesdropping adversary, may observe the model updates exchanged during training, the sensitive attributes can be treated as unknown variables that explain those updates. In particular, given the public part of the client's records and the corresponding labels, the adversary formulates the unknown sensitive attributes as optimization variables and searches for the assignment that makes the gradients computed on the completed records best align with the update observed during federated training~\cite{lyu2021novelattributereconstructionattack,chen2024practical}. More formally, for a target client $u$ and a set of observed rounds $\mathcal{T}$, the adversary can solve
+
+\begin{equation}\label{eq:aia_gradient_based}
+  \argmax_{\{s_u(i)\}_{i=1}^{B}} \sum_{t\in \mathcal{T}}\textbf{CosSim} \left(\frac{\partial\ell(\model^t, 
+    \{(\x^p(i), s_u(i), y_u^p(i))\})}{\partial \model^t}, \model^t-\model_u^t\right), 
+\end{equation}
+
+These attacks have been studied under both honest-but-curious and active adversaries, where the server isolates a target client in the training process to amplify leakage. A different active approach is proposed by~\citeA{Gomes_aia}, where the malicious server modifies selected neurons so that sensitive information about target records is encoded in the sign or structure of the resulting gradient update. 
+Existing AIAs in federated learning have mainly been developed for classification tasks, leaving regression comparatively underexplored despite its importance in many practical applications. Moreover, while model-based AIAs were originally studied in the centralized setting, their adaptation to federated learning has received limited attention. Chapter~\ref{chap:aia} addresses this gap by studying model-based attribute inference in federated regression tasks. In particular, it shows how an adversary can approximate the target client's local model and use it to infer sensitive attributes, overcoming limitations of gradient-based attacks in regression in both honest-but-curious and malicious settings. 
+
+
+
+\subsection{Data Reconstruction Attacks}
+So far, the discussed attacks assumed that the attacker had access to the sample from which he wanted to retrieve some information (MIA) or part of it (AIA). Instead, in Gradient Inversion Attacks (GIAs)---referred to also as Data Reconstruction Attacks (DRAs)--- the goal of the attacker is to reconstruct the entire training sample, by observing the exchanged updates \cite{carletti2025sok,Du_gia_survey}. Existing attacks can be categorized in three main families, namely \textit{optimization-based} attacks, \textit{generative-based}, and \textit{analytical} attacks \cite{carletti2025sok}. Optimization-based attacks can be further refined based on if the goal of the attack is to directly optimize in the input space or in a latent space. 
+
+The attacks discussed so far assume that the adversary already has access either to the record whose membership is to be inferred (MIAs), or to a partially observed record (AIAs). Instead, data reconstruction attacks (DRAs) consider a stronger form of privacy leakage. In this setting, the adversary aims to recover the training data themselves from information exposed by the learning procedure. In federated learning, this information typically consists of the gradients or model updates exchanged between clients and the server. For this reason, these attacks are often referred to as \emph{gradient inversion attacks} (GIAs), although the broader term \emph{data reconstruction attacks} (DRAs) is also used in the literature \cite{carletti2025sok,Du_gia_survey}.
+
+Existing GIAs can be broadly organized into three main families: \emph{optimization-based}, \emph{generative-based}, and \emph{analytical} attacks \cite{carletti2025sok}. Optimization-based attacks can be further distinguished according to whether the reconstruction is performed directly in the input space or in a latent representation. The following paragraphs review these families in more detail.
+
+\paragraph{Optimization-based attacks} This family of attacks tries to recover the original data by solving an optimization problem where the attacker iteratively matches the updates that the server receive from the client with the updates computed starting from a dummy input. More formally, gradient inversion attacks can be formulated as an optimization problem in which the adversary searches for a synthetic batch whose gradient matches the update observed during federated training. For a target client $u$ and a set of observed rounds $\mathcal{T}$, the reconstruction can be written as
+    \begin{equation}\label{eq:gia_general}
+        \{(\hat{\x}_i,\hat{y}_i)\}_{i=1}^{B}
+        \in
+        \argmin_{\{(\x_i,y_i)\}_{i=1}^{B}}
+        \mathrm{\Dist}\left(
+            \frac{\partial \ell\left(
+                \model^t,
+                \{(\x_i,y_i)\}_{i=1}^{B}
+            \right)}{\partial \model^t},
+            \model^t-\model_u^t
+        \right),
+    \end{equation}
+where $\Dist(\cdot,\cdot)$ denotes a generic distance or dissimilarity measure between the gradient computed on the reconstructed batch and the update observed by the adversary. The first formulation of the attack proposed using Euclidean distance~\cite{dlg}, then, following research showed improved performance using cosine similarity~\cite{geiping_ig} and introducing regularization terms to improve the quality of the reconstruction and to stabilize the optimization process. For example \cite{geiping_ig} introduced the usage of total variation (TV) regularization \cite{rudin_tv}
+
+\subsection{Other Attacks}
+% Property inference
+% Topology attacks
+% Canary attacks
+\subsection{Defenses}
 
 \section{Thesis Contributions}
