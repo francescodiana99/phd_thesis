@@ -1,5 +1,5 @@
-\chapter{Introduction}
-\section{Context of the Thesis}
+\chapter{Introduction}\label{chap:intro}
+\section{Context of the Thesis}\label{sec:context}
 In the last years, the increasing availability of connected devices has progressively shifted the data generation process from centralized infrastructures towards large populations of edge devices, including smartphones, wearables, vehicles and sensors.
 According to~\citeA{cisco2023annual}, the number of networked devices and connections was expected to reach 29.3 billion by 2023, corresponding to more than three times the global population, and approximately 3.6 devices per person. Each of these devices represents a valuable data generation source, collecting information about daily interactions between individuals, devices and digital services.
 
@@ -146,41 +146,6 @@ The black-box, grey-box, and white-box distinction can be used as a complementar
 
 \subsection{Membership Inference Attacks}
 
-% Membership inference attacks (MIA) tests models privicy leakage by aiming to determine whether a given data record was part of the training dataset \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Initially proposed in the centralized setting, it usually represents a good empirical lower bound to test the privacy guarantees of a model. In fact, many applications of MIAs inclide privacy breach evaluation of  a model, data censorship, testing unlearning,  or work as a foundation for other attacks that might reveal additional information \cite{xiao_mia}, for example if a person has a disease \cite{hu2021sourceinferenceattacksfederated}. The first attack specific to federated learning \cite{Nasr2018ComprehensivePA} works as follow: assuming the availability of an auxiliary dataset $\dataset_{aux}=\dataset_{member} \cup \dataset_{non-member}$ containing both member and non-member samples of the victim's training dataset, the attacker trains a shadow models that. Then, using the gradients of the shadow models and the training labels as features for a binary classification model, the attcker trains a binary classifier able to distinguish, from the gradients and from the known label, if a datapoint is part of the training set. Other techniques proposes the usage of GAN networks to generate diverse training data and augment the shadow dataset \cite{zhang_gan_mia}.  \citeA{zari2021efficientpassivemembershipinference} improved the efficiency of the attack training the discriminator only on model outputs. Similar approaches leveraging trends in the output of the model has been later proposed \cite{gu_mia} and in the bias parameters values of the model \cite{Zhang_mia}. \citeA{li2023effective} removed the requirement of shadow models and additional datasets and perfomed an attack by looking at the orthogonality of the gradients between consecutive rounds. \cite{Zhu_mia} designed an hypothesis test to improve the accuracy of the attack. Finally, active attacks considering the modifications in the model parameter or data have also been proposed. In the attack proposed by \citeA{Pichler_mia}, the attacker modifies the parameters of a ReLU-based fully connected layer such that, the gradient of the model will reveal if a sample has been used during training or not. \citeA{He_mia} propose to poison the training data before executing the attack to increase the gradient signal.
-
-% \paragraph{Membership inference attacks.}
-
-% MIAs were first studied in centralized learning \cite{shokri2017membershipinferenceattacksmachine, }, where the adversary typically interacts with a trained model after deployment and exploits differences between the model's behavior on training and non-training records, for example through prediction confidence, loss, or correctness. In federated learning, however, the attack surface is broader. Since training proceeds through repeated exchanges of model parameters or gradients, an adversary may observe not only the final model but also intermediate updates, hidden representations, losses, or several historical versions of the model \cite{mia_survey_bai}. The adversary may be the central server, a participating client, or an external eavesdropper, and may act either passively, by only observing the protocol, or actively, by modifying model parameters or data to amplify membership leakage \cite{mia_survey_bai}. Moreover, while record-level MIAs only decide whether a sample belongs to the global training set, source-level MIAs further attempt to identify the client that contributed the sample. In the latter case, the binary decision rule above can be extended to a multi-class inference problem,
-% \[
-%     \mathcal{A}_{\mathrm{source}}(z,\mathcal{O}) \in \{0,1,\ldots,K\},
-% \]
-% where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $z$ is inferred to belong to the local dataset of client $k$. This source-level notion is particularly relevant in cross-silo FL scenarios, where identifying the institution that contributed a record may reveal additional sensitive information \cite{hu2021sourceinferenceattacksfederated}.
-% The first FL-specific MIA of \citeA{Nasr2018ComprehensivePA} introduced a white-box attack against federated training in both passive and active settings. The adversary is assumed to know the target model architecture, parameters, and inference hyperparameters, and to know the true label of the candidate record. Given a candidate sample $(x,y)$, the attacker computes white-box features such as hidden-layer activations, the prediction vector, the loss, and the gradients of the loss with respect to the parameters of each layer. In the supervised variant, the attacker additionally relies on an auxiliary dataset containing both known members of the target training set and non-members drawn from the same distribution, which is used to train a binary attack classifier. In FL, these features may be observed over multiple communication rounds: a server can exploit individual client updates, whereas a participating client observes only aggregated updates. The same work also proposes active variants, where the adversary modifies uploaded parameters or the global parameters sent to clients, for instance by isolating a target client, to amplify membership leakage.
-
-% Subsequent work has reduced the amount of auxiliary information or computation required by the attacker. For example, \citeA{zhang_gan_mia} use generative adversarial networks to augment the attack data used for shadow training, while \citeA{zari2021efficientpassivemembershipinference} propose a more efficient passive attack based on the evolution of model outputs. This line of work was extended by attacks that exploit prediction-confidence series \cite{gu_mia} or trajectories of bias parameters \cite{Zhang_mia}. Other approaches remove the assumption of auxiliary data and the consequent shadow model training: \citeA{li2023effective} infer membership from the geometry of gradient updates across consecutive rounds, whereas \citeA{Zhu_mia} formulate the attack as a hypothesis test that leverages updates from multiple clients and communication rounds. Finally, active attacks show that membership leakage can be amplified when the adversary is allowed to interfere with the protocol. For instance, \citeA{Pichler_mia} modify the parameters of a ReLU-based fully connected layer so that the resulting gradients reveal whether a queried sample was used during training, while \citeA{He_mia} use data poisoning to increase the membership signal before launching the inference attack. 
-
-% \paragraph{Membership inference attacks.}
-% Membership inference attacks (MIAs) aim to determine whether a given data record is part of the training dataset of a model \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Formally, let $\dataset_{\mathrm{tr}}$ denote the training dataset and let $(\x,y)$ be a candidate record. Given an observation $\mathcal{O}$ available to the adversary, such as the final model, its outputs, gradients, model updates, or a sequence of intermediate models, an MIA is a binary decision rule
-% \[
-%     \mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O}) \in \{0,1\},
-% \]
-% where $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=1$ indicates that the adversary infers $(\x,y) \in \dataset_{\mathrm{tr}}$, while $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=0$ indicates that $(\x,y) \notin \dataset_{\mathrm{tr}}$. MIAs provide a standard empirical tool for assessing privacy leakage since a successful attack shows that the trained model, or the information exchanged during training, contains a distinguishable trace of individual training examples. This leakage can be sensitive even when the adversary learns only membership status. For instance, if a record is found to belong to the training set of a model trained on a specific medical condition, membership may already reveal information about the corresponding individual\cite{hu2021sourceinferenceattacksfederated}. Beyond privacy-risk assessment, MIAs have also been used to audit compliance with data deletion or unlearning requirements, and can serve as a preliminary step for stronger attacks, such as model extraction or attacks aiming to infer additional private information \cite{xiao_mia,hu2021sourceinferenceattacksfederated}.
-
-% MIAs were first studied in centralized learning \cite{shokri2017membershipinferenceattacksmachine, yeom2018privacyriskmachinelearning, carlini2022membershipinferenceattacksprinciples}, where the adversary typically interacts with a trained model after deployment and exploits differences between the model's behavior on training and non-training records, for example through prediction confidence, loss, or correctness. In federated learning, however, the attack surface is broader. Since training proceeds through repeated exchanges of model parameters or gradients, an adversary may observe not only the final model but also intermediate updates, hidden representations, losses, or several historical versions of the model~\cite{Nasr2018ComprehensivePA}. A foundational example of this risk is provided by \citeA{melis2019exploiting}, who showed that updates exchanged during collaborative learning can leak unintended information, including the presence of specific data points in other participants' training data. The adversary may be the central server, a participating client, or an external eavesdropper, and may act either passively, by only observing the protocol, or actively, by modifying model parameters or data to amplify membership leakage \cite{mia_survey_bai}.
-
-% The goal of the attack can also vary. While record-level MIAs only decide whether a sample belongs to the global training set, source-level MIAs further attempt to identify the client that contributed the sample. In this case, the binary decision rule above can be extended to a multi-class inference problem,
-% \[
-%     \mathcal{A}_{\mathrm{source}}(z,\mathcal{O}) \in \{0,1,\ldots,K\},
-% \]
-% where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $z$ is inferred to belong to the local dataset of client $k$. This source-level notion is particularly relevant in cross-silo FL scenarios, such in case of hospitals, where identifying the institution that contributed a record may reveal additional sensitive information \cite{hu2021sourceinferenceattacksfederated} like medical conditions of a patient. A related but distinct formulation is subject-level membership inference, introduced by \citeA{suri2022subject}, where the adversary aims to determine whether the data of a given individual, possibly represented by multiple records and distributed across several institutions, participated in the federation.
-
-% The first FL-specific MIA of \citeA{Nasr2018ComprehensivePA} introduced a white-box attack against federated training in both passive and active settings. In this threat model, the adversary is assumed to know the target model architecture, its parameters, and the hyperparameters needed to run inference. Therefore, for any candidate record $z=(x,y)$, the adversary can compute not only the model prediction $f(x;W)$, but also hidden-layer activations, the loss $L(f(x;W),y)$, and the gradients of this loss with respect to the parameters of each layer. In the supervised version of the attack, the adversary also has an auxiliary dataset $\dataset'$, containing some records known to be members of the target training set and some records sampled from the same distribution but known not to be members. These examples provide the membership labels needed to train the attack model. The attack model then takes, for each candidate record, a collection of white-box features as input: layer-wise gradients, hidden-layer outputs, the final prediction vector, the one-hot encoding of the true label, and the loss value. In the federated setting, these features can be collected over several training rounds, exploiting the fact that repeated updates on the same local data leave a stronger membership signal. The attack can be launched by a passive server, which observes individual client updates, or by a passive participant, which only observes aggregated global updates. Nasr et al. also consider active adversaries: a malicious participant can modify its uploaded parameters, while a malicious server can modify the parameters sent to selected clients or isolate a target client from the rest of the federation, thereby increasing the distinguishability between members and non-members.
-
-% Subsequent work has reduced the amount of auxiliary information or computation required by the attacker, and has explored different sources of membership signal. For example, \citeA{zhang_gan_mia} use generative adversarial networks to augment the attack data used for shadow training, while \citeA{zari2021efficientpassivemembershipinference} propose a more efficient passive attack based on the evolution of model outputs. This trend-based line of work was extended by attacks that exploit prediction-confidence series \cite{gu_mia}, trajectories of bias parameters \cite{Zhang_mia}, and the temporal evolution of adversarial robustness \cite{liu_mia}. Other approaches remove the necessity of training a shadow model: \citeA{li2023effective} infer membership from the geometry of gradient updates across consecutive rounds, whereas \citeA{Zhu_mia} formulate the attack as a hypothesis test that leverages updates from multiple clients and communication rounds. 
-% % MIAs have also been adapted to application-specific FL settings. For instance, \citeA{yuan2023interaction} study interaction-level membership inference in federated recommender systems, where the goal is to determine whether a user interacted with a particular item.
-
-% Finally, active attacks show that membership leakage can be amplified when the adversary is allowed to interfere with the protocol. For instance, \citeA{Pichler_mia} modify the parameters of a ReLU-based fully connected layer so that the resulting gradients reveal whether a queried sample was used during training. \citeA{nguyen2023active} show that active MIAs can also be mounted under local differential privacy by crafting malicious model parameters that increase the membership signal observed by the server. Similarly, \citeA{He_mia} use data poisoning to make the model memorize information about specific target classes before launching the inference attack.
-
 Membership inference attacks (MIAs) aim to determine whether a given data record is part of the training dataset of a model \cite{shokri2017membershipinferenceattacksmachine,yeom2018privacyriskmachinelearning,mia_survey_bai}. Formally, let $\dataset_{\mathrm{tr}}$ denote the training dataset and let $(\x,y)$ be a candidate record. Given an observation $\mathcal{O}$ available to the adversary, such as the final model, its outputs, gradients, model updates, or a sequence of intermediate models, an MIA is a binary decision rule
 \[
     \mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O}) \in \{0,1\},
@@ -304,7 +269,7 @@ In FL, the basic membership question can also be refined to account for the clie
 \]
 where $0$ denotes non-membership and $k \in \{1,\ldots,K\}$ indicates that $(\x,y)$ is inferred to belong to the local dataset $\dataset_k$ of client $k$. This refinement is particularly relevant in cross-silo FL, for example when hospitals collaborate to train a model, because identifying the institution that contributed a record may reveal additional sensitive information about the corresponding individual \cite{hu2021sourceinferenceattacksfederated}.
 %  A related formulation is subject-level membership inference, where the adversary aims to determine whether the data of a given individual participated in the federation, possibly through multiple records distributed across several institutions \cite{suri2022subject}.
-\subsection{Attribute Inference Attacks}
+\subsection{Attribute Inference Attacks}\label{sec:aia}
 
 While membership inference attacks reveal whether a record was used during training, attribute inference attacks (AIAs) ask a complementary question: what sensitive information about a partially known record can be inferred from the model or from the training process? AIAs aim to infer a sensitive attribute of a target record from partial knowledge about that record and from information leaked by the learning procedure. Let a data point be decomposed as $(\x^p, s, y)$, where $\x^p$ denotes the public attributes, $s$ is a sensitive attribute, and $y$ is the associated label or target value. Given the public part of the record, possibly the target value, and an observation $\mathcal{O}$ available to the adversary, an AIA can be written as
 \[
@@ -338,19 +303,21 @@ Existing AIAs in federated learning have mainly been developed for classificatio
 
 
 
-\subsection{Data Reconstruction Attacks}
+\subsection{Data Reconstruction Attacks}\label{sec:dra}
 So far, the discussed attacks assumed that the attacker had access to the sample from which he wanted to retrieve some information (MIA) or part of it (AIA). Instead, in Gradient Inversion Attacks (GIAs)---referred to also as Data Reconstruction Attacks (DRAs)--- the goal of the attacker is to reconstruct the entire training sample, by observing the exchanged updates \cite{carletti2025sok,Du_gia_survey}. Existing attacks can be categorized in three main families, namely \textit{optimization-based} attacks, \textit{generative-based}, and \textit{analytical} attacks \cite{carletti2025sok}. Optimization-based attacks can be further refined based on if the goal of the attack is to directly optimize in the input space or in a latent space. 
 
 The attacks discussed so far assume that the adversary already has access either to the record whose membership is to be inferred (MIAs), or to a partially observed record (AIAs). Instead, data reconstruction attacks (DRAs) consider a stronger form of privacy leakage. In this setting, the adversary aims to recover the training data themselves from information exposed by the learning procedure. In federated learning, this information typically consists of the gradients or model updates exchanged between clients and the server. For this reason, these attacks are often referred to as \emph{gradient inversion attacks} (GIAs), although the broader term \emph{data reconstruction attacks} (DRAs) is also used in the literature \cite{carletti2025sok,Du_gia_survey}.
 
 Existing GIAs can be broadly organized into three main families: \emph{optimization-based}, \emph{generative-based}, and \emph{analytical} attacks \cite{carletti2025sok}. Optimization-based attacks can be further distinguished according to whether the reconstruction is performed directly in the input space or in a latent representation. The following paragraphs review these families in more detail.
 
-\paragraph{Optimization-based attacks} This family of attacks tries to recover the original data by solving an optimization problem where the attacker iteratively matches the updates that the server receive from the client with the updates computed starting from a dummy input. More formally, gradient inversion attacks can be formulated as an optimization problem in which the adversary searches for a synthetic batch whose gradient matches the update observed during federated training. For a target client $u$ and a set of observed rounds $\mathcal{T}$, the reconstruction can be written as
+\paragraph{Optimization-based attacks} 
+Optimization-based attacks reconstruct private data by solving an inverse problem. The adversary initializes a candidate reconstructed batch and optimizes its inputs, and possibly its labels, so that the gradients computed on this batch match the update observed during federated training. More formally, for a target client $u$ and a set of observed rounds $\mathcal{T}$, the reconstruction problem can be written as
     \begin{equation}\label{eq:gia_general}
         \{(\hat{\x}_i,\hat{y}_i)\}_{i=1}^{B}
         \in
         \argmin_{\{(\x_i,y_i)\}_{i=1}^{B}}
-        \mathrm{\Dist}\left(
+        \sum_{t\in\mathcal{T}}
+        \Dist\left(
             \frac{\partial \ell\left(
                 \model^t,
                 \{(\x_i,y_i)\}_{i=1}^{B}
@@ -358,12 +325,420 @@ Existing GIAs can be broadly organized into three main families: \emph{optimizat
             \model^t-\model_u^t
         \right),
     \end{equation}
-where $\Dist(\cdot,\cdot)$ denotes a generic distance or dissimilarity measure between the gradient computed on the reconstructed batch and the update observed by the adversary. The first formulation of the attack proposed using Euclidean distance~\cite{dlg}, then, following research showed improved performance using cosine similarity~\cite{geiping_ig} and introducing regularization terms to improve the quality of the reconstruction and to stabilize the optimization process. For example \cite{geiping_ig} introduced the usage of total variation (TV) regularization \cite{rudin_tv}
+    where $\Dist(\cdot,\cdot)$ denotes a distance or dissimilarity measure between the gradient computed on the reconstructed batch and the update observed by the adversary. 
+
+The original attack formulation by~\citeA{dlg} instantiated this objective with a Euclidean matching loss. Subsequent work showed that the success of optimization-based GIAs depends not only on solving the inverse problem, but also on how the gradient-matching objective is defined. In particular, \citeA{geiping_ig} showed that image reconstruction can be substantially improved by matching the direction of the observed and reconstructed gradients through a cosine-based objective, and by adding total variation regularization~\cite{rudin_tv} to promote spatially coherent reconstructions and stabilize the optimization.
+
+These early attacks, however, were mainly effective in relatively idealized settings. They often assumed that the target labels were known and achieved high-quality reconstructions only for very small batches. When a client computes gradients over a local batch, the update observed by the server contains information from all samples in that batch, rather than separate per-sample gradients. As the batch size grows, the signal associated with each individual record becomes increasingly difficult to disentangle. A first line of follow-up work therefore focused on making the attack setting more realistic by recovering unknown labels together with the inputs~\cite{zhaoIDLGImprovedDeep2020, maINSTANCEWISEBATCHLABEL2023, gengImprovedGradientInversion2024, yeHighFidelityGradientInversion2024, liTemporalGradientInversion2025a}. In parallel, other works improved reconstruction quality by enriching the optimization objective, either through additional regularization terms~\cite{yinSeeGradientsImage2021, hatamizadehGradViTGradientInversion2022,liE2EGIEndtoEndGradient2023, gengImprovedGradientInversion2024, Fan_fedleak} or through losses designed to better correlate with reconstruction quality~\cite{wangVarianceGradientAlso2022, hongForeseeingReconstructionQuality2024, yeHighFidelityGradientInversion2024, Fan_fedleak}.
+
+Improving the objective alone is often insufficient in large-batch regimes, where the main difficulty is the separation of multiple sample contributions from a single observed update. Some works therefore modify the reconstruction algorithm itself to better handle this regime. For instance, \citeA{kariyappaCocktailPartyAttack2023} formulate gradient inversion as a blind source separation problem, aiming to separate the per-sample gradient contributions contained in the batch gradient. More recently, \citeA{liTemporalGradientInversion2025a} exploit information collected across different training steps and improve reconstruction by combining multiple candidate reconstructions of the same batch, drawing inspiration from robust aggregation techniques.
+
+Another important limitation arises in realistic federated protocols such as FedAvg, where clients perform several local optimization steps before communicating with the server. In this setting, the exhanged update is no longer a single gradient, but the result of an entire local training trajectory. To address this mismatch, \citeA{dimitrovDataLeakageFederated2022} propose to simulate the FedAvg update during reconstruction, so as to better reproduce the client-side computation and recover images from model updates. Later works approximate this local trajectory through surrogate models, using either linear~\cite{Zhu_sme_gia} or non-linear~\cite{xiaNonLinearTrajectoryModeling2025} trajectory models to improve reconstruction from multi-step updates.
+
+Although most optimization-based GIAs were initially designed for images, the same general principle has also been adapted to other data modalities. In the text domain, \citeA{deng-etal-2021-tag-gradient} design TAG, an attack specifically targeting Transformer-based language models. Later, \citeA{lamp_balunovic} propose to guide sentence reconstruction with a language-model prior. These settings still benefit from the fact that reconstruction quality can often be assessed through visual or semantic inspection. In the tabular domain instead, this is not possible: records may contain continuous, categorical, or mixed features, and reconstruction quality may be difficult to assess without access to the ground truth. In this context, \citeA{veroTabLeakTabularData2023} propose the only optimization-based GIA tailored to tabular data, together with an entropy-based heuristic for estimating reconstruction quality.
+
+All the attacks reviewed so far assume an honest-but-curious adversary, who passively observes the updates exchanged during the normal execution of the FL protocol. A stronger threat model considers a malicious adversary, typically the server, who can actively modify the model parameters, the architecture, or parts of the training protocol to induce more informative client updates. This changes the role of optimization-based reconstruction: instead of only improving the inversion procedure, the attacker can first manipulate the training signal so that the observed update reveals more information about selected client samples. For classification tasks, this can be achieved by modifying the classification layer to isolate or amplify the gradients associated with a target class~\cite{GradFiltClasswiseTargeted, wenFishingUserData2022a}. The same principle can also be exploited across multiple communication rounds to progressively focus the leakage on specific samples~\cite{wenFishingUserData2022a}. Alternatively, \citeA{shan2025geminio} use a vision-language model to assist the adversary in crafting a malicious model that increases the loss on target samples described through natural language, thereby making their contribution to the observed update more prominent.
+
+\paragraph{Generative-based attacks} The use of generative models in federated-learning privacy attacks has evolved through several distinct paradigms. Early works employed GANs to approximate class-level distributions in victims’ private data. In the first generateive-based attack proposed by \citeA{hitajDeepModelsGAN2017a}, a malicious participant exploits and actively influences the global model to train a GAN that generates prototypical samples of a target class available only to a victim participant. Instead, in the attack proposed by \citeA{wangInferringClassRepresentatives2018} the server becomes the attacker, and uses the client local updates as proxy for the discriminator. Subsequent studies shifted toward instance-level gradient inversion by constraining the reconstruction search with generative models. \citeA{jeon2021gradient} proposed GIAS, which replaces the direct optimization of the candidate input in Equation~\eqref{eq:gia_general} with an optimization over the output space of a pretrained generator. GIAS first optimizes the latent code and then fine-tunes the generator parameters, thereby compensating for inaccuracies in the pretrained generative prior. For settings in which a suitable pretrained generator is unavailable, the authors further introduced GIML, a meta-learning approach that learns a generative prior across multiple gradient-inversion tasks constructed from updates observed during federated training. GGL~\cite{liAuditingPrivacyDefenses2022a} reconstructs private samples from defense-transformed gradients by searching the latent manifold of a pretrained GAN with adaptive gradient-free optimization. GIFD~\cite{fangGIFDGenerativeGradient2023a} extends this strategy beyond latent-space search by successively optimizing intermediate generator features. GI-SMN~\cite{qian_gismn} subsequently optimizes the latent code of a pretrained StyleGAN-XL while regularizing the generated images through total-variation, $L_2$, and group regulariztions.
+AA complementary family of attacks replaces the fixed pretrained prior with a generator optimized during the inversion process~\cite{renGRNNGenerativeRegression2022a,xuCGIRConditionalGenerative2023,zhangGenerativeGradientInversion2023a}. Rather than optimizing the reconstructed images directly, these methods update the generator parameters so that its outputs induce gradients matching the observed client update.
+
+A more recent line of work shifts the reconstruction cost to an offline training phase by learning a reusable inversion model or generative decoder from auxiliary data. Once trained, these models can be applied to newly intercepted updates without solving a separate gradient-matching problem for each reconstruction. LTI~\cite{wu2023learning} follows the most direct approach, training an inversion network on auxiliary sample–gradient pairs to map gradients to their corresponding inputs. Defensive transformations, such as noise addition, pruning, or compression, are incorporated when generating the training gradients, allowing the inversion model to circumvent defenses. With the same goal~\citeA{Yue_gia2023} design an encoder-decoder inversion pipeline that solve the gradient optimization problem in a latent space, and then decodes the reconstruced image using a pretrained decoder.
+ FGLA~\cite{xueFastGenerationBasedGradient2023c} instead adopts a hybrid analytical–generative pipeline. It first separates the sample-level representations corresponding to the input of the classifier from the gradients of its fully connected layer, and then feeds these representations to a trained generator that reconstructs the original inputs. Under a malicious-server threat model, Scale-MIA~\cite{shiScaleMIAScalableModel2025} trains a generative decoder on auxiliary data and crafts linear layers in the latent space of the distributed model. The attacker can then recover latent representations from aggregated updates through a closed-form procedure and map them back to the input space using the trained decoder. SEER~\cite{garovHidingPlainSight2024} instead jointly trains the shared model and a secret server-side decoder so that the contribution of individual samples can be separated from the aggregated client gradients in a hidden representation space and then decoded into the corresponding inputs
+
+Finally, diffusion-based attacks use leaked gradients to guide the reverse generation process, as in GGDM~\cite{guFederatedLearningVulnerabilities2024} and gradient-guided conditional diffusion models~\cite{huangGradientGuidedConditionalDiffusion2024, mengEnhancedPrivacyLeakage2025}, while GUIDE~\cite{carlettiGUIDEEnhancingGradient2025} employs diffusion primarily as a post-reconstruction denoiser.A different use of diffusion is proposed by Mjölnir~\cite{liu2025mjolnirbreakingshieldperturbationprotected}, which trains a diffusion model to recover an approximation of the original gradients from perturbed observations before applying a conventional optimization-based reconstruction attack.
+
+Despite these advances, generative-based attacks still face difficulties when reconstructing large batches unless they are combined with complementary techniques, such as analytical gradient separation or active model manipulation. Moreover, their effectiveness has so far been demonstrated predominantly on image data, while their applicability to other modalities remains comparatively limited.
+
+\paragraph{Analytical attacks}
+The analytical study of gradient inversion can be traced back
+to~\citeA{phong_gia}, who first observed that the input to an affine
+layer can be recovered directly from its weight and bias gradients when
+these gradients are computed on a single training sample. This observation later became the basis of analytical leakage attacks against fully connected layers followed by ReLU activations. Indeed, ReLU naturally induces sparse gradients, since samples yielding
+non-positive pre-activations contribute zero gradient to the corresponding neuron. 
+
+To illustrate this mechanism, consider a fully connected layer with
+$N$ neurons, parameterized by a weight matrix
+$\W^{a} \in \mathbb{R}^{N \times d}$ and a bias vector
+$\b^{a} \in \mathbb{R}^{N}$. For an input
+$\x_j \in \mathbb{R}^{d}$, the post-activation output of neuron $i$ is
+\begin{equation}
+    z^{a}_{i,j}
+    =
+    \operatorname{ReLU}
+    \left(
+        \W^{a}_{i}\x_j+b^{a}_{i}
+    \right).
+\end{equation}
+Let $\loss_j$ denote the loss associated with sample
+$(\x_j,y_j)$. By the chain rule, the corresponding weight and bias
+gradients are
+\begin{equation}
+    \frac{\partial \loss_j}{\partial \W^{a}_{i}}
+    =
+    \frac{\partial \loss_j}{\partial z^{a}_{i,j}}
+    \frac{\partial z^{a}_{i,j}}{\partial \W^{a}_{i}}
+    =
+    \frac{\partial \loss_j}{\partial z^{a}_{i,j}}
+    \x_j
+    \mathbb{1}_{z^{a}_{i,j}>0},
+\end{equation}
+and
+\begin{equation}
+    \frac{\partial \loss_j}{\partial b^{a}_{i}}
+    =
+    \frac{\partial \loss_j}{\partial z^{a}_{i,j}}
+    \frac{\partial z^{a}_{i,j}}{\partial b^{a}_{i}}
+    =
+    \frac{\partial \loss_j}{\partial z^{a}_{i,j}}
+    \mathbb{1}_{z^{a}_{i,j}>0}.
+\end{equation}
+Thus, whenever neuron $i$ is active and its bias gradient is non-zero,
+the input can be recovered exactly as
+\begin{equation}
+    \x_j
+    =
+    \frac{\partial \loss_j}{\partial \W^{a}_{i}}
+    \left(
+        \frac{\partial \loss_j}{\partial b^{a}_{i}}
+    \right)^{-1}.
+\end{equation}
+
+If the attacked layer is the first layer of the network, this expression
+reveals the original training sample, otherwise, it reveals the
+intermediate representation supplied as input to that layer. The
+reconstruction is obtained in closed form and does not require an
+iterative optimization procedure. When gradients are aggregated over a
+batch, however, the same ratio generally produces a weighted linear
+combination of all samples activating the neuron. Disentangling these
+contributions is therefore the central problem addressed by subsequent
+analytical attacks.
+
+In the honest-but-curious setting,
+\citeA{zhuRGAPRecursiveGradient2021} extended closed-form inversion from
+shallow affine models to deep fully connected and convolutional networks
+through a recursive, layer-wise reconstruction procedure. R-GAP also
+introduced a rank-based analysis to identify the layers and
+architectures for which exact recovery is possible, although its
+strongest results concern single-example gradients and networks
+satisfying suitable rank and invertibility conditions.
+\citeA{pan_gia} subsequently characterized batch reconstruction through
+the notion of \emph{neuron exclusivity}. A ReLU neuron is exclusive to a
+sample $\x_j$ when it is activated by $\x_j$ but remains inactive for
+every other sample in the batch. In this case, its aggregated weight and
+bias gradients contain only the contribution of $\x_j$, enabling its
+closed-form recovery. \citeA{luAPRILFindingAchilles2022} showed that
+analytical inversion can also be extended to self-attention layers and
+that learnable positional embeddings may expose the ordering of the
+reconstructed image patches. In a complementary theoretical setting,
+\citeA{wang2023reconstructingtrainingdatamodel} established
+identifiability guarantees for sufficiently wide shallow and deep
+networks and proposed a tensor-decomposition method for reconstructing training samples from a gradient evaluated at suitably selected model parameters. These early passive attacks were nevertheless limited by restrictive conditions, such as single-samples gradients, or natural occurrence of the exclusive activations. Then, SPEAR~\cite{dimitrovSPEARExactGradient2024} addressed this limitation by
+exploiting the low-rank factorization of fully connected-layer gradients
+together with the sparsity induced by ReLU activations. This enabled the
+exact reconstruction of complete batches of up to approximately 25
+high-dimensional images, using dictionary learning techniques~\cite{pmlr-v23-spielman12}. However, its sampling procedure has exponential complexity in the batch size, therefore, \cite{bakarsky2025spearscalinggradientinversion} improved the complexity limitation by replacing the search with more efficient dictionary learning techniques. For language models, DAGER~\cite{petrovDAGERExactGradient2024}
+built on the same low-rank intuition as SPEAR: gradients computed over a
+batch span a low-dimensional subspace containing the private inputs.
+Instead of using ReLU-induced sparsity to disaggregate continuous
+samples, DAGER leverages the finite vocabulary and known embedding
+matrix to identify tokens lying in the gradient-induced subspace and
+recover complete textual batches. \cite{drencheva2025grain} extend the same underlying theory to GNN layers, recovering both client input features and graph structure, under the assumption of discrete input features.
+
+A distinct line of work considers a malicious server that is allowed to
+manipulate the model distributed to clients. A seminal example is
+\textit{Robbing the Fed}~\cite{fowlRobbingFedDirectly2021}, which
+introduced an \emph{imprint module} consisting of a maliciously
+configured fully connected ReLU layer. Its ordered activation thresholds
+separate the contributions of different samples across consecutive
+neurons, allowing the attacker to isolate individual samples from the
+corresponding weight and bias gradients. The private inputs can then be
+reconstructed in closed form from a single communication round gradients.
+
+In parallel, \citeA{pasquiniEludingSecureAggregation2022a} showed that a
+malicious server can circumvent Secure Aggregation
+(SA)~\cite{secure_aggregation_bonawitz}. The server sends an honest model to the target client
+and manipulated models to the remaining clients, forcing the latter to
+produce zero gradients. As a result, the secure aggregate reveals the
+target client's individual update. The imprint module subsequently became a fundamental building block for several attacks. Decepticons~\cite{fowlDecepticonsCorruptedTransformers2022} combines an
+imprint-style linear leakage module with malicious modifications of the
+attention layers, allowing the attacker to associate the recovered
+tokens with their positions and reconstruct the original sequences in
+transformer-based language models.
+Panning for Gold~\cite{chu2023panning} further adapts this construction
+from indiscriminate reconstruction to the targeted extraction of
+privacy-sensitive information. Modified attention heads tag sequences
+containing an attacker-defined trigger, while the linear leakage module
+filters out irrelevant tokens and exposes only the targeted
+continuations. \citeA{Zhao_cvf} examined the resource overhead of linear-layer leakage,
+showing that naively scaling the imprint module with the total number of
+aggregated samples leads to prohibitive model growth. They proposed a
+sparse construction that separates the scaling with the number of
+clients from that with the number of local samples, thereby reducing the
+number of injected parameters.  This line of work was subsequently
+extended by LOKI~\cite{zhaoLOKILargescaleData2023a}, which combines
+client-specific convolutional mappings with fully connected imprint
+layers. The convolutional mappings keep the gradient contributions of
+different clients separated after aggregation, while the imprint layers
+isolate individual samples within each client. Scale-MIA~\cite{shiScaleMIAScalableModel2025} applies the same imprint
+mechanism to an intermediate layer of the target model. Rather than
+recovering the original inputs directly, the malicious linear layers
+isolate and reconstruct their latent representations in closed form,
+which are subsequently mapped back to the input space using a
+generative decoder trained on auxiliary data.
+
+An alternative ReLU-leakage attack was proposed by~\citeA{boenischWhenCuriousAbandon2023} through the \emph{Trap Weights} attack. initializations may naturally cause some neurons in a fully connected ReLU layer to activate for only one sample, thereby exposing
+that sample through linear-layer leakage. Trap Weights amplifies this
+phenomenon by inconspicuously rescaling the weights of existing layers,
+increasing the number of neurons that isolate individual samples without
+modifying the model architecture. A theoretical bound on the
+reconstruction capability of this attack is discussed in
+Chapter~\ref{chap:ctp}. A related approach was proposed
+by~\citeA{ZHANG2023119421}, who train malicious parameters for an
+existing fully connected layer using an auxiliary dataset. Their method
+extends analytical extraction beyond ReLU networks to models employing
+Tanh and Sigmoid activations. A different architecture-preserving strategy is adopted by
+MKOR~\cite{wangMaximumKnowledgeOrthogonality2024}. The attack
+maliciously modifies the parameters of existing convolutional and fully
+connected layers to maximize the orthogonality between prior knowledge
+about the input structure and the information revealed by the gradients.
+For images, this prior is based on the assumption that neighbouring
+pixels tend to have similar intensities. Under this assumption, MKOR
+enables analytical reconstruction of multiple samples from large
+batches without requiring auxiliary data or changes to the model
+architecture.
+
+Building on this line of work, Chapter~\ref{chap:ctp} introduces a
+geometric perspective on analytical gradient leakage and proposes an
+attack capable of recovering all samples in a batch. Chapter~\ref{chap:vgia} then
+investigates the previously overlooked problem of verifiability and
+introduces a method that certifies the exact isolation of a private
+sample before reconstructing it analytically.
+
+
 
 \subsection{Other Attacks}
-% Property inference
-% Topology attacks
-% Canary attacks
-\subsection{Defenses}
+Federated learning is subject to several additional forms of privacy leakage that are partially related to those discussed in the previous subsection. Source inference attacks, for instance, are closely related to membership inference attacks (MIAs). Rather than merely determining whether a sample belongs to a client’s training dataset, they seek to identify the client from which a known or suspected training record originated~\cite{hu2021sourceinferenceattacksfederated, Hu2024sia, ijcai2025p536}. Property inference attacks are instead more closely related to attribute inference attacks (AIAs). However, rather than recovering a specific feature of an individual record, they aim to infer statistical or semantic characteristics of a client’s local dataset, such as the presence or prevalence of a sensitive group or concept, including properties unrelated to the intended learning task. Examples include the presence of people wearing glasses in an image dataset or of particular medical conditions in a patient dataset~\cite{melis2018exploitingunintendedfeatureleakage, Zhang_pia, Wang_pia, Kerkouche_pia}. Another category of attacks targets graph topology, either by exploiting the communication graph that connects participants in decentralized learning or by recovering the topology of private graph-structured data. In the former setting, adversaries may exploit their position in a peer-to-peer network and the gossip-averaging process to reconstruct information belonging to neighbouring or even non-neighbouring users~\cite{Pasquini_insecurity, ElMrini_graph}. Finally, canary-based attacks and privacy audits deliberately introduce crafted examples, gradients, or client updates and subsequently test whether their participation can be detected. These methods provide empirical estimates of membership leakage or differential-privacy loss, rather than inferring an unknown, naturally occurring property of another client’s data~\cite{maddock2023canife, Nasr_tight_auditing, andrew2024oneshot}. Collectively, these attack families demonstrate that withholding raw data is not, by itself, sufficient to guarantee privacy. The next subsection therefore provides an overview of the main defense mechanisms proposed in the literature.
+\subsection{Privacy Mechanisms in Federated Learning}
+Several mechanisms have been proposed to mitigate privacy risks in federated learning. As discussed by~\citeA{kairouz_open_problems}, privacy should not be regarded as a binary property provided by a single mechanism. Instead, effective privacy-preserving systems typically adopt a layered approach, combining complementary mechanisms that address different leakage channels, adversarial capabilities, and trust assumptions. This subsection provides an overview of the main privacy-preserving mechanisms used in federated learning. For more comprehensive discussions, the reader is referred to dedicated surveys on privacy and security in federated learning~\cite{Rao_privacy_survey, Yin_defense_taxonomy, sok_secure_aggregation}.
 
-\section{Thesis Contributions}
+Differential privacy (DP)~\cite{dp_dwork,dwork_dp_book} is widely regarded as the de facto standard for providing formal and quantifiable privacy guarantees. Rather than directly measuring the amount of information disclosed by an algorithm, DP bounds the extent to which the distribution of its outputs can change when the contribution of a single sample is added to or removed from the input dataset. More formally, a mechanism $\mathcal{M}$ satisfies $(\varepsilon, \delta)$-differential privacy guarantees if, for every pair of adjacent datasets $\mathcal{D}$ and $\mathcal{D}'$, and for every measurable set of outputs $S \subseteq \mathrm{Range}(\mathcal{M})$,
+\begin{equation}\label{eq:dp}
+    \mathrm{Pr}\left[ \mathcal{M}(\mathcal{D} \in S)\right] \leq e^{\varepsilon} \mathrm{Pr}\left[ \mathcal{M}(\mathcal{D}' \in S)\right] + \delta.
+\end{equation}
+Here $\varepsilon$ controls the multiplicative difference between the two output distributions, and $\delta$ is a small probability of failure. In practice, $\varepsilon$ quantifies the maximum amout of information that the output of the algorithm can disclose, therefore a smaller value indicates a stronger privacy guarantee. A common mechanism for training neural networks with record-level DP is DP-SGD~\cite{Abadi_dp}. At every optimization step, DP-SGD clips each per-example gradient to bound its sensitivity and adds calibrated Gaussian or Laplacian noise to the aggregated gradient. 
+
+In Federated Learning, depending on where the perturbation is applied and which parties are trusted, different DP deployment models can be distinguished. Under \emph{local differential privacy} (LDP), each client randomizes its contribution before transmitting it to the server. Consequently, the server never observes an unperturbed update, and the privacy guarantee does not rely on trusting the server with individual client contributions. However, because each transmitted contribution must satisfy DP independently, LDP generally requires substantially more noise than mechanisms that operate on aggregated updates. This can adversely affect model convergence and final-model utility, particularly for high-dimensional updates, small client populations, or strong privacy requirements~\cite{geyer2018differentiallyprivatefederatedlearning,kairouz_open_problems}.
+
+Under \emph{central differential privacy} (CDP), a trusted server or aggregator receives the individual client updates, bounds their sensitivity through clipping, computes their aggregate, and adds calibrated noise before using or releasing it. Since noise is added only once to the aggregate, CDP typically provides a more favourable privacy--utility trade-off than LDP. Nevertheless, conventional CDP requires the aggregator to be trusted because it observes individual updates before the privacy mechanism is applied. It therefore does not protect clients against a malicious or compromised server~\cite{mcmahan_user_dp,kairouz_open_problems}.
+
+To improve utility relative to LDP without exposing individual unperturbed updates, \emph{distributed differential privacy} (DDP) combines client-side randomization with secure aggregation~\cite{kairouz_discrete_gaussian, agarwal2021the, chen2022poisson}. Secure aggregation is a cryptographic multiparty-computation primitive that allows the server to recover only an aggregate, typically the sum of the clients' updates, while hiding each individual contribution~\cite{secure_aggregation_bonawitz,sok_secure_aggregation}. In DDP, each client clips its update and contributes a share of the noise required to achieve a target DP guarantee. Although an individual contribution does not necessarily satisfy LDP, the securely aggregated sum can provide a central-DP-like guarantee because the server observes only the noisy aggregate and cannot separate the contributions of individual clients~\cite{kairouz_discrete_gaussian, agarwal2021the, chen2022poisson}.
+
+Distributed DP introduces additional assumptions and system costs. Its guarantees depend on sufficient client participation and on bounds regarding dropout and collusion, while secure aggregation adds computational, communication, and coordination overheads~\cite{kairouz_discrete_gaussian, chen2022fundamentalpricesecureaggregation}. Moreover, secure aggregation hides individual updates but does not verify the model distributed by the server or the validity of client contributions. In some settings, a malicious server may therefore circumvent its protection through inconsistent or manipulated models, without breaking the underlying cryptographic protocol~\cite{pasquiniEludingSecureAggregation2022a,zhaoLOKILargescaleData2023a}.
+
+More generally, DP entails an inherent privacy-utility trade-off: stronger guarantees may reduce convergence and accuracy, while large values of $\varepsilon$ can provide limited practical protection~\cite{Jayaraman_privacy_evaluation,cummings2024advancingdifferentialprivacyfuture}. To some extents, empirical attacks may still succeed when privacy parameters are weak, as we will examin in Chapter~\ref{chap:aia}.
+
+
+Beyond formal privacy guarantees, several attack-specific empirical countermeasures have been proposed in the literature~\cite{bai_survey_mai,carletti2025sok}. For membership and property inference, researchers have investigated selective gradient sharing, model perturbation, and weight pruning~\cite{melis2018exploitingunintendedfeatureleakage,yang_perturbation,Stripelis_pruning}. However, the protection offered by these techniques is generally specific to the attacks and threat models considered during their evaluation.
+
+Gradient inversion attacks have motivated defenses operating at different stages of the learning process. Data-level approaches transform or replace sensitive samples before computing the shared updates~\cite{jeterOASISOffsettingActive2024,fanRefinerDataRefining}. Other methods obfuscate intermediate representations or model updates through updates perturbation~\cite{sunSoteriaProvableDefense2021, Xue_pruning, zhangCENSORDefenseGradient2025}, model modifications~\cite{scheligaPRECODEGenericModel2022}, learning algorithm modifications~\cite{Wudefense2024, Ye_privacy2023}. Client-side detection mechanisms have also been proposed to identify model manipulations performed by malicious servers before local training begins~\cite{wangHearNoEvil2025,Carletti_2026}.
+
+Nevertheless, these methods generally provide empirical, attack-dependent protection rather than universal privacy guarantees. Their effectiveness depends on the adversary's knowledge and capabilities, as well as on the model architecture, training configuration, and evaluation setting. In particular, adaptive attacks have been shown to circumvent gradient compression, pruning, stochastic defenses, and noise-based perturbation~\cite{Yue_gia2023,scheligaCombiningStochasticDefenses2025,liu2025mjolnirbreakingshieldperturbationprotected,mengEnhancedPrivacyLeakage2025,carletti2025sok}. These limitations motivate further investigation of the information exposed by federated learning protocols and of the conditions under which such information can be exploited. 
+
+\section{Summary of the Thesis Contribution}
+
+The preceding sections have shown that federated learning changes, rather than eliminates, the trust assumptions underlying machine learning. The central server retains a privileged position in the training process, as it coordinates client participation, distributes model parameters, and observes the resulting updates. It is therefore essential to understand how this position may be exploited, since privacy should not depend solely on the assumption that the server will act in the interests of participating clients.
+
+Strong privacy attacks play an important role in this assessment. They reveal information that remains exposed by the training protocol, establish empirical lower bounds on the leakage achievable by an adversary, and provide demanding baselines for evaluating privacy-preserving mechanisms.
+
+Motivated by these considerations, this thesis pursues two main objectives:
+\begin{enumerate}
+    \item To deepen the understanding of privacy leakage in federated learning
+    from the perspective of the central server, characterizing what information
+    can be inferred from clients' updates under both honest-but-curious and
+    malicious-server threat models.
+
+    \item To develop stronger, more scalable, and more reliable privacy attacks
+    that improve the empirical auditing of federated learning systems and
+    provide more informative baselines for the design and evaluation of
+    privacy-preserving mechanisms.
+\end{enumerate}
+
+These contributions are motivated by a constructive objective. Federated learning can meaningfully contribute to preserving privacy, but the protection it provides should not depend on the server’s goodwill alone. Its effectiveness ultimately depends on how the training protocol is designed, implemented, and complemented by appropriate safeguards. By clarifying what information a server may infer under different threat models, this thesis aims to help researchers, system designers, organizations, and service providers make informed design choices and assess privacy claims more rigorously. Based on these motivations, the remainder of this section summarizes the contributions of the thesis.
+
+\subsection*{Contribution \#1: Attribute Inference Attacks for Federated Regression Tasks.}
+
+\noindent\textbf{Problem:}
+Attribute inference attacks; federated regression; empirical privacy auditing.
+
+\medskip
+\noindent\textbf{Research gap:}
+Existing attribute inference attacks for federated learning have predominantly
+focused on classification tasks and rely on matching the gradients generated by
+candidate sensitive attributes with the updates observed during training.
+Their effectiveness in regression settings had remained largely unexplored.
+Moreover, model-based attribute inference attacks, originally developed for
+centralized learning, had not been adapted to exploit the information exchanged
+during federated training. As a result, the poor performance of existing
+gradient-based attacks could incorrectly suggest that federated regression
+provides stronger privacy protection.
+
+\noindent\textbf{Main contributions:}
+\begin{itemize}
+    \item We establish a theoretical lower bound on the accuracy of model-based
+    attribute inference attacks for least-squares regression, showing how the
+    attack success depends on the local model's training error and on the
+    influence of the sensitive attribute on the prediction.
+
+    \item We introduce model-based attribute inference attacks for federated
+    regression under both honest-but-curious and malicious-server threat
+    models. The proposed methods first approximate the optimal local model of
+    the targeted client and then use it to infer the sensitive attributes of
+    individual records.
+
+    \item Through experiments on real-world datasets, we show that the proposed
+    attacks substantially outperform existing gradient-based approaches,
+    particularly under heterogeneous client distributions, and provide stronger
+    empirical baselines for evaluating privacy leakage in federated regression.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Publication:}
+ \textbf{Francesco Diana}, Othmane Marfoq, Chuan Xu, Giovanni Neglia,
+    Frédéric Giroire, and Eoin Thomas.
+    ``Attribute Inference Attacks for Federated Regression Tasks.''
+    In \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+    vol.~39, no.~15, pp.~16271--16279, 2025.
+
+
+
+\subsection*{Contribution \#2: A Hyperplane-Based
+Data Reconstruction Attack in Federated Learning.}
+
+\noindent\textbf{Problem:} Gradient inversion attacks; malicious federated-learning servers; reconstruction
+of large and low-dimensional data batches.
+
+\medskip
+\noindent\textbf{Research gap:}
+Existing gradient inversion attacks either rely on auxiliary knowledge about the
+clients' data distribution or lose effectiveness as the number of records
+contributing to an update increases. In particular, sparsity-based analytical
+attacks attempt to configure neurons so that individual records can be separated
+from the remaining batch. Although effective for some high-dimensional image
+data, their performance degrades considerably for large batches and
+low-dimensional tabular records. Consequently, prior attacks could not reliably
+recover all the records contained in large aggregated updates.
+
+\noindent\textbf{Main contributions:}
+\begin{itemize}
+    \item We provide a geometric interpretation of existing sparsity-based
+    analytical attacks and derive theoretical upper bounds on their
+    reconstruction capabilities, explaining their limited effectiveness for
+    large batches and low-dimensional data.
+
+    \item We introduce a hyperplane-based reconstruction attack in which a
+    malicious server controls the contribution of client records to the
+    observed gradients and progressively isolates them across communication
+    rounds, without requiring auxiliary data or prior knowledge of the client
+    data distribution.
+
+    \item We show theoretically and empirically that the proposed attack can
+    recover complete batches independently of their size, given sufficiently
+    many communication rounds, and demonstrate perfect reconstruction of image
+    and tabular batches containing up to \(4{,}096\) records.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Publication:}
+ \textbf{Francesco Diana}, André Nusser, Chuan Xu, and Giovanni Neglia.
+    ``Cutting Through Privacy: A Hyperplane-Based Data Reconstruction Attack
+    in Federated Learning.''
+    In \emph{The 41st Conference on Uncertainty in Artificial Intelligence},
+    2025.
+
+
+\subsection*{Contribution \#3: No More Guessing: A Verifiable Gradient
+Inversion Attack in Federated Learning}
+
+\noindent\textbf{Problem:}
+Verifiability of gradient inversion attacks; certified record reconstruction;
+privacy auditing without access to ground-truth data.
+
+\medskip
+\noindent\textbf{Research gap:}
+Gradient inversion attacks are generally evaluated by comparing reconstructed
+records with the original client data. Such an evaluation is available to the
+researcher conducting an experiment, but not to an actual adversary, who does
+not know the private batch. Existing attacks may therefore not distinguish
+correct records from incorrect ones. Visual inspection can sometimes provide a
+heuristic assessment for images or text, but it is costly for large batches and
+is largely ineffective for numerical tabular data. Moreover, the geometric
+search introduced in the previous contribution relies on a manually selected
+stopping threshold and cannot determine whether a non-empty region contains one
+record or several records.
+
+\medskip
+\noindent\textbf{Main contributions:}
+\begin{itemize}
+    \item We introduce a verifiable gradient inversion attack that uses an
+    algebraic subspace test to certify when records have been individually
+    isolated, providing an intrinsic guarantee of reconstruction correctness
+    without requiring access to the original client data.
+
+    \item We develop an adaptive hyperplane-search procedure that analytically
+    reconstructs certified inputs, recovers their corresponding targets, and
+    reallocates subsequent queries to unresolved regions, thereby avoiding
+    heuristic stopping thresholds and unnecessary communication rounds.
+
+    \item We validate the attack on tabular and image datasets for both
+    regression and classification tasks, demonstrating exact and automatically
+    certified recovery under large-batch aggregation in settings where previous
+    attacks either fail or cannot assess reconstruction correctness.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Publication:}
+    \textbf{Francesco Diana}, Chuan Xu, André Nusser, and Giovanni Neglia.
+    ``No More Guessing: A Verifiable Gradient Inversion Attack in Federated
+    Learning.''
+    \emph{arXiv preprint arXiv:2604.15063}, 2026.
+
+\section{Publications}
+\subsection*{Published}
+\noindent\begin{itemize}
+    \item  \textbf{Francesco Diana}, Othmane Marfoq, Chuan Xu, Giovanni Neglia,
+Frédéric Giroire, and Eoin Thomas.
+``Attribute Inference Attacks for Federated Regression Tasks.''
+In \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+vol.~39, no.~15, pp.~16271--16279, 2025.
+    \item \textbf{Francesco Diana}, André Nusser, Chuan Xu, and Giovanni Neglia.
+``Cutting Through Privacy: A Hyperplane-Based Data Reconstruction Attack
+in Federated Learning.''
+In \emph{The 41st Conference on Uncertainty in Artificial Intelligence},
+2025.
+\end{itemize}
+
+\subsection*{Under Review}
+\noindent\begin{itemize}
+    \item \textbf{Francesco Diana}, Chuan Xu, André Nusser, and Giovanni Neglia.
+    ``No More Guessing: A Verifiable Gradient Inversion Attack in Federated
+    Learning.''
+    \emph{arXiv preprint arXiv:2604.15063}, 2026.
+\end{itemize}
+
+\section{Thesis Outline}
+The remainder of this thesis is organized as follows. Chapter~\ref{chap:aia}
+studies attribute inference attacks for federated regression tasks. It introduces
+model-based attacks for both honest-but-curious and malicious adversaries,
+provides theoretical guarantees for least-squares regression, and evaluates
+their effectiveness against existing gradient-based approaches.
+Chapter~\ref{chap:ctp} turns to the complete reconstruction of clients' private
+records. It provides a geometric analysis of the limitations of existing
+analytical attacks and introduces a hyperplane-based method capable of
+reconstructing large batches of image and tabular data.
+Chapter~\ref{chap:vgia} addresses the problem of reconstruction verifiability
+and proposes an attack that certifies when a private record has been correctly
+isolated and recovered, while adaptively reducing the number of communication
+rounds required by the reconstruction process. Finally, Chapter~\ref{chap:conclusion}
+summarizes the main findings of the thesis and discusses possible directions and challenges
+for future research on privacy attacks in federated
+learning.

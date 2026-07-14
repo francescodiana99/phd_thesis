@@ -88,6 +88,15 @@
 
 \usepackage{hyperref}
 
+% Babel's French setup resets itemize labels at document start, so apply this
+% customization afterwards.
+\AtBeginDocument{%
+  \renewcommand{\labelitemi}{\textcolor{black}{\textbullet}}%
+  \renewcommand{\labelitemii}{\textcolor{black}{\textbullet}}%
+  \renewcommand{\labelitemiii}{\textcolor{black}{\textbullet}}%
+  \renewcommand{\labelitemiv}{\textcolor{black}{\textbullet}}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Tables des matières à chaque chapitre
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

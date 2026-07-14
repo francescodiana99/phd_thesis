@@ -1619,7 +1619,1473 @@ author = {Leonid I. Rudin and Stanley Osher and Emad Fatemi},
 abstract = {A constrained optimization type of numerical algorithm for removing noise from images is presented. The total variation of the image is minimized subject to constraints involving the statistics of the noise. The constraints are imposed using Lanrange multipliers. The solution is obtained using the gradient-projection method. This amounts to solving a time dependent partial differential equation on a manifold determined by the constraints. As t → ∞ the solution converges to a steady state which is the denoised image. The numerical algorithm is simple and relatively fast. The results appear to be state-of-the-art for very noisy images. The method is noninvasive, yielding sharp edges in the image. The technique could be interpreted as a first step of moving each level set of the image normal to itself with velocity equal to the curvature of the level set divided by the magnitude of the gradient of the image, and a second step which projects the image back onto the constraint set.}
 }
 
+@misc{zhaoIDLGImprovedDeep2020,
+  title = {{{iDLG}}: {{Improved Deep Leakage}} from {{Gradients}}},
+  shorttitle = {{{iDLG}}},
+  author = {Zhao, Bo and Mopuri, Konda Reddy and Bilen, Hakan},
+  year = 2020,
+  month = jan,
+  number = {arXiv:2001.02610},
+  eprint = {2001.02610},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2001.02610},
+  urldate = {2025-12-17},
+  abstract = {It is widely believed that sharing gradients will not leak private training data in distributed learning systems such as Collaborative Learning and Federated Learning, etc. Recently, Zhu et al. [1] presented an approach which shows the possibility to obtain private training data from the publicly shared gradients. In their Deep Leakage from Gradient (DLG) method, they synthesize the dummy data and corresponding labels with the supervision of shared gradients. However, DLG has difficulty in convergence and discovering the ground-truth labels consistently. In this paper, we find that sharing gradients definitely leaks the ground-truth labels. We propose a simple but reliable approach to extract accurate data from the gradients. Particularly, our approach can certainly extract the ground-truth labels as opposed to DLG, hence we name it Improved DLG (iDLG). Our approach is valid for any differentiable model trained with cross-entropy loss over one-hot labels. We mathematically illustrate how our method can extract ground-truth labels from the gradients and empirically demonstrate the advantages over DLG.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning},
+}
+
+@inproceedings{yinSeeGradientsImage2021,
+  title = {See through {{Gradients}}: {{Image Batch Recovery}} via {{GradInversion}}},
+  shorttitle = {See through {{Gradients}}},
+  booktitle = {2021 {{IEEE}}/{{CVF Conference}} on {{Computer Vision}} and {{Pattern Recognition}} ({{CVPR}})},
+  author = {Yin, Hongxu and Mallya, Arun and Vahdat, Arash and Alvarez, Jose M. and Kautz, Jan and Molchanov, Pavlo},
+  year = 2021,
+  month = jun,
+  pages = {16332--16341},
+  publisher = {IEEE},
+  address = {Nashville, TN, USA},
+  doi = {10.1109/CVPR46437.2021.01607},
+  urldate = {2024-11-20},
+  abstract = {Training deep neural networks requires gradient estimation from data batches to update parameters. Gradients per parameter are averaged over a set of data and this has been presumed to be safe for privacy-preserving training in joint, collaborative, and federated learning applications. Prior work only showed the possibility of recovering input data given gradients under very restrictive conditions -- a single input point, or a network with no non-linearities, or a small 32 \textasciicircum{} 32 px input batch. Therefore, averaging gradients over larger batches was thought to be safe. In this work, we introduce GradInversion, using which input images from a larger batch (8 -- 48 images) can also be recovered for large networks such as ResNets (50 layers), on complex datasets such as ImageNet (1000 classes, 224 \textasciicircum{} 224 px). We formulate an optimization task that converts random noise into natural images, matching gradients while regularizing image fidelity. We also propose an algorithm for target class label recovery given gradients. We further propose a group consistency regularization framework, where multiple agents starting from different random seeds work together to find an enhanced reconstruction of the original data batch. We show that gradients encode a surprisingly large amount of information, such that all the individual images can be recovered with high fidelity via GradInversion, even for complex datasets, deep networks, and large batch sizes.},
+  copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/IEEE.html},
+  isbn = {978-1-6654-4509-2},
+  langid = {english},
+}
+
+
+@inproceedings{hatamizadehGradViTGradientInversion2022,
+  title = {{{GradViT}}: {{Gradient Inversion}} of {{Vision Transformers}}},
+  shorttitle = {{{GradViT}}},
+  booktitle = {2022 {{IEEE}}/{{CVF Conference}} on {{Computer Vision}} and {{Pattern Recognition}} ({{CVPR}})},
+  author = {Hatamizadeh, Ali and Yin, Hongxu and Roth, Holger and Li, Wenqi and Kautz, Jan and Xu, Daguang and Molchanov, Pavlo},
+  year = 2022,
+  month = jun,
+  pages = {10011--10020},
+  publisher = {IEEE},
+  address = {New Orleans, LA, USA},
+  doi = {10.1109/CVPR52688.2022.00978},
+  urldate = {2025-12-17},
+  abstract = {In this work we demonstrate the vulnerability of vision transformers (ViTs) to gradient-based inversion attacks. During this attack, the original data batch is reconstructed given model weights and the corresponding gradients. We introduce a method, named GradViT, that optimizes random noise into naturally looking images via an iterative process. The optimization objective consists of (i) a loss on matching the gradients, (ii) image prior in the form of distance to batchnormalization statistics of a pretrained CNN model, and (iii) a total variation regularization on patches to guide correct recovery locations. We propose a unique loss scheduling function to overcome local minima during optimization. We evaluate GadViT on ImageNet1K and MS-Celeb-1M datasets, and observe unprecedentedly high fidelity and closeness to the original (hidden) data. During the analysis we find that vision transformers are significantly more vulnerable than previously studied CNNs due to the presence of the attention mechanism. Our method demonstrates new state-of-the-art results for gradient inversion in both qualitative and quantitative metrics. Project page at https://gradvit.github.io/.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {978-1-6654-6946-3},
+  langid = {english},
+}
+
+@misc{maINSTANCEWISEBATCHLABEL2023,
+  title = {{{INSTANCE-WISE BATCH LABEL RESTORATION VIA GRADIENTS IN FEDERATED LEARNING}}},
+  author = {Ma, Kailang and Sun, Yu and Cui, Jian and Li, Dawei and Guan, Zhenyu and Liu, Jianwei},
+  year = 2023,
+  abstract = {Gradient inversion attacks have posed a serious threat to the privacy of federated learning. The attacks search for the optimal pair of input and label best matching the shared gradients and the search space of the attacks can be reduced by pre-restoring labels. Recently, label restoration technique allows for the extraction of labels from gradients analytically, but even the state-of-the-art remains limited to identify the presence of categories (i.e., the class-wise label restoration). This work considers the more real-world settings, where there are multiple instances of each class in a training batch. An analytic method is proposed to perform instance-wise batch label restoration from only the gradient of the final layer. On the basis of the approximate recovered class-wise embeddings and postsoftmax probabilities, we establish linear equations of the gradients, probabilities and labels to derive the Number of Instances (NoI) per class by the Moore-Penrose pseudoinverse algorithm. Untrained models are most vulnerable to the proposed attack, and therefore serve as the primary experimental setup. Our experimental evaluations reach over 99\% Label existence Accuracy (LeAcc) and exceed 96\% Label number Accuracy (LnAcc) in most cases on three image datasets and four untrained classification models. The two metrics are used to evaluate class-wise and instance-wise label restoration accuracy, respectively. And the recovery is made feasible even with a batch size of 4096 and partially negative activations (e.g., Leaky ReLU and Swish). Furthermore, we demonstrate that our method facilitates the existing gradient inversion attacks by exploiting the recovered labels, with an increase of 6-7 in PSNR on both MNIST and CIFAR100. Our code is available at https://github.com/BUAA-CST/iLRG.},
+  langid = {english},
+}
+
+@article{liE2EGIEndtoEndGradient2023,
+  title = {{{E2EGI}}: {{End-to-End Gradient Inversion}} in {{Federated Learning}}},
+  shorttitle = {{{E2EGI}}},
+  author = {Li, Zhaohua and Wang, Le and Chen, Guangyao and Zhang, Zhiqiang and Shafiq, Muhammad and Gu, Zhaoquan},
+  year = 2023,
+  month = feb,
+  journal = {IEEE Journal of Biomedical and Health Informatics},
+  volume = {27},
+  number = {2},
+  pages = {756--767},
+  issn = {2168-2208},
+  doi = {10.1109/JBHI.2022.3204455},
+  urldate = {2025-12-17},
+  abstract = {A plethora of healthcare data is produced every day due to the proliferation of prominent technologies such as Internet of Medical Things (IoMT). Digital-driven smart devices like wearable watches, wristbands and bracelets are utilized extensively in modern healthcare applications. Mining valuable information from the data distributed at the owners' level is useful, but it is challenging to preserve data privacy. Federated learning (FL) has swiftly surged in popularity due to its efficacy in dealing privacy vulnerabilities. Recent studies have demonstrated that Gradient Inversion Attack (GIA) can reconstruct the input data by leaked gradients, previous work demonstrated the achievement of GIA in very limited scenarios, such as the label repetition rate of the target sample being low and batch sizes being smaller than 48. In this paper, a novel method of End-to-End Gradient Inversion (E2EGI) is proposed. Compared to the state-of-the-art method, E2EGI's Minimum Loss Combinatorial Optimization (MLCO) has the ability to realize reconstructed samples with higher similarity, and the Distributed Gradient Inversion algorithm can implement GIA with batch sizes of 8 to 256 on deep network models (such as ResNet-50) and ImageNet datasets. A new Label Reconstruction algorithm is developed that relies only on the gradient information of the target model, which can achieve a label reconstruction accuracy of 81\% in one batch sample with a label repetition rate of 96\%, a 27\% improvement over the state-of-the-art method. This proposed work can underpin data security assessments for healthcare federated learning.},
+  keywords = {Collaborative work,Data models,Data privacy,deep learning,federated learning,gradient inversion,Image reconstruction,Optimization,Reconstruction algorithms,Training},
+}
+
+@inproceedings{wangVarianceGradientAlso2022,
+  title = {Variance of the {{Gradient Also Matters}}: {{Privacy Leakage}} from {{Gradients}}},
+  shorttitle = {Variance of the {{Gradient Also Matters}}},
+  booktitle = {2022 {{International Joint Conference}} on {{Neural Networks}} ({{IJCNN}})},
+  author = {Wang, Yijue and Deng, Jieren and Guo, Dan and Wang, Chenghong and Meng, Xianrui and Liu, Hang and Shang, Chao and Wang, Binghui and Cao, Qin and Ding, Caiwen and Rajasekaran, Sanguthevar},
+  year = 2022,
+  month = jul,
+  pages = {1--8},
+  publisher = {IEEE},
+  address = {Padua, Italy},
+  doi = {10.1109/IJCNN55064.2022.9892665},
+  urldate = {2026-07-08},
+  abstract = {Distributed machine learning (DML) enables model training on a large corpus of decentralized data from users and only collects local models or gradients for global synchronization on the cloud. Recent studies show that a third party can recover the training data in the DML system through publicly shared gradients. Our investigation has revealed that existing techniques (e.g., DLG) can only recover the training data on uniform weight distribution and fail to recover the training data on other weights initialization (e.g., normal distribution) or during the training stage. In this work, we provide an analysis of how weight distribution can affect the training data recovery from gradients. Based on this analysis, we propose a self-adaptive privacy attack from gradients, SAPAG---a general gradient attack algorithm that can recover the training data in DML with any weight initialization and in any training phase. Our algorithm exploits not only the gradients but also the variance of gradients.Specifically, we exploit the variance of gradients distribution and the Deep Neural Network (DNN) architecture and design an adaptive Gaussian kernel of gradient difference as a distance measure. Our experimental results on various benchmark datasets and tasks demonstrate the generalizability of SAPAG. SAPAG outperforms the state-of-the-art algorithms in terms of both the data recovery performance and the recovery speed.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {978-1-7281-8671-9},
+  langid = {english},
+}
+
+@article{hongForeseeingReconstructionQuality2024,
+  title = {Foreseeing {{Reconstruction Quality}} of {{Gradient Inversion}}: {{An Optimization Perspective}}},
+  shorttitle = {Foreseeing {{Reconstruction Quality}} of {{Gradient Inversion}}},
+  author = {Hong, Hyeong Gwon and Cho, Yooshin and Cho, Hanbyel and Ahn, Jaesung and Kim, Junmo},
+  year = 2024,
+  month = mar,
+  journal = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume = {38},
+  number = {11},
+  pages = {12473--12481},
+  issn = {2374-3468},
+  doi = {10.1609/aaai.v38i11.29140},
+  urldate = {2026-06-05},
+  abstract = {Gradient inversion attacks can leak data privacy when clients share weight updates with the server in federated learning (FL). Existing studies mainly use L2 or cosine distance as the loss function for gradient matching in the attack. Our empirical investigation shows that the vulnerability ranking varies with the loss function used. Gradient norm, which is commonly used as a vulnerability proxy for gradient inversion attack, cannot explain this as it remains constant regardless of the loss function for gradient matching. In this paper, we propose a loss-aware vulnerability proxy (LAVP) for the first time. LAVP refers to either the maximum or minimum eigenvalue of the Hessian with respect to gradient matching loss at ground truth. This suggestion is based on our theoretical findings regarding the local optimization of the gradient inversion in proximity to the ground truth, which corresponds to the worst case attack scenario. We demonstrate the effectiveness of LAVP on various architectures and datasets, showing its consistent superiority over the gradient norm in capturing sample vulnerabilities. The performance of each proxy is measured in terms of Spearman's rank correlation with respect to several similarity scores. This work will contribute to enhancing FL security against any potential loss functions beyond L2 or cosine distance in the future.},
+  copyright = {Copyright (c) 2024 Association for the Advancement of Artificial Intelligence},
+  langid = {english},
+  keywords = {Explainable ML,Interpretable,ML: Distributed Machine Learning \& Federated Learning,ML: Privacy,ML: Transparent,PEAI: Privacy \& Security},
+}
+
+@article{gengImprovedGradientInversion2024,
+  title = {Improved {{Gradient Inversion Attacks}} and {{Defenses}} in {{Federated Learning}}},
+  author = {Geng, Jiahui and Mou, Yongli and Li, Qing and Li, Feifei and Beyan, Oya and Decker, Stefan and Rong, Chunming},
+  year = 2024,
+  month = dec,
+  journal = {IEEE Transactions on Big Data},
+  volume = {10},
+  number = {6},
+  pages = {839--850},
+  issn = {2332-7790},
+  doi = {10.1109/TBDATA.2023.3239116},
+  urldate = {2024-11-20},
+  abstract = {Gradient inversion attacks can reconstruct the victim's private data once they have access to the victim's model and gradient. However, existing research is still immature, and many attacks are conducted in ideal conditions. It is unclear how damaging such attacks really are and how they can be effectively defended. In this article, we first summarize the current relevant researches and their limitations. Then we design a general gradient inversion attack framework, which can attack both FedSGD and FedAVG. We propose approaches to enhance the label inference and image restoration, respectively. Our approach surpasses the SOTA attacks, by successfully attacking the batches from ImageNet while other methods fail to attack. Finally, we suggest several defense strategies without any utility loss from extensive experiments. We are confirmed that our work makes people aware of the privacy issues and can actively avoid the potential risks.},
+  keywords = {Big Data,Cryptography,Federated learning,gradient inversion attacks,Image reconstruction,Image restoration,Load modeling,privacy-preserving machine learning,secure computing,TV},
+}
+
+@article{yeHighFidelityGradientInversion2024,
+  title = {High-{{Fidelity Gradient Inversion}} in {{Distributed Learning}}},
+  author = {Ye, Zipeng and Luo, Wenjian and Zhou, Qi and Tang, Yubo},
+  year = 2024,
+  month = mar,
+  journal = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume = {38},
+  number = {18},
+  pages = {19983--19991},
+  issn = {2374-3468},
+  doi = {10.1609/aaai.v38i18.29975},
+  urldate = {2026-02-19},
+  abstract = {Distributed learning frameworks aim to train global models by sharing gradients among clients while preserving the data privacy of each individual client. However, extensive research has demonstrated that these learning frameworks do not absolutely ensure the privacy, as training data can be reconstructed from shared gradients. Nevertheless, the existing privacy-breaking attack methods have certain limitations. Some are applicable only to small models, while others can only recover images in small batch size and low resolutions, or with low fidelity. Furthermore, when there are some data with the same label in a training batch, existing attack methods usually perform poorly. In this work, we successfully address the limitations of existing attacks by two steps. Firstly, we model the coefficient of variation (CV) of features and design an evolutionary algorithm based on the minimum CV to accurately reconstruct the labels of all training data. After that, we propose a stepwise gradient inversion attack, which dynamically adapts the objective function, thereby effectively and rationally promoting the convergence of attack results towards an optimal solution. With these two steps, our method is able to recover high resolution images (224*224 pixel, from ImageNet and Web) with high fidelity in distributed learning scenarios involving complex models and larger batch size. Experiment results demonstrate the superiority of our approach, reveal the potential vulnerabilities of the distributed learning paradigm, and emphasize the necessity of developing more secure mechanisms. Source code is available at https://github.com/MiLab-HITSZ/2023YeHFGradInv.},
+  copyright = {Copyright (c) 2024 Association for the Advancement of Artificial Intelligence},
+  langid = {english},
+  keywords = {PEAI: Safety,Robustness \& Trustworthiness},
+}
+
+@misc{bakarsky2025spearscalinggradientinversion,
+      title={SPEAR++: Scaling Gradient Inversion via Sparsely-Used Dictionary Learning}, 
+      author={Alexander Bakarsky and Dimitar I. Dimitrov and Maximilian Baader and Martin Vechev},
+      year={2025},
+      eprint={2510.24200},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2510.24200}, 
+}
+
+@article{liTemporalGradientInversion2025a,
+  title = {Temporal {{Gradient Inversion Attacks With Robust Optimization}}},
+  author = {Li, Bowen and Gu, Hanlin and Chen, Ruoxin and Li, Jie and Wu, Chentao and Ruan, Na and Si, Xueming and Fan, Lixin},
+  year = 2025,
+  month = jul,
+  journal = {IEEE Transactions on Dependable and Secure Computing},
+  volume = {22},
+  number = {4},
+  pages = {3383--3397},
+  issn = {1545-5971, 1941-0018, 2160-9209},
+  doi = {10.1109/TDSC.2025.3532339},
+  urldate = {2026-07-08},
+  copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/IEEE.html},
+  langid = {english}}
+
+@inproceedings {Fan_fedleak,
+author = {Mingyuan Fan and Fuyi Wang and Cen Chen and Jianying Zhou},
+title = {Boosting Gradient Leakage Attacks: Data Reconstruction in Realistic {FL} Settings},
+booktitle = {34th USENIX Security Symposium (USENIX Security 25)},
+year = {2025},
+isbn = {978-1-939133-52-6},
+address = {Seattle, WA},
+pages = {2985--3004},
+url = {https://www.usenix.org/conference/usenixsecurity25/presentation/fan-boosting},
+publisher = {USENIX Association},
+month = aug
+}
+
+@inproceedings{kariyappaCocktailPartyAttack2023,
+  title = {Cocktail {{Party Attack}}: {{Breaking Aggregation-Based Privacy}} in {{Federated Learning Using Independent Component Analysis}}},
+  shorttitle = {Cocktail {{Party Attack}}},
+  booktitle = {Proceedings of the 40th {{International Conference}} on {{Machine Learning}}},
+  author = {Kariyappa, Sanjay and Guo, Chuan and Maeng, Kiwan and Xiong, Wenjie and Suh, G. Edward and Qureshi, Moinuddin K. and Lee, Hsien-Hsin S.},
+  year = 2023,
+  month = jul,
+  pages = {15884--15899},
+  publisher = {PMLR},
+  issn = {2640-3498},
+  urldate = {2024-01-17},
+  abstract = {Federated learning (FL) aims to perform privacy-preserving machine learning on distributed data held by multiple data owners. To this end, FL requires the data owners to perform training locally and share the gradients or weight updates (instead of the private inputs) with the central server, which are then securely aggregated over multiple data owners. Although aggregation by itself does not offer provable privacy protection, prior work suggested that if the batch size is sufficiently large the aggregation may be secure enough. In this paper, we propose the Cocktail Party Attack (CPA) that, contrary to prior belief, is able to recover the private inputs from gradients/weight updates aggregated over as many as 1024 samples. CPA leverages the crucial insight that aggregate gradients from a fully connected (FC) layer is a linear combination of its inputs, which allows us to frame gradient inversion as a blind source separation (BSS) problem. We adapt independent component analysis (ICA)---a classic solution to the BSS problem---to recover private inputs for FC and convolutional networks, and show that CPA significantly outperforms prior gradient inversion attacks, scales to ImageNet-sized inputs, and works on large batch sizes of up to 1024.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/38YDQLMA/Kariyappa et al. - 2023 - Cocktail Party Attack Breaking Aggregation-Based .pdf}
+}
+
+@article{dimitrovDataLeakageFederated2022,
+  title = {Data {{Leakage}} in {{Federated Averaging}}},
+  author = {Dimitrov, Dimitar Iliev and Balunovic, Mislav and Konstantinov, Nikola and Vechev, Martin},
+  year = 2022,
+  month = jun,
+  journal = {Transactions on Machine Learning Research},
+  issn = {2835-8856},
+  urldate = {2024-01-17},
+  abstract = {Recent attacks have shown that user data can be recovered from FedSGD updates, thus breaking privacy. However, these attacks are of limited practical relevance as federated learning typically uses the FedAvg algorithm. Compared to FedSGD, recovering data from FedAvg updates is much harder as: (i) the updates are computed at unobserved intermediate network weights, (ii) a large number of batches are used, and (iii) labels and network weights vary simultaneously across client steps. In this work, we propose a new optimization-based attack which successfully attacks FedAvg by addressing the above challenges. First, we solve the optimization problem using automatic differentiation that forces a simulation of the client's update that generates the unobserved parameters for the recovered labels and inputs to match the received client update. Second, we address the large number of batches by relating images from different epochs with a permutation invariant prior. Third, we recover the labels by estimating the parameters of existing FedSGD attacks at every FedAvg step. On the popular FEMNIST dataset, we demonstrate that on average we successfully recover {$>$}45\% of the client's images from realistic FedAvg updates computed on 10 local epochs of 10 batches each with 5 images, compared to only {$<$}10\% using the baseline. Our findings show many real-world federated learning implementations based on FedAvg are vulnerable.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/IQ7CYRK7/Dimitrov et al. - 2022 - Data Leakage in Federated Averaging.pdf}
+}
+
+@inproceedings{Zhu_sme_gia,
+author = {Zhu, Junyi and Yao, Ruicong and Blaschko, Matthew B.},
+title = {Surrogate model extension (SME): a fast and accurate weight update attack on federated learning},
+year = {2023},
+publisher = {JMLR.org},
+abstract = {In Federated Learning (FL) and many other distributed training frameworks, collaborators can hold their private data locally and only share the network weights trained with the local data after multiple iterations. Gradient inversion is a family of privacy attacks that recovers data from its generated gradients. Seemingly, FL can provide a degree of protection against gradient inversion attacks on weight updates, since the gradient of a single step is concealed by the accumulation of gradients over multiple local iterations. In this work, we propose a principled way to extend gradient inversion attacks to weight updates in FL, thereby better exposing weaknesses in the presumed privacy protection inherent in FL. In particular, we propose a surrogate model method based on the characteristic of two-dimensional gradient flow and low-rank property of local updates. Our method largely boosts the ability of gradient inversion attacks on weight updates containing many iterations and achieves state-of-the-art (SOTA) performance. Additionally, our method runs up to 100\texttimes{} faster than the SOTA baseline in the common FL scenario. Our work re-evaluates and highlights the privacy risk of sharing network weights. Our code is available at https://github.com/JunyiZhu-AI/surrogate_model_extension.},
+booktitle = {Proceedings of the 40th International Conference on Machine Learning},
+articleno = {1821},
+numpages = {30},
+location = {Honolulu, Hawaii, USA},
+series = {ICML'23}
+}
+
+@misc{veroTabLeakTabularData2023,
+  title = {{{TabLeak}}: {{Tabular Data Leakage}} in {{Federated Learning}}},
+  shorttitle = {{{TabLeak}}},
+  author = {Vero, Mark and Balunovi{\'c}, Mislav and Dimitrov, Dimitar I. and Vechev, Martin},
+  year = 2023,
+  month = jul,
+  number = {arXiv:2210.01785},
+  eprint = {2210.01785},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2210.01785},
+  urldate = {2025-02-03},
+  abstract = {While federated learning (FL) promises to preserve privacy, recent works in the image and text domains have shown that training updates leak private client data. However, most high-stakes applications of FL (e.g., in healthcare and finance) use tabular data, where the risk of data leakage has not yet been explored. A successful attack for tabular data must address two key challenges unique to the domain: (i) obtaining a solution to a high-variance mixed discrete-continuous optimization problem, and (ii) enabling human assessment of the reconstruction as unlike for image and text data, direct human inspection is not possible. In this work we address these challenges and propose TabLeak, the first comprehensive reconstruction attack on tabular data. TabLeak is based on two key contributions: (i) a method which leverages a softmax relaxation and pooled ensembling to solve the optimization problem, and (ii) an entropy-based uncertainty quantification scheme to enable human assessment. We evaluate TabLeak on four tabular datasets for both FedSGD and FedAvg training protocols, and show that it successfully breaks several settings previously deemed safe. For instance, we extract large subsets of private data at {$>$}90\% accuracy even at the large batch size of 128. Our findings demonstrate that current high-stakes tabular FL is excessively vulnerable to leakage attacks.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Cryptography and Security,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Machine Learning},
+}
+
+@misc{xiaNonLinearTrajectoryModeling2025,
+  title = {Non-{{Linear Trajectory Modeling}} for {{Multi-Step Gradient Inversion Attacks}} in {{Federated Learning}}},
+  author = {Xia, Li and Yu, Jing and Liu, Zheng and Huang, Sili and Tang, Wei and Liu, Xuan},
+  year = 2025,
+  publisher = {arXiv},
+  doi = {10.48550/ARXIV.2509.22082},
+  urldate = {2026-06-05},
+  abstract = {Federated Learning (FL) enables collaborative training while preserving privacy, yet Gradient Inversion Attacks (GIAs) pose severe threats by reconstructing private data from shared gradients. In realistic FedAvg scenarios with multi-step updates, existing surrogate methods like SME rely on linear interpolation to approximate client trajectories for privacy leakage. However, we demonstrate that linear assumptions fundamentally underestimate SGD's nonlinear complexity, encountering irreducible approximation barriers in non-convex landscapes with only one-dimensional expressiveness. We propose Non-Linear Surrogate Model Extension (NL-SME), the first framework introducing learnable quadratic Be\textasciiacute zier curves for trajectory modeling in GIAs against FL. NL-SME leverages \textbar w\textbar{} + 1-dimensional control point parameterization combined with dvec scaling and regularization mechanisms to achieve superior approximation accuracy. Extensive experiments on CIFAR-100 and FEMNIST demonstrate NL-SME significantly outperforms baselines across all metrics, achieving 94\%--98\% performance gaps and order-ofmagnitude improvements in cosine similarity loss while maintaining computational efficiency. This work exposes critical privacy vulnerabilities in FL's multi-step paradigm and provides insights for robust defense development.Code is available at https:// anonymous.4open.science/r/NL-SME-main/README.md.},
+  copyright = {arXiv.org perpetual, non-exclusive license},
+  langid = {english},
+  keywords = {Cryptography and Security (cs.CR),FOS: Computer and information sciences,K.6.5,Machine Learning (cs.LG)},
+  file = {/home/fdiana/Zotero/storage/L2IAENF8/Xia et al. - 2025 - Non-Linear Trajectory Modeling for Multi-Step Gradient Inversion Attacks in Federated Learning.pdf}
+}
+
+@inproceedings{deng-etal-2021-tag-gradient,
+    title = "{TAG}: Gradient Attack on Transformer-based Language Models",
+    author = "Deng, Jieren  and
+      Wang, Yijue  and
+      Li, Ji  and
+      Wang, Chenghong  and
+      Shang, Chao  and
+      Liu, Hang  and
+      Rajasekaran, Sanguthevar  and
+      Ding, Caiwen",
+    editor = "Moens, Marie-Francine  and
+      Huang, Xuanjing  and
+      Specia, Lucia  and
+      Yih, Scott Wen-tau",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2021",
+    month = nov,
+    year = "2021",
+    address = "Punta Cana, Dominican Republic",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.findings-emnlp.305/",
+    doi = "10.18653/v1/2021.findings-emnlp.305",
+    pages = "3600--3610",
+    abstract = "Although distributed learning has increasingly gained attention in terms of effectively utilizing local devices for data privacy enhancement, recent studies show that publicly shared gradients in the training process can reveal the private training data (gradient leakage) to a third-party. We have, however, no systematic understanding of the gradient leakage mechanism on the Transformer based language models. In this paper, as the first attempt, we formulate the gradient attack problem on the Transformer-based language models and propose a gradient attack algorithm, TAG, to reconstruct the local training data. Experimental results on Transformer, TinyBERT4, TinyBERT6 BERT{\_}BASE, and BERT{\_}LARGE using GLUE benchmark show that compared with DLG, TAG works well on more weight distributions in reconstructing training data and achieves 1.5x recover rate and 2.5x ROUGE-2 over prior methods without the need of ground truth label. TAG can obtain up to 90{\%} data by attacking gradients in CoLA dataset. In addition, TAG is stronger than previous approaches on larger models, smaller dictionary size, and smaller input length. We hope the proposed TAG will shed some light on the privacy leakage problem in Transformer-based NLP models."
+}
+
+@inproceedings{lamp_balunovic,
+ author = {Balunovic, Mislav and Dimitrov, Dimitar and Jovanovi\'{c}, Nikola and Vechev, Martin},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+ pages = {7641--7654},
+ publisher = {Curran Associates, Inc.},
+ title = {LAMP: Extracting Text from Gradients with Language Model Priors},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/32375260090404f907ceae19f3564a7e-Paper-Conference.pdf},
+ volume = {35},
+ year = {2022}
+}
+
+@inproceedings{wenFishingUserData2022a,
+  title = {Fishing for {{User Data}} in {{Large-Batch Federated Learning}} via {{Gradient Magnification}}},
+  booktitle = {Proceedings of the 39th {{International Conference}} on {{Machine Learning}}},
+  author = {Wen, Yuxin and Geiping, Jonas A. and Fowl, Liam and Goldblum, Micah and Goldstein, Tom},
+  year = 2022,
+  month = jun,
+  pages = {23668--23684},
+  publisher = {PMLR},
+  issn = {2640-3498},
+  urldate = {2026-07-09},
+  abstract = {Federated learning (FL) has rapidly risen in popularity due to its promise of privacy and efficiency. Previous works have exposed privacy vulnerabilities in the FL pipeline by recovering user data from gradient updates. However, existing attacks fail to address realistic settings because they either 1) require toy settings with very small batch sizes, or 2) require unrealistic and conspicuous architecture modifications. We introduce a new strategy that dramatically elevates existing attacks to operate on batches of arbitrarily large size, and without architectural modifications. Our model-agnostic strategy only requires modifications to the model parameters sent to the user, which is a realistic threat model in many scenarios. We demonstrate the strategy in challenging large-scale settings, obtaining high-fidelity data extraction in both cross-device and cross-silo federated learning. Code is available at https://github.com/JonasGeiping/breaching.},
+  langid = {english},
+}
+
+@misc{GradFiltClasswiseTargeted,
+  title = {{{GradFilt}}: {{Class-wise Targeted Data Reconstruction}} from {{Gradients}} in {{Federated Learning}}},
+  shorttitle = {{{GradFilt}}},
+  year = 2024,
+  doi = {10.1145/3589335.3651514},
+  urldate = {2026-01-06},
+  howpublished = {https://dl.acm.org/doi/epdf/10.1145/3589335.3651514},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/AMIH3XPW/2024 - GradFilt Class-wise Targeted Data Reconstruction from Gradients in Federated Learning.pdf;/home/fdiana/Zotero/storage/UNWYIHG6/3589335.html}
+}
+
+@inproceedings{shan2025geminio,
+      title={Geminio: Language-Guided Gradient Inversion Attacks in Federated Learning}, 
+      author={Junjie Shan and Ziqi Zhao and Jialin Lu and Rui Zhang and Siu Ming Yiu and Ka-Ho Chow},
+      booktitle={International Conference on Computer Vision},
+      year={2025}
+}
+
+@ARTICLE{phong_gia,
+  author={Phong, Le Trieu and Aono, Yoshinori and Hayashi, Takuya and Wang, Lihua and Moriai, Shiho},
+  journal={IEEE Transactions on Information Forensics and Security}, 
+  title={Privacy-Preserving Deep Learning via Additively Homomorphic Encryption}, 
+  year={2018},
+  volume={13},
+  number={5},
+  pages={1333-1345},
+  keywords={Servers;Machine learning;Encryption;Neural networks;Privacy;Privacy;deep learning;neural network;additively homomorphic encryption;LWE-based encryption;Paillier encryption},
+  doi={10.1109/TIFS.2017.2787987}}
+
+@inproceedings{hitajDeepModelsGAN2017a,
+  title = {Deep {{Models Under}} the {{GAN}}: {{Information Leakage}} from {{Collaborative Deep Learning}}},
+  shorttitle = {Deep {{Models Under}} the {{GAN}}},
+  booktitle = {Proceedings of the 2017 {{ACM SIGSAC Conference}} on {{Computer}} and {{Communications Security}}},
+  author = {Hitaj, Briland and Ateniese, Giuseppe and {Perez-Cruz}, Fernando},
+  year = 2017,
+  month = oct,
+  pages = {603--618},
+  publisher = {ACM},
+  address = {Dallas Texas USA},
+  doi = {10.1145/3133956.3134012},
+  urldate = {2025-12-19},
+  abstract = {Deep Learning has recently become hugely popular in machine learning for its ability to solve end-to-end learning systems, in which the features and the classifiers are learned simultaneously, providing significant improvements in classification accuracy in the presence of highly-structured and large databases.},
+  isbn = {978-1-4503-4946-8},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/MX6KJRQ7/Hitaj et al. - 2017 - Deep Models Under the GAN Information Leakage from Collaborative Deep Learning.pdf}
+}
+
+@misc{wangInferringClassRepresentatives2018,
+  title = {Beyond {{Inferring Class Representatives}}: {{User-Level Privacy Leakage From Federated Learning}}},
+  shorttitle = {Beyond {{Inferring Class Representatives}}},
+  author = {Wang, Zhibo and Song, Mengkai and Zhang, Zhifei and Song, Yang and Wang, Qian and Qi, Hairong},
+  year = 2018,
+  month = dec,
+  number = {arXiv:1812.00535},
+  eprint = {1812.00535},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1812.00535},
+  urldate = {2025-12-19},
+  abstract = {Federated learning, i.e., a mobile edge computing framework for deep learning, is a recent advance in privacy-preserving machine learning, where the model is trained in a decentralized manner by the clients, i.e., data curators, preventing the server from directly accessing those private data from the clients. This learning mechanism significantly challenges the attack from the server side. Although the state-of-the-art attacking techniques that incorporated the advance of Generative adversarial networks (GANs) could construct class representatives of the global data distribution among all clients, it is still challenging to distinguishably attack a specific client (i.e., user-level privacy leakage), which is a stronger privacy threat to precisely recover the private data from a specific client. This paper gives the first attempt to explore user-level privacy leakage against the federated learning by the attack from a malicious server. We propose a framework incorporating GAN with a multi-task discriminator, which simultaneously discriminates category, reality, and client identity of input samples. The novel discrimination on client identity enables the generator to recover user specified private data. Unlike existing works that tend to interfere the training process of the federated learning, the proposed method works "invisibly" on the server side. The experimental results demonstrate the effectiveness of the proposed attacking approach and the superior to the state-of-the-art.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Cryptography and Security,Computer Science - Machine Learning},
+  file = {/home/fdiana/Zotero/storage/GUV446XI/Wang et al. - 2018 - Beyond Inferring Class Representatives User-Level Privacy Leakage From Federated Learning.pdf}
+}
+@inproceedings{
+jeon2021gradient,
+title={Gradient Inversion with Generative Image Prior},
+author={Jinwoo Jeon and Jaechang Kim and Kangwook Lee and Sewoong Oh and Jungseul Ok},
+booktitle={Advances in Neural Information Processing Systems},
+editor={A. Beygelzimer and Y. Dauphin and P. Liang and J. Wortman Vaughan},
+year={2021},
+url={https://openreview.net/forum?id=x9jS8pX3dkx}
+}
+
+@inproceedings{liAuditingPrivacyDefenses2022a,
+  title = {Auditing {{Privacy Defenses}} in {{Federated Learning}} via {{Generative Gradient Leakage}}},
+  booktitle = {2022 {{IEEE}}/{{CVF Conference}} on {{Computer Vision}} and {{Pattern Recognition}} ({{CVPR}})},
+  author = {Li, Zhuohang and Zhang, Jiaxin and Liu, Luyang and Liu, Jian},
+  year = 2022,
+  month = jun,
+  pages = {10122--10132},
+  publisher = {IEEE},
+  address = {New Orleans, LA, USA},
+  doi = {10.1109/CVPR52688.2022.00989},
+  urldate = {2025-12-19},
+  abstract = {Federated Learning (FL) framework brings privacy benefits to distributed learning systems by allowing multiple clients to participate in a learning task under the coordination of a central server without exchanging their private data. However, recent studies have revealed that private information can still be leaked through shared gradient information. To further protect user's privacy, several defense mechanisms have been proposed to prevent privacy leakage via gradient information degradation methods, such as using additive noise or gradient compression before sharing it with the server. In this work, we validate that the private training data can still be leaked under certain defense settings with a new type of leakage, i.e., Generative Gradient Leakage (GGL). Unlike existing methods that only rely on gradient information to reconstruct data, our method leverages the latent space of generative adversarial networks (GAN) learned from public image datasets as a prior to compensate for the informational loss during gradient degradation. To address the nonlinearity caused by the gradient operator and the GAN model, we explore various gradient-free optimization methods (e.g., evolution strategies and Bayesian optimization) and empirically show their superiority in reconstructing high-quality images from gradients compared to gradient-based optimizers. We hope the proposed method can serve as a tool for empirically measuring the amount of privacy leakage to facilitate the design of more robust defense mechanisms.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {978-1-6654-6946-3},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/WYEAB5HB/Li et al. - 2022 - Auditing Privacy Defenses in Federated Learning via Generative Gradient Leakage.pdf}
+}
+@misc{fangGIFDGenerativeGradient2023a,
+  title = {{{GIFD}}: {{A Generative Gradient Inversion Method}} with {{Feature Domain Optimization}}},
+  shorttitle = {{{GIFD}}},
+  author = {Fang, Hao and Chen, Bin and Wang, Xuan and Wang, Zhi and Xia, Shu-Tao},
+  year = 2023,
+  month = sep,
+  number = {arXiv:2308.04699},
+  eprint = {2308.04699},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2308.04699},
+  urldate = {2025-12-19},
+  abstract = {Federated Learning (FL) has recently emerged as a promising distributed machine learning framework to preserve clients' privacy, by allowing multiple clients to upload the gradients calculated from their local data to a central server. Recent studies find that the exchanged gradients also take the risk of privacy leakage, e.g., an attacker can invert the shared gradients and recover sensitive data against an FL system by leveraging pre-trained generative adversarial networks (GAN) as prior knowledge. However, performing gradient inversion attacks in the latent space of the GAN model limits their expression ability and generalizability. To tackle these challenges, we propose Gradient Inversion over Feature Domains (GIFD), which disassembles the GAN model and searches the feature domains of the intermediate layers. Instead of optimizing only over the initial latent code, we progressively change the optimized layer, from the initial latent space to intermediate layers closer to the output images. In addition, we design a regularizer to avoid unreal image generation by adding a small l1 ball constraint to the searching range. We also extend GIFD to the out-of-distribution (OOD) setting, which weakens the assumption that the training sets of GANs and FL tasks obey the same data distribution. Extensive experiments demonstrate that our method can achieve pixel-level reconstruction and is superior to the existing methods. Notably, GIFD also shows great generalizability under different defense strategy settings and batch sizes.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Cryptography and Security},
+  file = {/home/fdiana/Zotero/storage/6BR6Y2PA/Fang et al. - 2023 - GIFD A Generative Gradient Inversion Method with Feature Domain Optimization.pdf}
+}
+
+@inproceedings{qian_gismn,
+author = {Qian, Jin and Wei, Kaimin and Wu, Yongdong and Zhang, Jilian and Chen, Jinpeng and Bao, Huan},
+title = {GI-SMN: Gradient Inversion Attack Against Federated Learning Without Prior Knowledge},
+year = {2024},
+isbn = {978-981-97-5602-5},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-981-97-5603-2_36},
+doi = {10.1007/978-981-97-5603-2_36},
+abstract = {Federated learning (FL) has emerged as a privacy-preserving machine learning approach where multiple parties share gradient information rather than original user data. Recent work has demonstrated that gradient inversion (GI) attacks can exploit the gradients of FL to recreate the original user data, posing significant privacy risks. However, these attacks make strong assumptions about the attacker, such as altering the model structure or parameters, gaining batch normalization statistics, or acquiring prior knowledge of the original training set, etc. Consequently, these attacks are not possible in real-world scenarios. To end it, we propose a novel GI attack based on Style Migration Network (GI-SMN), which breaks through the strong assumptions made by previous GI attacks. The optimization space is reduced by the refinement of the latent code and the use of regular terms to facilitate gradient matching. GI-SMN enables the reconstruction of user data with high similarity in batches. Experimental results have demonstrated that GI-SMN outperforms state-of-the-art GI attacks in both visual effect and similarity metrics.},
+booktitle = {Advanced Intelligent Computing Technology and Applications: 20th International Conference, ICIC 2024, Tianjin, China, August 5–8, 2024, Proceedings, Part VIII},
+pages = {439–448},
+numpages = {10},
+keywords = {Gradient inversion, Federated learning, Style migration network Prior knowledge},
+location = {Tianjin, China}
+}
+
+@article{renGRNNGenerativeRegression2022a,
+  title = {{{GRNN}}: {{Generative Regression Neural Network}}---{{A Data Leakage Attack}} for {{Federated Learning}}},
+  shorttitle = {{{GRNN}}},
+  author = {Ren, Hanchi and Deng, Jingjing and Xie, Xianghua},
+  year = 2022,
+  month = aug,
+  journal = {ACM Transactions on Intelligent Systems and Technology},
+  volume = {13},
+  number = {4},
+  pages = {1--24},
+  issn = {2157-6904, 2157-6912},
+  doi = {10.1145/3510032},
+  urldate = {2025-12-19},
+  abstract = {Data privacy has become an increasingly important issue in               Machine Learning (ML)               , where many approaches have been developed to tackle this challenge, e.g., cryptography (               Homomorphic Encryption (HE)               ,               Differential Privacy (DP)               ) and collaborative training (Secure               Multi-Party Computation (MPC)               , Distributed Learning, and               Federated Learning (FL)               ). These techniques have a particular focus on data encryption or secure local computation. They transfer the intermediate information to the third party to compute the final result. Gradient exchanging is commonly considered to be a secure way of training a robust model collaboratively in               Deep Learning (DL)               . However, recent researches have demonstrated that sensitive information can be recovered from the shared gradient.               Generative Adversarial Network (GAN)               , in particular, has shown to be effective in recovering such information. However, GAN based techniques require additional information, such as class labels that are generally unavailable for privacy-preserved learning. In this article, we show that, in the FL system, image-based privacy data can be easily recovered in full from the shared gradient only via our proposed               Generative Regression Neural Network (GRNN)               . We formulate the attack to be a regression problem and optimize two branches of the generative model by minimizing the distance between gradients. We evaluate our method on several image classification tasks. The results illustrate that our proposed GRNN outperforms state-of-the-art methods with better stability, stronger robustness, and higher accuracy. It also has no convergence requirement to the global FL model. Moreover, we demonstrate information leakage using face re-identification. Some defense strategies are also discussed in this work.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/PIRGL5UZ/Ren et al. - 2022 - GRNN Generative Regression Neural Network—A Data Leakage Attack for Federated Learning.pdf}
+}
+
+@article{xuCGIRConditionalGenerative2023,
+  title = {{{CGIR}}: {{Conditional Generative Instance Reconstruction Attacks Against Federated Learning}}},
+  shorttitle = {{{CGIR}}},
+  author = {Xu, Xiangrui and Liu, Pengrui and Wang, Wei and Ma, Hong-Liang and Wang, Bin and Han, Zhen and Han, Yufei},
+  year = 2023,
+  month = nov,
+  journal = {IEEE Transactions on Dependable and Secure Computing},
+  volume = {20},
+  number = {6},
+  pages = {4551--4563},
+  issn = {1941-0018},
+  doi = {10.1109/TDSC.2022.3228302},
+  urldate = {2025-12-19},
+  abstract = {Data reconstruction attack has become an emerging privacy threat to Federal Learning (FL), inspiring a rethinking of FL's ability to protect privacy. While existing data reconstruction attacks have shown some effective performance, prior arts rely on different strong assumptions to guide the reconstruction process. In this work, we propose a novel Conditional Generative Instance Reconstruction Attack (CGIR attack) that drops all these assumptions. Specifically, we propose a batch label inference attack in non-IID FL scenarios, where multiple images can share the same labels. Based on the inferred labels, we conduct a ``coarse-to-fine'' image reconstruction process that provides a stable and effective data reconstruction. In addition, we equip the generator with a label condition restriction so that the contents and the labels of the reconstructed images are consistent. Our extensive evaluation results on two model architectures and five image datasets show that without the auxiliary assumptions, the CGIR attack outperforms the prior arts, even for complex datasets, deep models, and large batch sizes. Furthermore, we evaluate several existing defense methods. The experimental results suggest that pruning gradients can be used as a strategy to mitigate privacy risks in FL if a model tolerates a slight accuracy loss.},
+  keywords = {Data privacy,Data reconstruction attacks,federated learning,Generators,Image reconstruction,Optimization,privacy,Privacy,Servers,Training},
+  file = {/home/fdiana/Zotero/storage/YX8VQ39J/Xu et al. - 2023 - CGIR Conditional Generative Instance Reconstruction Attacks Against Federated Learning.pdf}
+}
 
 
 
+@inproceedings{zhangGenerativeGradientInversion2023a,
+  title = {Generative {{Gradient Inversion}} via {{Over-Parameterized Networks}} in {{Federated Learning}}},
+  booktitle = {2023 {{IEEE}}/{{CVF International Conference}} on {{Computer Vision}} ({{ICCV}})},
+  author = {Zhang, Chi and Zhang, Xiaoman and Sotthiwat, Ekanut and Xu, Yanyu and Liu, Ping and Zhen, Liangli and Liu, Yong},
+  year = 2023,
+  month = oct,
+  pages = {5103--5112},
+  publisher = {IEEE},
+  address = {Paris, France},
+  doi = {10.1109/ICCV51070.2023.00473},
+  urldate = {2025-12-19},
+  abstract = {Federated learning has gained recognitions as a secure approach for safeguarding local private data in collaborative learning. But the advent of gradient inversion research has posed significant challenges to this premise by enabling a third-party to recover groundtruth images via gradients. While prior research has predominantly focused on low-resolution images and small batch sizes, this study highlights the feasibility of reconstructing complex images with high resolutions and large batch sizes. The success of the proposed method is contingent on constructing an overparameterized convolutional network, so that images are generated before fitting to the gradient matching requirement. Practical experiments demonstrate that the proposed algorithm achieves high-fidelity image recovery, surpassing state-of-the-art competitors that commonly fail in more intricate scenarios. Consequently, our study shows that local participants in a federated learning system are vulnerable to potential data leakage issues. Source code is available at https://github.com/czhang024/CI-Net.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {979-8-3503-0718-4},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/HR67RM2Q/Zhang et al. - 2023 - Generative Gradient Inversion via Over-Parameterized Networks in Federated Learning.pdf}
+}
 
+@inproceedings{shiScaleMIAScalableModel2025,
+  title = {Scale-{{MIA}}: {{A Scalable Model Inversion Attack}} against {{Secure Federated Learning}} via {{Latent Space Reconstruction}}},
+  shorttitle = {Scale-{{MIA}}},
+  booktitle = {Proceedings 2025 {{Network}} and {{Distributed System Security Symposium}}},
+  author = {Shi, Shanghao and Wang, Ning and Xiao, Yang and Zhang, Chaoyu and Shi, Yi and Hou, Y. Thomas and Lou, Wenjing},
+  year = 2025,
+  publisher = {Internet Society},
+  address = {San Diego, CA, USA},
+  doi = {10.14722/ndss.2025.240644},
+  urldate = {2025-10-06},
+  abstract = {Federated learning is known for its capability to safeguard the participants' data privacy. However, recently emerged model inversion attacks (MIAs) have shown that a malicious parameter server can reconstruct individual users' local data samples from model updates. The state-of-the-art attacks either rely on computation-intensive iterative optimization methods to reconstruct each input batch, making scaling difficult, or involve the malicious parameter server adding extra modules before the global model architecture, rendering the attacks too conspicuous and easily detectable.},
+  isbn = {979-8-9894372-8-3},
+  langid = {english},
+  keywords = {to read},
+  file = {/home/fdiana/Zotero/storage/6VEGLMWG/Shi et al. - 2025 - Scale-MIA A Scalable Model Inversion Attack against Secure Federated Learning via Latent Space Reco.pdf}
+}
+
+@misc{garovHidingPlainSight2024,
+  title = {Hiding in {{Plain Sight}}: {{Disguising Data Stealing Attacks}} in {{Federated Learning}}},
+  shorttitle = {Hiding in {{Plain Sight}}},
+  author = {Garov, Kostadin and Dimitrov, Dimitar I. and Jovanovi{\'c}, Nikola and Vechev, Martin},
+  year = 2024,
+  month = apr,
+  number = {arXiv:2306.03013},
+  eprint = {2306.03013},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2306.03013},
+  urldate = {2024-11-26},
+  abstract = {Malicious server (MS) attacks have enabled the scaling of data stealing in federated learning to large batch sizes and secure aggregation, settings previously considered private. However, many concerns regarding the client-side detectability of MS attacks were raised, questioning their practicality. In this work, for the first time, we thoroughly study client-side detectability. We first demonstrate that all prior MS attacks are detectable by principled checks, and formulate a necessary set of requirements that a practical MS attack must satisfy. Next, we propose SEER, a novel attack framework that satisfies these requirements. The key insight of SEER is the use of a secret decoder, jointly trained with the shared model. We show that SEER can steal user data from gradients of realistic networks, even for large batch sizes of up to 512 and under secure aggregation. Our work is a promising step towards assessing the true vulnerability of federated learning in real-world settings.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Cryptography and Security,Computer Science - Machine Learning,to read},
+  file = {/home/fdiana/Zotero/storage/5IWDJ3UW/Garov et al. - 2024 - Hiding in Plain Sight Disguising Data Stealing Attacks in Federated Learning.pdf}
+}
+
+@misc{
+wu2023learning,
+title={Learning To Invert: Simple Adaptive Attacks for Gradient Inversion in Federated Learning},
+author={Ruihan Wu and Xiangyu Chen and Chuan Guo and Kilian Q Weinberger},
+year={2023},
+url={https://openreview.net/forum?id=deit1AdsFU}
+}
+
+
+@inproceedings{xueFastGenerationBasedGradient2023c,
+  title = {Fast {{Generation-Based Gradient Leakage Attacks}} against {{Highly Compressed Gradients}}},
+  booktitle = {{{IEEE INFOCOM}} 2023 - {{IEEE Conference}} on {{Computer Communications}}},
+  author = {Xue, Dongyun and Yang, Haomiao and Ge, Mengyu and Li, Jingwei and Xu, Guowen and Li, Hongwei},
+  year = 2023,
+  month = may,
+  pages = {1--10},
+  publisher = {IEEE},
+  address = {New York City, NY, USA},
+  doi = {10.1109/INFOCOM53939.2023.10229091},
+  urldate = {2026-07-10},
+  abstract = {Federated learning (FL) is a distributed machine learning technology that preserves data privacy. However, it has been shown to be vulnerable to gradient leakage attacks (GLA), which can reconstruct private training data from public gradients with an overwhelming probability. Nevertheless, these attacks either require modification of the FL model (analytics-based) or take a long time to converge (optimization-based) and fail in dealing with highly compressed gradients in practical FL systems. In this paper, we pioneer a generation-based GLA method called FGLA that can reconstruct batches of user data, forgoing the optimization process. Specifically, we design a feature separation technique that extracts the feature of each data in a batch and then generates user data directly. Extensive experiments on multiple image datasets demonstrate that FGLA can reconstruct user images in milliseconds with a batch size of 256 from highly compressed gradients (0.8\% compression ratio or higher), thus substantially outperforming state-of-the-art methods.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {979-8-3503-3414-2},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/P6LWPJ6B/Xue et al. - 2023 - Fast Generation-Based Gradient Leakage Attacks against Highly Compressed Gradients.pdf}
+}
+
+@misc{carlettiGUIDEEnhancingGradient2025,
+  title = {{{GUIDE}}: {{Enhancing Gradient Inversion Attacks}} in {{Federated Learning}} with {{Denoising Models}}},
+  shorttitle = {{{GUIDE}}},
+  author = {Carletti, Vincenzo and Foggia, Pasquale and Mazzocca, Carlo and Parrella, Giuseppe and Vento, Mario},
+  year = 2025,
+  month = oct,
+  number = {arXiv:2510.17621},
+  eprint = {2510.17621},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2510.17621},
+  urldate = {2025-11-10},
+  abstract = {Federated Learning (FL) enables collaborative training of Machine Learning (ML) models across multiple clients while preserving their privacy. Rather than sharing raw data, federated clients transmit locally computed updates to train the global model. Although this paradigm should provide stronger privacy guarantees than centralized ML, client updates remain vulnerable to privacy leakage. Adversaries can exploit them to infer sensitive properties about the training data or even to reconstruct the original inputs via Gradient Inversion Attacks (GIAs). Under the honest-but-curious threat model, GIAs attempt to reconstruct training data by reversing intermediate updates using optimization-based techniques. We observe that these approaches usually reconstruct noisy approximations of the original inputs, whose quality can be enhanced with specialized denoising models. This paper presents Gradient Update Inversion with DEnoising (GUIDE), a novel methodology that leverages diffusion models as denoising tools to improve image reconstruction attacks in FL. GUIDE can be integrated into any GIAs that exploits surrogate datasets, a widely adopted assumption in GIAs literature. We comprehensively evaluate our approach in two attack scenarios that use different FL algorithms, models, and datasets. Our results demonstrate that GUIDE integrates seamlessly with two state-of-the-art GIAs, substantially improving reconstruction quality across multiple metrics. Specifically, GUIDE achieves up to 46\% higher perceptual similarity, as measured by the DreamSim metric.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Cryptography and Security},
+  file = {/home/fdiana/Zotero/storage/CF4D8Q3C/Carletti et al. - 2025 - GUIDE Enhancing Gradient Inversion Attacks in Federated Learning with Denoising Models.pdf}
+}
+
+@inproceedings{guFederatedLearningVulnerabilities2024,
+  title = {Federated {{Learning Vulnerabilities}}: {{Privacy Attacks}} with {{Denoising Diffusion Probabilistic Models}}},
+  shorttitle = {Federated {{Learning Vulnerabilities}}},
+  booktitle = {Proceedings of the {{ACM Web Conference}} 2024},
+  author = {Gu, Hongyan and Zhang, Xinyi and Li, Jiang and Wei, Hui and Li, Baiqi and Huang, Xinli},
+  year = 2024,
+  month = may,
+  pages = {1149--1157},
+  publisher = {ACM},
+  address = {Singapore Singapore},
+  doi = {10.1145/3589334.3645514},
+  urldate = {2025-12-19},
+  isbn = {979-8-4007-0171-9},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/MMN9GUHB/Gu et al. - 2024 - Federated Learning Vulnerabilities Privacy Attacks with Denoising Diffusion Probabilistic Models.pdf}
+}
+@misc{mengEnhancedPrivacyLeakage2025,
+  title = {Enhanced {{Privacy Leakage}} from {{Noise-Perturbed Gradients}} via {{Gradient-Guided Conditional Diffusion Models}}},
+  author = {Meng, Jiayang and Huang, Tao and Chen, Hong and Hou, Chen and Zheng, Guolong},
+  year = 2025,
+  month = nov,
+  number = {arXiv:2511.10423},
+  eprint = {2511.10423},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2511.10423},
+  urldate = {2025-11-20},
+  abstract = {Federated learning synchronizes models through gradient transmission and aggregation. However, these gradients pose significant privacy risks, as sensitive training data is embedded within them. Existing gradient inversion attacks suffer from significantly degraded reconstruction performance when gradients are perturbed by noise-a common defense mechanism. In this paper, we introduce gradient-guided conditional diffusion models for reconstructing private images from leaked gradients, without prior knowledge of the target data distribution. Our approach leverages the inherent denoising capability of diffusion models to circumvent the partial protection offered by noise perturbation, thereby improving attack performance under such defenses. We further provide a theoretical analysis of the reconstruction error bounds and the convergence properties of the attack loss, characterizing the impact of key factors---such as noise magnitude and attacked model architecture---on reconstruction quality. Extensive experiments demonstrate our attack's superior reconstruction performance with Gaussian noise-perturbed gradients, and confirm our theoretical findings.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Cryptography and Security},
+  file = {/home/fdiana/Zotero/storage/GU7CDDCM/Meng et al. - 2025 - Enhanced Privacy Leakage from Noise-Perturbed Gradients via Gradient-Guided Conditional Diffusion Mo.pdf}
+}
+
+@misc{huangGradientGuidedConditionalDiffusion2024,
+  title = {Gradient-{{Guided Conditional Diffusion Models}} for {{Private Image Reconstruction}}: {{Analyzing Adversarial Impacts}} of {{Differential Privacy}} and {{Denoising}}},
+  shorttitle = {Gradient-{{Guided Conditional Diffusion Models}} for {{Private Image Reconstruction}}},
+  author = {Huang, Tao and Meng, Jiayang and Chen, Hong and Zheng, Guolong and Yang, Xu and Yi, Xun and Wang, Hua},
+  year = 2024,
+  month = nov,
+  number = {arXiv:2411.03053},
+  eprint = {2411.03053},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2411.03053},
+  urldate = {2025-12-22},
+  abstract = {We investigate the construction of gradient-guided conditional diffusion models for reconstructing private images, focusing on the adversarial interplay between differential privacy noise and the denoising capabilities of diffusion models. While current gradient-based reconstruction methods struggle with high-resolution images due to computational complexity and prior knowledge requirements, we propose two novel methods that require minimal modifications to the diffusion model's generation process and eliminate the need for prior knowledge. Our approach leverages the strong image generation capabilities of diffusion models to reconstruct private images starting from randomly generated noise, even when a small amount of differentially private noise has been added to the gradients. We also conduct a comprehensive theoretical analysis of the impact of differential privacy noise on the quality of reconstructed images, revealing the relationship among noise magnitude, the architecture of attacked models, and the attacker's reconstruction capability. Additionally, extensive experiments validate the effectiveness of our proposed methods and the accuracy of our theoretical findings, suggesting new directions for privacy risk auditing using conditional diffusion models.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/fdiana/Zotero/storage/KJ9SLTKD/Huang et al. - 2024 - Gradient-Guided Conditional Diffusion Models for Private Image Reconstruction Analyzing Adversarial.pdf}
+}
+
+@misc{zhuRGAPRecursiveGradient2021,
+  title = {R-{{GAP}}: {{Recursive Gradient Attack}} on {{Privacy}}},
+  shorttitle = {R-{{GAP}}},
+  author = {Zhu, Junyi and Blaschko, Matthew},
+  year = 2021,
+  month = mar,
+  number = {arXiv:2010.07733},
+  eprint = {2010.07733},
+  primaryclass = {cs.LG},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2010.07733},
+  urldate = {2026-07-08},
+  abstract = {Federated learning frameworks have been regarded as a promising approach to break the dilemma between demands on privacy and the promise of learning from large collections of distributed data. Many such frameworks only ask collaborators to share their local update of a common model, i.e. gradients, instead of exposing their raw data to other collaborators. However, recent optimization-based gradient attacks show that raw data can often be accurately recovered from gradients. It has been shown that minimizing the Euclidean distance between true gradients and those calculated from estimated data is often effective in fully recovering private data. However, there is a fundamental lack of theoretical understanding of how and when gradients can lead to unique recovery of original data. Our research fills this gap by providing a closed-form recursive procedure to recover data from gradients in deep neural networks. We name it Recursive Gradient Attack on Privacy (R-GAP). Experimental results demonstrate that R-GAP works as well as or even better than optimization-based approaches at a fraction of the computation under certain conditions. Additionally, we propose a Rank Analysis method, which can be used to estimate the risk of gradient attacks inherent in certain network architectures, regardless of whether an optimization-based or closed-form-recursive attack is used. Experimental results demonstrate the utility of the rank analysis towards improving the network's security. Source code is available for download from https://github.com/JunyiZhu-AI/R-GAP.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Machine Learning},
+  file = {/home/fdiana/Zotero/storage/4D2YC355/Zhu e Blaschko - 2021 - R-GAP Recursive Gradient Attack on Privacy.pdf}
+}
+
+@inproceedings {pan_gia,
+author = {Xudong Pan and Mi Zhang and Yifan Yan and Jiaming Zhu and Zhemin Yang},
+title = {Exploring the Security Boundary of Data Reconstruction via Neuron Exclusivity Analysis},
+booktitle = {31st USENIX Security Symposium (USENIX Security 22)},
+year = {2022},
+isbn = {978-1-939133-31-1},
+address = {Boston, MA},
+pages = {3989--4006},
+url = {https://www.usenix.org/conference/usenixsecurity22/presentation/pan-exploring},
+publisher = {USENIX Association},
+month = aug
+}
+
+@inproceedings{luAPRILFindingAchilles2022,
+  title = {{{APRIL}}: {{Finding}} the {{Achilles}}' {{Heel}} on {{Privacy}} for {{Vision Transformers}}},
+  shorttitle = {{{APRIL}}},
+  booktitle = {2022 {{IEEE}}/{{CVF Conference}} on {{Computer Vision}} and {{Pattern Recognition}} ({{CVPR}})},
+  author = {Lu, Jiahao and Zhang, Xi Sheryl and Zhao, Tianli and He, Xiangyu and Cheng, Jian},
+  year = 2022,
+  month = jun,
+  pages = {10041--10050},
+  publisher = {IEEE},
+  address = {New Orleans, LA, USA},
+  doi = {10.1109/CVPR52688.2022.00981},
+  urldate = {2025-03-21},
+  abstract = {Federated learning frameworks typically require collaborators to share their local gradient updates of a common model instead of sharing training data to preserve privacy. However, prior works on Gradient Leakage Attacks showed that private training data can be revealed from gradients. So far almost all relevant works base their attacks on fullyconnected or convolutional neural networks. Given the recent overwhelmingly rising trend of adapting Transformers to solve multifarious vision tasks, it is highly valuable to investigate the privacy risk of vision transformers. In this paper, we analyse the gradient leakage risk of self-attention based mechanism in both theoretical and practical manners. Particularly, we propose APRIL - Attention PRIvacy Leakage, which poses a strong threat to self-attention inspired models such as ViT. Showing how vision Transformers are at the risk of privacy leakage via gradients, we urge the significance of designing privacy-safer Transformer models and defending schemes.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {978-1-6654-6946-3},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/BBI6H36H/Lu et al. - 2022 - APRIL Finding the Achilles' Heel on Privacy for Vision Transformers.pdf}
+}
+
+@misc{dimitrovSPEARExactGradient2024,
+  title = {{{SPEAR}}:{{Exact Gradient Inversion}} of {{Batches}} in {{Federated Learning}}},
+  shorttitle = {{{SPEAR}}},
+  author = {Dimitrov, Dimitar I. and Baader, Maximilian and M{\"u}ller, Mark Niklas and Vechev, Martin},
+  year = 2024,
+  month = jun,
+  number = {arXiv:2403.03945},
+  eprint = {2403.03945},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  urldate = {2024-11-20},
+  abstract = {Federated learning is a framework for collaborative machine learning where clients only share gradient updates and not their private data with a server. However, it was recently shown that gradient inversion attacks can reconstruct this data from the shared gradients. In the important honest-but-curious setting, existing attacks enable exact reconstruction only for batch size of b = 1, with larger batches permitting only approximate reconstruction. In this work, we propose SPEAR, the first algorithm reconstructing whole batches with b {$>$} 1 exactly. SPEAR combines insights into the explicit low-rank structure of gradients with a sampling-based algorithm. Crucially, we leverage ReLU-induced gradient sparsity to precisely filter out large numbers of incorrect samples, making a final reconstruction step tractable. We provide an efficient GPU implementation for fully connected networks and show that it recovers high-dimensional ImageNet inputs in batches of up to b {$\lessequivlnt$} 25 exactly while scaling to large networks. Finally, we show theoretically that much larger batches can be reconstructed with high probability given exponential time.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Cryptography and Security,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Machine Learning,to read},
+  file = {/home/fdiana/Zotero/storage/7DRNZU8I/Dimitrov et al. - 2024 - SPEARExact Gradient Inversion of Batches in Federated Learning.pdf}
+}
+
+@InProceedings{pmlr-v23-spielman12,
+  title = 	 {Exact Recovery of Sparsely-Used Dictionaries},
+  author = 	 {Spielman, Daniel A. and Wang, Huan and Wright, John},
+  booktitle = 	 {Proceedings of the 25th Annual Conference on Learning Theory},
+  pages = 	 {37.1--37.18},
+  year = 	 {2012},
+  editor = 	 {Mannor, Shie and Srebro, Nathan and Williamson, Robert C.},
+  volume = 	 {23},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Edinburgh, Scotland},
+  month = 	 {25--27 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v23/spielman12/spielman12.pdf},
+  url = 	 {https://proceedings.mlr.press/v23/spielman12.html},
+  abstract = 	 {We consider the problem of learning sparsely used dictionaries with an arbitrary square dictionary and a random, sparse coefficient matrix. We prove that \emphO(n log \emphn) samples are sufficient to uniquely determine the coefficient matrix. Based on this proof, we design a polynomial-time algorithm, called Exact Recovery of Sparsely-Used Dictionaries (ER-SpUD), and prove that it probably recovers the dictionary and coefficient matrix when the coefficient matrix is sufficiently sparse. Simulation results show that ER-SpUD reveals the true dictionary as well as the coefficients with probability higher than many state-of-the-art algorithms.}
+}
+
+
+@inproceedings{petrovDAGERExactGradient2024,
+  title = {{{DAGER}}: {{Exact Gradient Inversion}} for {{Large Language Models}}},
+  shorttitle = {{{DAGER}}},
+  booktitle = {The {{Thirty-eighth Annual Conference}} on {{Neural Information Processing Systems}}},
+  author = {Petrov, Ivo and Dimitrov, Dimitar Iliev and Baader, Maximilian and Mueller, Mark Niklas and Vechev, Martin},
+  year = 2024,
+  month = nov,
+  urldate = {2024-11-20},
+  abstract = {Federated learning works by aggregating locally computed gradients from multiple clients, thus enabling collaborative training without sharing private client data. However, prior work has shown that the data can actually be recovered by the server using so-called gradient inversion attacks. While these attacks perform well when applied on images, they are limited in the text domain and only permit approximate reconstruction of small batches and short input sequences. In this work, we propose DAGER, the first algorithm to recover whole batches of input text exactly. DAGER leverages the low-rank structure of self-attention layer gradients and the discrete nature of token embeddings to efficiently check if a given token sequence is part of the client data. We use this check to exactly recover full batches in the honest-but-curious setting without any prior on the data for both encoder and decoder-based architectures using exhaustive heuristic search and a greedy approach, respectively. We provide an efficient GPU implementation of DAGER and show experimentally that it recovers full batches of size up to 128 on large language models (LLMs), beating prior attacks in speed (20x at same batch size), scalability (10x larger batches), and reconstruction quality (ROUGE-1/2 {$>$} 0.99).},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/X9UGDH7T/Petrov et al. - 2024 - DAGER Exact Gradient Inversion for Large Language Models.pdf}
+}
+
+@inproceedings{fowlRobbingFedDirectly2021,
+  title = {Robbing the {{Fed}}: {{Directly Obtaining Private Data}} in {{Federated Learning}} with {{Modified Models}}},
+  shorttitle = {Robbing the {{Fed}}},
+  booktitle = {International {{Conference}} on {{Learning Representations}}},
+  author = {Fowl, Liam H. and Geiping, Jonas and Czaja, Wojciech and Goldblum, Micah and Goldstein, Tom},
+  year = 2021,
+  month = oct,
+  urldate = {2024-01-17},
+  abstract = {Federated learning has quickly gained popularity with its promises of increased user privacy and efficiency. Previous works have shown that federated gradient updates contain information that can be used to approximately recover user data in some situations. These previous attacks on user privacy have been limited in scope and do not scale to gradient updates aggregated over even a handful of data points, leaving some to conclude that data privacy is still intact for realistic training regimes. In this work, we introduce a new threat model based on minimal but malicious modifications of the shared model architecture which enable the server to directly obtain a verbatim copy of user data from gradient updates without solving difficult inverse problems. Even user data aggregated over large batches -- where previous methods fail to extract meaningful content -- can be reconstructed by these minimally modified models.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/MFFRHXUW/Fowl et al. - 2021 - Robbing the Fed Directly Obtaining Private Data i.pdf}
+}
+
+@inproceedings{pasquiniEludingSecureAggregation2022a,
+  title = {Eluding {{Secure Aggregation}} in {{Federated Learning}} via {{Model Inconsistency}}},
+  booktitle = {Proceedings of the 2022 {{ACM SIGSAC Conference}} on {{Computer}} and {{Communications Security}}},
+  author = {Pasquini, Dario and Francati, Danilo and Ateniese, Giuseppe},
+  year = 2022,
+  month = nov,
+  pages = {2429--2443},
+  publisher = {ACM},
+  address = {Los Angeles CA USA},
+  doi = {10.1145/3548606.3560557},
+  urldate = {2026-07-11},
+  abstract = {Secure aggregation is a cryptographic protocol that securely computes the aggregation of its inputs. It is pivotal in keeping model updates private in federated learning. Indeed, the use of secure aggregation prevents the server from learning the value and the source of the individual model updates provided by the users, hampering inference and data attribution attacks. In this work, we show that a malicious server can easily elude secure aggregation as if the latter were not in place. We devise two different attacks capable of inferring information on individual private training datasets, independently of the number of users participating in the secure aggregation. This makes them concrete threats in large-scale, real-world federated learning applications.},
+  isbn = {978-1-4503-9450-5},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/NMAVD2ET/Pasquini et al. - 2022 - Eluding Secure Aggregation in Federated Learning via Model Inconsistency.pdf}
+}
+
+@inproceedings{secure_aggregation_bonawitz,
+author = {Bonawitz, Keith and Ivanov, Vladimir and Kreuter, Ben and Marcedone, Antonio and McMahan, H. Brendan and Patel, Sarvar and Ramage, Daniel and Segal, Aaron and Seth, Karn},
+title = {Practical Secure Aggregation for Privacy-Preserving Machine Learning},
+year = {2017},
+isbn = {9781450349468},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3133956.3133982},
+doi = {10.1145/3133956.3133982},
+abstract = {We design a novel, communication-efficient, failure-robust protocol for secure aggregation of high-dimensional data. Our protocol allows a server to compute the sum of large, user-held data vectors from mobile devices in a secure manner (i.e. without learning each user's individual contribution), and can be used, for example, in a federated learning setting, to aggregate user-provided model updates for a deep neural network. We prove the security of our protocol in the honest-but-curious and active adversary settings, and show that security is maintained even if an arbitrarily chosen subset of users drop out at any time. We evaluate the efficiency of our protocol and show, by complexity analysis and a concrete implementation, that its runtime and communication overhead remain low even on large data sets and client pools. For 16-bit input values, our protocol offers $1.73 x communication expansion for 210 users and 220-dimensional vectors, and 1.98 x expansion for 214 users and 224-dimensional vectors over sending data in the clear.},
+booktitle = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {1175–1191},
+numpages = {17},
+keywords = {federated learning, machine learning, privacy-preserving protocols, secure aggregation},
+location = {Dallas, Texas, USA},
+series = {CCS '17}
+}
+
+@inproceedings{fowlDecepticonsCorruptedTransformers2022,
+  title = {Decepticons: {{Corrupted Transformers Breach Privacy}} in {{Federated Learning}} for {{Language Models}}},
+  shorttitle = {Decepticons},
+  booktitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  author = {Fowl, Liam H. and Geiping, Jonas and Reich, Steven and Wen, Yuxin and Czaja, Wojciech and Goldblum, Micah and Goldstein, Tom},
+  year = 2022,
+  month = sep,
+  urldate = {2025-04-18},
+  abstract = {Privacy is a central tenet of Federated learning (FL), in which a central server trains models without centralizing user data. However, gradient updates used in FL can leak user information. While the most industrial uses of FL are for text applications (e.g. keystroke prediction), the majority of attacks on user privacy in FL have focused on simple image classifiers and threat models that assume honest execution of the FL protocol from the server. We propose a novel attack that reveals private user text by deploying malicious parameter vectors, and which succeeds even with mini-batches, multiple users, and long sequences. Unlike previous attacks on FL, the attack exploits characteristics of both the Transformer architecture and the token embedding, separately extracting tokens and positional embeddings to retrieve high-fidelity text. We argue that the threat model of malicious server states is highly relevant from a user-centric perspective, and show that in this scenario, text applications using transformer models are much more vulnerable than previously thought.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/7FBE77HC/Fowl et al. - 2022 - Decepticons Corrupted Transformers Breach Privacy in Federated Learning for Language Models.pdf}
+}
+
+@inproceedings{
+chu2023panning,
+title={Panning for Gold in Federated Learning: Targeted Text Extraction under Arbitrarily Large-Scale Aggregation},
+author={Hong-Min Chu and Jonas Geiping and Liam H Fowl and Micah Goldblum and Tom Goldstein},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=A9WQaxYsfx}
+}
+
+@INPROCEEDINGS{Zhao_cvf,
+  author={Zhao, Joshua C. and Elkordy, Ahmed Roushdy and Sharma, Atul and Ezzeldin, Yahya H. and Avestimehr, Salman and Bagchi, Saurabh},
+  booktitle={2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 
+  title={The Resource Problem of Using Linear Layer Leakage Attack in Federated Learning}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={3974-3983},
+  keywords={Privacy;Computer vision;Federated learning;Aggregates;Computational modeling;Pattern recognition;Servers;Adversarial attack and defense},
+  doi={10.1109/CVPR52729.2023.00387}}
+
+@misc{zhaoLOKILargescaleData2023a,
+  title = {{{LOKI}}: {{Large-scale Data Reconstruction Attack}} against {{Federated Learning}} through {{Model Manipulation}}},
+  shorttitle = {{{LOKI}}},
+  author = {Zhao, Joshua C. and Sharma, Atul and Elkordy, Ahmed Roushdy and Ezzeldin, Yahya H. and Avestimehr, Salman and Bagchi, Saurabh},
+  year = 2023,
+  month = sep,
+  number = {arXiv:2303.12233},
+  eprint = {2303.12233},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2303.12233},
+  urldate = {2025-01-20},
+  abstract = {Federated learning was introduced to enable machine learning over large decentralized datasets while promising privacy by eliminating the need for data sharing. Despite this, prior work has shown that shared gradients often contain private information and attackers can gain knowledge either through malicious modification of the architecture and parameters or by using optimization to approximate user data from the shared gradients. However, prior data reconstruction attacks have been limited in setting and scale, as most works target FedSGD and limit the attack to single-client gradients. Many of these attacks fail in the more practical setting of FedAVG or if updates are aggregated together using secure aggregation. Data reconstruction becomes significantly more difficult, resulting in limited attack scale and/or decreased reconstruction quality. When both FedAVG and secure aggregation are used, there is no current method that is able to attack multiple clients concurrently in a federated learning setting. In this work we introduce LOKI, an attack that overcomes previous limitations and also breaks the anonymity of aggregation as the leaked data is identifiable and directly tied back to the clients they come from. Our design sends clients customized convolutional parameters, and the weight gradients of data points between clients remain separate even through aggregation. With FedAVG and aggregation across 100 clients, prior work can leak less than 1\% of images on MNIST, CIFAR-100, and Tiny ImageNet. Using only a single training round, LOKI is able to leak 76-86\% of all data samples.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Cryptography and Security,Computer Science - Machine Learning},
+  file = {/home/fdiana/Zotero/storage/GZCEG5QB/Zhao et al. - 2023 - LOKI Large-scale Data Reconstruction Attack against Federated Learning through Model Manipulation.pdf;/home/fdiana/Zotero/storage/KEXB3TWS/2303.html}
+}
+
+@inproceedings{boenischWhenCuriousAbandon2023,
+  title = {When the {{Curious Abandon Honesty}}: {{Federated Learning Is Not Private}}},
+  shorttitle = {When the {{Curious Abandon Honesty}}},
+  booktitle = {2023 {{IEEE}} 8th {{European Symposium}} on {{Security}} and {{Privacy}} ({{EuroS}}\&{{P}})},
+  author = {Boenisch, Franziska and Dziedzic, Adam and Schuster, Roei and Shamsabadi, Ali Shahin and Shumailov, Ilia and Papernot, Nicolas},
+  year = 2023,
+  month = jul,
+  pages = {175--199},
+  doi = {10.1109/EuroSP57164.2023.00020},
+  urldate = {2024-01-18},
+  abstract = {In federated learning (FL), data does not leave personal devices when they are jointly training a machine learning model. Instead, these devices share gradients, parameters, or other model updates, with a central party (e.g., a company) coordinating the training. Because data never "leaves" personal devices, FL is often presented as privacy-preserving. Yet, recently it was shown that this protection is but a thin facade, as even a passive, honest-but-curious attacker observing gradients can reconstruct data of individual users contributing to the protocol.In this work, we show a novel data reconstruction attack which allows an active and dishonest central party to efficiently extract user data from the received gradients. While prior work on data reconstruction in FL relies on solving computationally expensive optimization problems or on making easily detectable modifications to the shared model's architecture or parameters, in our attack the central party makes inconspicuous changes to the shared model's weights before sending them out to the users. We call the modified weights of our attack trap weights.Our active attacker is able to recover user data perfectly, i.e., with zero error, even when this data stems from the same class. Recovery comes with near-zero costs: the attack requires no complex optimization objectives. Instead, our attacker exploits inherent data leakage from model gradients and simply amplifies this effect by maliciously altering the weights of the shared model through the trap weights. These specificities enable our attack to scale to fully-connected and convolutional deep neural networks trained with large mini-batches of data. For example, for the high-dimensional vision dataset ImageNet, we perfectly reconstruct more than 50\% of the training data points from mini-batches as large as 100 data points. In textual tasks, such as IMDB sentiment analysis, more than 65\% of data points from mini-batches containing 100 data points can be perfectly reconstructed.},
+  file = {/home/fdiana/Zotero/storage/IC674KMC/Boenisch et al. - 2023 - When the Curious Abandon Honesty Federated Learni.pdf;/home/fdiana/Zotero/storage/UQK43KH5/10190537.html}
+}
+
+@article{ZHANG2023119421,
+title = {Compromise privacy in large-batch Federated Learning via model poisoning},
+journal = {Information Sciences},
+volume = {647},
+pages = {119421},
+year = {2023},
+issn = {0020-0255},
+doi = {https://doi.org/10.1016/j.ins.2023.119421},
+url = {https://www.sciencedirect.com/science/article/pii/S002002552301006X},
+author = {Shuaishuai Zhang and Jie Huang and Zeping Zhang and Peihao Li and Chunyang Qi},
+keywords = {Privacy, Federated Learning, Gradient inversion, Model poisoning},
+abstract = {Federated Learning (FL) is a distributed learning paradigm in which clients collaboratively train a global model with shared gradients while preserving the privacy of local data. Recent researches found that an adversary can reveal private local data with gradient inversion attacks. However, setting a large batchsize in local training can defense against these attacks effectively by confusing gradients computed on private data. Although some advanced methods have been proposed to improve the performance of gradient inversion attacks on the large-batch training, they are limited to specific model architectures (e.g., fully connected neural networks (FCNNs) with ReLU layers). To address these problems, we propose a novel gradient inversion attack to compromise privacy in large-batch FL via model poisoning. We poison clients' models with malicious parameters, which are constructed purposely to mitigate the confusion of aggregated gradients. For FCNNs, the private data can be perfectly recovered by analyzing gradients of the first fully connected (FC) layer. For convolutional neural networks (CNNs), we extend our proposed method as a hybrid approach, consisting of the analytic method and the optimization-based method. We first recover the feature maps after the convolutional layers and then reconstruct private data by minimizing the loss of data-wise feature map matching. We demonstrate the effectiveness of our proposed method on four datasets and show that it outperforms previous methods for large-batch FL (e.g., 64, 128, 256) and models with different activation layers (e.g., ReLU, Sigmoid and Tanh).}
+}
+
+@misc{wang2023reconstructingtrainingdatamodel,
+      title={Reconstructing Training Data from Model Gradient, Provably}, 
+      author={Zihan Wang and Jason D. Lee and Qi Lei},
+      year={2023},
+      eprint={2212.03714},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2212.03714}, 
+}
+
+@inproceedings{wangMaximumKnowledgeOrthogonality2024,
+  title = {Maximum {{Knowledge Orthogonality Reconstruction With Gradients}} in {{Federated Learning}}},
+  booktitle = {Proceedings of the {{IEEE}}/{{CVF Winter Conference}} on {{Applications}} of {{Computer Vision}}},
+  author = {Wang, Feng and Velipasalar, Senem and Gursoy, M. Cenk},
+  year = 2024,
+  pages = {3884--3893},
+  urldate = {2024-01-17},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/5R2KBWTN/Wang et al. - 2024 - Maximum Knowledge Orthogonality Reconstruction Wit.pdf}
+}
+
+@inproceedings{Karan_prop_inf,
+author = {Ganju, Karan and Wang, Qi and Yang, Wei and Gunter, Carl A. and Borisov, Nikita},
+title = {Property Inference Attacks on Fully Connected Neural Networks using Permutation Invariant Representations},
+year = {2018},
+isbn = {9781450356930},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3243734.3243834},
+doi = {10.1145/3243734.3243834},
+abstract = {With the growing adoption of machine learning, sharing of learned models is becoming popular. However, in addition to the prediction properties the model producer aims to share, there is also a risk that the model consumer can infer other properties of the training data the model producer did not intend to share. In this paper, we focus on the inference of global properties of the training data, such as the environment in which the data was produced, or the fraction of the data that comes from a certain class, as applied to white-box Fully Connected Neural Networks (FCNNs). Because of their complexity and inscrutability, FCNNs have a particularly high risk of leaking unexpected information about their training sets; at the same time, this complexity makes extracting this information challenging. We develop techniques that reduce this complexity by noting that FCNNs are invariant under permutation of nodes in each layer. We develop our techniques using representations that capture this invariance and simplify the information extraction task. We evaluate our techniques on several synthetic and standard benchmark datasets and show that they are very effective at inferring various data properties. We also perform two case studies to demonstrate the impact of our attack. In the first case study we show that a classifier that recognizes smiling faces also leaks information about the relative attractiveness of the individuals in its training set. In the second case study we show that a classifier that recognizes Bitcoin mining from performance counters also leaks information about whether the classifier was trained on logs from machines that were patched for the Meltdown and Spectre attacks.},
+booktitle = {Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {619–633},
+numpages = {15},
+keywords = {property inference, permutation equivalence, neural networks},
+location = {Toronto, Canada},
+series = {CCS '18}
+}
+
+@article{Hu2024sia,
+author = {Hu, Hongsheng and Zhang, Xuyun and Salcic, Zoran and Sun, Lichao and Choo, Kim-Kwang Raymond and Dobbie, Gillian},
+title = {Source Inference Attacks: Beyond Membership Inference Attacks in Federated Learning},
+year = {2024},
+issue_date = {July-Aug. 2024},
+publisher = {IEEE Computer Society Press},
+address = {Washington, DC, USA},
+volume = {21},
+number = {4},
+issn = {1545-5971},
+url = {https://doi.org/10.1109/TDSC.2023.3321565},
+doi = {10.1109/TDSC.2023.3321565},
+abstract = {Federated learning (FL) is a popular approach to facilitate privacy-aware machine learning since it allows multiple clients to collaboratively train a global model without granting others access to their private data. It is, however, known that FL can be vulnerable to <italic>membership inference attacks (MIAs)</italic>, where the training records of the global model can be distinguished from the testing records. Surprisingly, research focusing on the investigation of the source inference problem appears to be lacking. We also observe that identifying a training record's source client can result in privacy breaches extending beyond MIAs. Seeking to contribute to the literature gap, we take the first step to investigate source privacy in FL. Specifically, we propose a new inference attack (hereafter referred to as source inference attack–SIA), designed to facilitate an honest-but-curious server to identify the training record's source client. The proposed SIAs leverage the Bayesian theorem to implement the attack in a non-intrusive manner without deviating from the defined FL protocol. We then evaluate SIAs in three different FL frameworks to show that in existing FL frameworks, the clients sharing gradients, model parameters, or predictions on a public dataset will leak such source information to the server. The experimental results validate the efficacy of the proposed SIAs, e.g., an attack success rate of 67.1\% (baseline 10\%) can be achieved when the clients share model parameters with the server. Comprehensive ablation studies demonstrate that the success of an SIA is directly related to the overfitting of the local models.},
+journal = {IEEE Trans. Dependable Secur. Comput.},
+month = jul,
+pages = {3012–3029},
+numpages = {18}
+}
+
+@inproceedings{ijcai2025p536,
+  title     = {Where Does This Data Come From? Enhanced Source Inference Attacks in Federated Learning},
+  author    = {Chen, Haiyang and Xu, Xiaolong and Zhu, Xiang and Zhou, Xiaokang and Dai, Fei and Gao, Yansong and Chen, Xiao and Wang, Shuo and Hu, Hongsheng},
+  booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on
+               Artificial Intelligence, {IJCAI-25}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {James Kwok},
+  pages     = {4815--4823},
+  year      = {2025},
+  month     = {8},
+  note      = {Main Track},
+  doi       = {10.24963/ijcai.2025/536},
+  url       = {https://doi.org/10.24963/ijcai.2025/536},
+}
+
+@inproceedings {Zhang_pia,
+author = {Wanrong Zhang and Shruti Tople and Olga Ohrimenko},
+title = {Leakage of Dataset Properties in {Multi-Party} Machine Learning},
+booktitle = {30th USENIX Security Symposium (USENIX Security 21)},
+year = {2021},
+isbn = {978-1-939133-24-3},
+pages = {2687--2704},
+url = {https://www.usenix.org/conference/usenixsecurity21/presentation/zhang-wanrong},
+publisher = {USENIX Association},
+month = aug
+}
+
+@ARTICLE{Wang_pia,
+  author={Wang, Zhibo and Huang, Yuting and Song, Mengkai and Wu, Libing and Xue, Feng and Ren, Kui},
+  journal={IEEE Transactions on Dependable and Secure Computing}, 
+  title={Poisoning-Assisted Property Inference Attack Against Federated Learning}, 
+  year={2023},
+  volume={20},
+  number={4},
+  pages={3328-3340},
+  keywords={Data models;Training;Training data;Servers;Hidden Markov models;Collaborative work;Privacy;Federated learning;property inference attack;privacy protection},
+  doi={10.1109/TDSC.2022.3196646}}
+
+@inproceedings{Kerkouche_pia,
+author = {Kerkouche, Raouf and \'{A}cs, Gergely and Fritz, Mario},
+title = {Client-specific Property Inference against Secure Aggregation in Federated Learning},
+year = {2023},
+isbn = {9798400702358},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3603216.3624964},
+doi = {10.1145/3603216.3624964},
+abstract = {Federated learning has become a widely used paradigm for collaboratively training a common model among different participants with the help of a central server that coordinates the training. Although only the model parameters or other model updates are exchanged during the federated training instead of the participant's data, many attacks have shown that it is still possible to infer sensitive information or to reconstruct participant data. Although differential privacy is considered an effective solution to protect against privacy attacks, it is also criticized for its negative effect on utility. Another possible defense is to use secure aggregation, which allows the server to only access the aggregated update instead of each individual one, and it is often more appealing because it does not degrade the model quality. However, combining only the aggregated updates, which are generated by a different composition of clients in every round, may still allow the inference of some client-specific information. In this paper, we show that simple linear models can effectively capture client-specific properties only from the aggregated model updates due to the linearity of aggregation. We formulate an optimization problem across different rounds in order to infer a tested property of every client from the output of the linear models, for example, whether they have a specific sample in their training data (membership inference) or whether they misbehave and attempt to degrade the performance of the common model by poisoning attacks. Our reconstruction technique is completely passive and undetectable. We demonstrate the efficacy of our approach on several scenarios, showing that secure aggregation provides very limited privacy guarantees in practice.},
+booktitle = {Proceedings of the 22nd Workshop on Privacy in the Electronic Society},
+pages = {45–60},
+numpages = {16},
+keywords = {client-specific property inference, federated learning, membership inference, poisoning attacks., secure aggregation},
+location = {Copenhagen, Denmark},
+series = {WPES '23}
+}
+
+
+@inproceedings{
+drencheva2025grain,
+title={{GRAIN}: Exact Graph Reconstruction from Gradients},
+author={Maria Drencheva and Ivo Petrov and Maximilian Baader and Dimitar Iliev Dimitrov and Martin Vechev},
+booktitle={The Thirteenth International Conference on Learning Representations},
+year={2025},
+url={https://openreview.net/forum?id=7bAjVh3CG3}
+}
+
+@INPROCEEDINGS{Pasquini_insecurity,
+  author={Pasquini, Dario and Raynal, Mathilde and Troncoso, Carmela},
+  booktitle={2023 IEEE Symposium on Security and Privacy (SP)}, 
+  title={On the (In)security of Peer-to-Peer Decentralized Machine Learning}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={418-436},
+  keywords={Privacy;Protocols;Federated learning;Collaboration;Performance gain;Benchmark testing;Peer-to-peer computing;Collaborative Machine Learning;Privacy attacks;Peer-to-Peer systems},
+  doi={10.1109/SP46215.2023.10179291}}
+
+@inproceedings{ElMrini_graph,
+author = {El Mrini, Abdellah and Cyffers, Edwige and Bellet, Aur\'{e}lien},
+title = {Privacy attacks in decentralized learning},
+year = {2024},
+publisher = {JMLR.org},
+abstract = {Decentralized Gradient Descent (D-GD) allows a set of users to perform collaborative learning without sharing their data by iteratively averaging local model updates with their neighbors in a network graph. The absence of direct communication between non-neighbor nodes might lead to the belief that users cannot infer precise information about the data of others. In this work, we demonstrate the opposite, by proposing the first attack against D-GD that enables a user (or set of users) to reconstruct the private data of other users outside their immediate neighborhood. Our approach is based on a reconstruction attack against the gossip averaging protocol, which we then extend to handle the additional challenges raised by D-GD. We validate the effectiveness of our attack on real graphs and datasets, showing that the number of users compromised by a single or a handful of attackers is often surprisingly large. We empirically investigate some of the factors that affect the performance of the attack, namely the graph topology, the number of attackers, and their position in the graph. Our code is available at https://github.com/AbdellahElmrini/decAttack.},
+booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+articleno = {1481},
+numpages = {15},
+location = {Vienna, Austria},
+series = {ICML'24}
+}
+@inproceedings{
+maddock2023canife,
+title={{CANIFE}: Crafting Canaries for Empirical Privacy Measurement in Federated Learning},
+author={Samuel Maddock and Alexandre Sablayrolles and Pierre Stock},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=Kf7Yyf4O0u}
+}
+@inproceedings {Nasr_tight_auditing,
+author = {Milad Nasr and Jamie Hayes and Thomas Steinke and Borja Balle and Florian Tram{\`e}r and Matthew Jagielski and Nicholas Carlini and Andreas Terzis},
+title = {Tight Auditing of Differentially Private Machine Learning},
+booktitle = {32nd USENIX Security Symposium (USENIX Security 23)},
+year = {2023},
+isbn = {978-1-939133-37-3},
+address = {Anaheim, CA},
+pages = {1631--1648},
+url = {https://www.usenix.org/conference/usenixsecurity23/presentation/nasr},
+publisher = {USENIX Association},
+month = aug
+}
+
+@inproceedings{
+andrew2024oneshot,
+title={One-shot Empirical Privacy Estimation for Federated Learning},
+author={Galen Andrew and Peter Kairouz and Sewoong Oh and Alina Oprea and Hugh Brendan McMahan and Vinith Menon Suriyakumar},
+booktitle={The Twelfth International Conference on Learning Representations},
+year={2024},
+url={https://openreview.net/forum?id=0BqyZSWfzo}
+}
+
+@InProceedings{dp_dwork,
+author="Dwork, Cynthia",
+editor="Bugliesi, Michele
+and Preneel, Bart
+and Sassone, Vladimiro
+and Wegener, Ingo",
+title="Differential Privacy",
+booktitle="Automata, Languages and Programming",
+year="2006",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="1--12",
+abstract="In 1977 Dalenius articulated a desideratum for statistical databases: nothing about an individual should be learnable from the database that cannot be learned without access to the database. We give a general impossibility result showing that a formalization of Dalenius' goal along the lines of semantic security cannot be achieved. Contrary to intuition, a variant of the result threatens the privacy even of someone not in the database. This state of affairs suggests a new measure, differential privacy, which, intuitively, captures the increased risk to one's privacy incurred by participating in a database. The techniques developed in a sequence of papers [8, 13, 3], culminating in those described in [12], can achieve any desired level of privacy under this measure. In many cases, extremely accurate information about the database can be provided while simultaneously ensuring very high levels of privacy.",
+isbn="978-3-540-35908-1"
+}
+
+
+@article{dwork_dp_book,
+author = {Dwork, Cynthia and Roth, Aaron},
+title = {The Algorithmic Foundations of Differential Privacy},
+year = {2014},
+issue_date = {Aug 2014},
+publisher = {Now Publishers Inc.},
+address = {Hanover, MA, USA},
+volume = {9},
+number = {3–4},
+issn = {1551-305X},
+url = {https://doi.org/10.1561/0400000042},
+doi = {10.1561/0400000042},
+abstract = {The problem of privacy-preserving data analysis has a long history spanning multiple disciplines. As electronic data about individuals becomes increasingly detailed, and as technology enables ever more powerful collection and curation of these data, the need increases for a robust, meaningful, and mathematically rigorous definition of privacy, together with a computationally rich class of algorithms that satisfy this definition. Differential Privacy is such a definition.After motivating and discussing the meaning of differential privacy, the preponderance of this monograph is devoted to fundamental techniques for achieving differential privacy, and application of these techniques in creative combinations, using the query-release problem as an ongoing example. A key point is that, by rethinking the computational goal, one can often obtain far better results than would be achieved by methodically replacing each step of a non-private computation with a differentially private implementation. Despite some astonishingly powerful computational results, there are still fundamental limitations — not just on what can be achieved with differential privacy but on what can be achieved with any method that protects against a complete breakdown in privacy. Virtually all the algorithms discussed herein maintain differential privacy against adversaries of arbitrary computational power. Certain algorithms are computationally intensive, others are efficient. Computational complexity for the adversary and the algorithm are both discussed.We then turn from fundamentals to applications other than queryrelease, discussing differentially private methods for mechanism design and machine learning. The vast majority of the literature on differentially private algorithms considers a single, static, database that is subject to many analyses. Differential privacy in other models, including distributed databases and computations on data streams is discussed.Finally, we note that this work is meant as a thorough introduction to the problems and techniques of differential privacy, but is not intended to be an exhaustive survey — there is by now a vast amount of work in differential privacy, and we can cover only a small portion of it.},
+journal = {Found. Trends Theor. Comput. Sci.},
+month = aug,
+pages = {211–407},
+numpages = {197}
+}
+
+@inproceedings{Abadi_dp,
+author = {Abadi, Martin and Chu, Andy and Goodfellow, Ian and McMahan, H. Brendan and Mironov, Ilya and Talwar, Kunal and Zhang, Li},
+title = {Deep Learning with Differential Privacy},
+year = {2016},
+isbn = {9781450341394},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2976749.2978318},
+doi = {10.1145/2976749.2978318},
+abstract = {Machine learning techniques based on neural networks are achieving remarkable results in a wide variety of domains. Often, the training of models requires large, representative datasets, which may be crowdsourced and contain sensitive information. The models should not expose private information in these datasets. Addressing this goal, we develop new algorithmic techniques for learning and a refined analysis of privacy costs within the framework of differential privacy. Our implementation and experiments demonstrate that we can train deep neural networks with non-convex objectives, under a modest privacy budget, and at a manageable cost in software complexity, training efficiency, and model quality.},
+booktitle = {Proceedings of the 2016 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {308–318},
+numpages = {11},
+keywords = {differential privacy, deep learning},
+location = {Vienna, Austria},
+series = {CCS '16}
+}
+
+@ARTICLE{Rao_privacy_survey,
+  author={Rao, Bosen and Zhang, Jiale and Wu, Di and Zhu, Chengcheng and Sun, Xiaobing and Chen, Bing},
+  journal={IEEE Transactions on Artificial Intelligence}, 
+  title={Privacy Inference Attack and Defense in Centralized and Federated Learning: A Comprehensive Survey}, 
+  year={2025},
+  volume={6},
+  number={2},
+  pages={333-353},
+  keywords={Federated learning;Training;Privacy;Machine learning;Data privacy;Data models;Servers;Centralized and federated learning;machine learning security;privacy defense;privacy inference attack},
+  doi={10.1109/TAI.2024.3363670}}
+
+@article{Yin_defense_taxonomy,
+author = {Yin, Xuefei and Zhu, Yanming and Hu, Jiankun},
+title = {A Comprehensive Survey of Privacy-preserving Federated Learning: A Taxonomy, Review, and Future Directions},
+year = {2021},
+issue_date = {July 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {54},
+number = {6},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3460427},
+doi = {10.1145/3460427},
+abstract = {The past four years have witnessed the rapid development of federated learning (FL). However, new privacy concerns have also emerged during the aggregation of the distributed intermediate results. The emerging privacy-preserving FL (PPFL) has been heralded as a solution to generic privacy-preserving machine learning. However, the challenge of protecting data privacy while maintaining the data utility through machine learning still remains. In this article, we present a comprehensive and systematic survey on the PPFL based on our proposed 5W-scenario-based taxonomy. We analyze the privacy leakage risks in the FL from five aspects, summarize existing methods, and identify future research directions.},
+journal = {ACM Comput. Surv.},
+month = jul,
+articleno = {131},
+numpages = {36},
+keywords = {Privacy-preserving federated learning, anonymization techniques, cryptographic encryption, data privacy, federated transfer learning, horizontal federated learning, perturbation techniques, vertical federated learning}
+}
+@conference{sok_secure_aggregation,
+  author = {Mohamad, Mansouri and {\"O}nen, Melek and Ben Jaballah, Wafa and Conti, Mauro},
+  title = {SoK: Secure aggregation based on cryptographic schemes for federated learning},
+  booktitle = {PETS 2023, 23rd Privacy Enhancing Technologies Symposium, 10-15 July 2023, Lausanne, Switzerland (Hybrid Conference)},
+  year = {2023},
+  editor = {IACR},
+  address = {Lausanne},
+  note = {IACR},
+}
+
+@misc{geyer2018differentiallyprivatefederatedlearning,
+      title={Differentially Private Federated Learning: A Client Level Perspective}, 
+      author={Robin C. Geyer and Tassilo Klein and Moin Nabi},
+      year={2018},
+      eprint={1712.07557},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/1712.07557}, 
+}
+
+@misc{cummings2024advancingdifferentialprivacyfuture,
+      title={Advancing Differential Privacy: Where We Are Now and Future Directions for Real-World Deployment}, 
+      author={Rachel Cummings and Damien Desfontaines and David Evans and Roxana Geambasu and Yangsibo Huang and Matthew Jagielski and Peter Kairouz and Gautam Kamath and Sewoong Oh and Olga Ohrimenko and Nicolas Papernot and Ryan Rogers and Milan Shen and Shuang Song and Weijie Su and Andreas Terzis and Abhradeep Thakurta and Sergei Vassilvitskii and Yu-Xiang Wang and Li Xiong and Sergey Yekhanin and Da Yu and Huanyu Zhang and Wanrong Zhang},
+      year={2024},
+      eprint={2304.06929},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2304.06929}, 
+}
+
+@inproceedings {Jayaraman_privacy_evaluation,
+author = {Bargav Jayaraman and David Evans},
+title = {Evaluating Differentially Private Machine Learning in Practice},
+booktitle = {28th USENIX Security Symposium (USENIX Security 19)},
+year = {2019},
+isbn = {978-1-939133-06-9},
+address = {Santa Clara, CA},
+pages = {1895--1912},
+url = {https://www.usenix.org/conference/usenixsecurity19/presentation/jayaraman},
+publisher = {USENIX Association},
+month = aug
+}
+@inproceedings{
+mcmahan_user_dp,
+title={Learning Differentially Private Recurrent Language Models},
+author={H. Brendan McMahan and Daniel Ramage and Kunal Talwar and Li Zhang},
+booktitle={International Conference on Learning Representations},
+year={2018},
+url={https://openreview.net/forum?id=BJ0hF1Z0b},
+}
+
+@InProceedings{kairouz_discrete_gaussian,
+  title = 	 {The Distributed Discrete Gaussian Mechanism for Federated Learning with Secure Aggregation},
+  author =       {Kairouz, Peter and Liu, Ziyu and Steinke, Thomas},
+  booktitle = 	 {Proceedings of the 38th International Conference on Machine Learning},
+  pages = 	 {5201--5212},
+  year = 	 {2021},
+  editor = 	 {Meila, Marina and Zhang, Tong},
+  volume = 	 {139},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {18--24 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v139/kairouz21a/kairouz21a.pdf},
+  url = 	 {https://proceedings.mlr.press/v139/kairouz21a.html},
+  abstract = 	 {We consider training models on private data that are distributed across user devices. To ensure privacy, we add on-device noise and use secure aggregation so that only the noisy sum is revealed to the server. We present a comprehensive end-to-end system, which appropriately discretizes the data and adds discrete Gaussian noise before performing secure aggregation. We provide a novel privacy analysis for sums of discrete Gaussians and carefully analyze the effects of data quantization and modular summation arithmetic. Our theoretical guarantees highlight the complex tension between communication, privacy, and accuracy. Our extensive experimental results demonstrate that our solution is essentially able to match the accuracy to central differential privacy with less than 16 bits of precision per value.}
+}
+
+@inproceedings{
+agarwal2021the,
+title={The Skellam Mechanism for Differentially Private Federated Learning},
+author={Naman Agarwal and Peter Kairouz and Ziyu Liu},
+booktitle={Advances in Neural Information Processing Systems},
+editor={A. Beygelzimer and Y. Dauphin and P. Liang and J. Wortman Vaughan},
+year={2021},
+url={https://openreview.net/forum?id=dvyUaK4neD0}
+}
+@InProceedings{chen2022poisson,
+  title = 	 {The Poisson Binomial Mechanism for Unbiased Federated Learning with Secure Aggregation},
+  author =       {Chen, Wei-Ning and Ozgur, Ayfer and Kairouz, Peter},
+  booktitle = 	 {Proceedings of the 39th International Conference on Machine Learning},
+  pages = 	 {3490--3506},
+  year = 	 {2022},
+  editor = 	 {Chaudhuri, Kamalika and Jegelka, Stefanie and Song, Le and Szepesvari, Csaba and Niu, Gang and Sabato, Sivan},
+  volume = 	 {162},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {17--23 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v162/chen22s/chen22s.pdf},
+  url = 	 {https://proceedings.mlr.press/v162/chen22s.html},
+  abstract = 	 {We introduce the Poisson Binomial mechanism (PBM), a discrete differential privacy mechanism for distributed mean estimation (DME) with applications to federated learning and analytics. We provide a tight analysis of its privacy guarantees, showing that it achieves the same privacy-accuracy trade-offs as the continuous Gaussian mechanism. Our analysis is based on a novel bound on the Rényi divergence of two Poisson binomial distributions that may be of independent interest. Unlike previous discrete DP schemes based on additive noise, our mechanism encodes local information into a parameter of the binomial distribution, and hence the output distribution is discrete with bounded support. Moreover, the support does not increase as the privacy budget goes to zero as in the case of additive schemes which require the addition of more noise to achieve higher privacy; on the contrary, the support becomes smaller as eps goes to zero. The bounded support enables us to combine our mechanism with secure aggregation (SecAgg), a multi-party cryptographic protocol, without the need of performing modular clipping which results in an unbiased estimator of the sum of the local vectors. This in turn allows us to apply it in the private FL setting and provide an upper bound on the convergence rate of the SGD algorithm. Moreover, since the support of the output distribution becomes smaller as $\varepsilon \ra 0$, the communication cost of our scheme decreases with the privacy constraint $\varepsilon$, outperforming all previous distributed DP schemes based on additive noise in the high privacy or low communication regimes.}
+}
+@misc{chen2022fundamentalpricesecureaggregation,
+      title={The Fundamental Price of Secure Aggregation in Differentially Private Federated Learning}, 
+      author={Wei-Ning Chen and Christopher A. Choquette-Choo and Peter Kairouz and Ananda Theertha Suresh},
+      year={2022},
+      eprint={2203.03761},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2203.03761}, 
+}
+
+@article{bai_survey_mai,
+author = {Bai, Li and Hu, Haibo and Ye, Qingqing and Li, Haoyang and Wang, Leixia and Xu, Jianliang},
+title = {Membership Inference Attacks and Defenses in Federated Learning: A Survey},
+year = {2024},
+issue_date = {April 2025},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {57},
+number = {4},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3704633},
+doi = {10.1145/3704633},
+abstract = {Federated learning is a decentralized machine learning approach where clients train models locally and share model updates to develop a global model. This enables low-resource devices to collaboratively build a high-quality model without requiring direct access to the raw training data. However, despite only sharing model updates, federated learning still faces several privacy vulnerabilities. One of the key threats is membership inference attacks, which target clients’ privacy by determining whether a specific example is part of the training set. These attacks can compromise sensitive information in real-world applications, such as medical diagnoses within a healthcare system. Although there has been extensive research on membership inference attacks, a comprehensive and up-to-date survey specifically focused on it within federated learning is still absent. To fill this gap, we categorize and summarize membership inference attacks and their corresponding defense strategies based on their characteristics in this setting. We introduce a unique taxonomy of existing attack research and provide a systematic overview of various countermeasures. For these studies, we thoroughly analyze the strengths and weaknesses of different approaches. Finally, we identify and discuss key future research directions for readers interested in advancing the field.},
+journal = {ACM Comput. Surv.},
+month = dec,
+articleno = {89},
+numpages = {35},
+keywords = {Membership inference attacks, federated learning, deep leaning, privacy risk}
+}
+
+@misc{bernstein2019signsgdmajorityvotecommunication,
+      title={signSGD with Majority Vote is Communication Efficient And Fault Tolerant}, 
+      author={Jeremy Bernstein and Jiawei Zhao and Kamyar Azizzadenesheli and Anima Anandkumar},
+      year={2019},
+      eprint={1810.05291},
+      archivePrefix={arXiv},
+      primaryClass={cs.DC},
+      url={https://arxiv.org/abs/1810.05291}, 
+}
+
+@inproceedings{Stripelis_pruning,
+author = {Stripelis, Dimitris and Gupta, Umang and Dhinagar, Nikhil and Steeg, Greg Ver and Thompson, Paul M. and Ambite, Jos\'{e} Luis},
+title = {Towards Sparsified Federated Neuroimaging Models via Weight Pruning},
+year = {2022},
+isbn = {978-3-031-18522-9},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-3-031-18523-6_14},
+doi = {10.1007/978-3-031-18523-6_14},
+abstract = {Federated training of large deep neural networks can often be restrictive due to the increasing costs of communicating the updates with increasing model sizes. Various model pruning techniques have been designed in centralized settings to reduce inference times. Combining centralized pruning techniques with federated training seems intuitive for reducing communication costs—by pruning the model parameters right before the communication step. Moreover, such a progressive model pruning approach during training can also reduce training times/costs. To this end, we propose FedSparsify, which performs model pruning during federated training. In our experiments in centralized and federated settings on the brain age prediction task (estimating a person’s age from their brain MRI), we demonstrate that models can be pruned up to 95\% sparsity without affecting performance even in challenging federated learning environments with highly heterogeneous data distributions. One surprising benefit of model pruning is improved model privacy. We demonstrate that models with high sparsity are less susceptible to membership inference attacks, a type of privacy attack.},
+booktitle = {Distributed, Collaborative, and Federated Learning, and Affordable AI and Healthcare for Resource Diverse Global Health: Third MICCAI Workshop, DeCaF 2022, and Second MICCAI Workshop, FAIR 2022, Held in Conjunction with MICCAI 2022, Singapore, September 18 and 22, 2022, Proceedings},
+pages = {141–151},
+numpages = {11},
+keywords = {Neuroimaging, Federated learning, Model pruning, Security \& Privacy},
+location = {Singapore, Singapore}
+}
+
+@inproceedings{yang_perturbation,
+author = {Yang, Xue and Feng, Yan and Fang, Weijun and Shao, Jun and Tang, Xiaohu and Xia, Shu-Tao and Lu, Rongxing},
+title = {An Accuracy-Lossless Perturbation Method for Defending Privacy Attacks in Federated Learning},
+year = {2022},
+isbn = {9781450390965},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3485447.3512233},
+doi = {10.1145/3485447.3512233},
+abstract = {Although federated learning improves privacy of training data by exchanging local gradients or parameters rather than raw data, the adversary still can leverage local gradients and parameters to obtain local training data by launching reconstruction and membership inference attacks. To defend against such privacy attacks, many noises perturbed methods (like differential privacy or CountSketch matrix) have been widely designed. However, the strong defence ability and high learning accuracy of these schemes cannot be ensured at the same time, which will impede the wide application of FL in practice (especially for medical or financial institutions that require both high accuracy and strong privacy guarantee). To overcome this issue, we propose an efficient model perturbation method for federated learning to defend against reconstruction and membership inference attacks launched by curious clients. On the one hand, similar to the differential privacy, our method also selects random numbers as perturbed noises added to the global model parameters, and thus it is very efficient and easy to be integrated in practice. Meanwhile, the random selected noises are positive real numbers and the corresponding value can be arbitrarily large, and thus the strong defence ability can be ensured. On the other hand, unlike differential privacy or other perturbation methods that cannot eliminate added noises, our method allows the server to recover the true aggregated gradients by eliminating the added noises. Therefore, our method does not hinder learning accuracy at all. Extensive experiments demonstrate that for both regression and classification tasks, our method achieves the same accuracy as non-private approaches and outperforms the state-of-the-art defence schemes. Besides, the defence ability of our method against reconstruction and membership inference attack is significantly better than the state-of-the-art related defence schemes.},
+booktitle = {Proceedings of the ACM Web Conference 2022},
+pages = {732–742},
+numpages = {11},
+keywords = {federated learning, privacy attack, privacy-preserving},
+location = {Virtual Event, Lyon, France},
+series = {WWW '22}
+}
+
+@inproceedings{Xue_pruning,
+  author={Lulu Xue and Shengshan Hu and Ruizhi Zhao and Leo Yu Zhang and Shengqing Hu and Lichao Sun and Dezhong Yao},
+  title={Revisiting Gradient Pruning: A Dual Realization for Defending against Gradient Attacks},
+  year={2024},
+  cdate={1704067200000},
+  pages={6404-6412},
+  url={https://doi.org/10.1609/aaai.v38i6.28460},
+  booktitle={AAAI},
+}
+
+@inproceedings {Yue_gia2023,
+author = {Kai Yue and Richeng Jin and Chau-Wai Wong and Dror Baron and Huaiyu Dai},
+title = {Gradient Obfuscation Gives a False Sense of Security in Federated Learning},
+booktitle = {32nd USENIX Security Symposium (USENIX Security 23)},
+year = {2023},
+isbn = {978-1-939133-37-3},
+address = {Anaheim, CA},
+pages = {6381--6398},
+url = {https://www.usenix.org/conference/usenixsecurity23/presentation/yue},
+publisher = {USENIX Association},
+month = aug
+}
+
+@misc{liu2025mjolnirbreakingshieldperturbationprotected,
+      title={Mjolnir: Breaking the Shield of Perturbation-Protected Gradients via Adaptive Diffusion}, 
+      author={Xuan Liu and Siqi Cai and Qihua Zhou and Song Guo and Ruibin Li and Kaiwei Lin},
+      year={2025},
+      eprint={2407.05285},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2407.05285}, 
+}
+
+@article{scheligaCombiningStochasticDefenses2025,
+  title = {Combining {{Stochastic Defenses}} to {{Resist Gradient Inversion}}: {{An Ablation Study}}},
+  shorttitle = {Combining {{Stochastic Defenses}} to {{Resist Gradient Inversion}}},
+  author = {Scheliga, Daniel and M{\"a}der, Patrick and Seeland, Marco},
+  year = 2025,
+  month = dec,
+  journal = {Applied Artificial Intelligence},
+  volume = {39},
+  number = {1},
+  pages = {2565165},
+  issn = {0883-9514, 1087-6545},
+  doi = {10.1080/08839514.2025.2565165},
+  urldate = {2025-10-06},
+  abstract = {Gradient Inversion (GI) attacks are a ubiquitous threat in Federated Learning (FL) as they exploit gradient leakage to reconstruct supposedly private training data. Common defense mechanisms such as Differential Privacy (DP) or stochastic Privacy Modules (PMs) introduce randomness during gradient computation to prevent such attacks. However, we pose that if an attacker effectively mimics a client's stochastic gradient computation, the attacker can circumvent the defense and reconstruct clients' private training data. This paper introduces several targeted GI attacks that leverage this principle to bypass common defense mechanisms. As a result, we demonstrate that no individual defense provides sufficient privacy protection. To address this issue, we propose to combine multiple defenses. We conduct an extensive ablation study to evaluate the influence of various combinations of defenses on privacy protection and model utility. We observe that only the combination of DP and a stochastic PM was sufficient to decrease the Attack Success Rate (ASR) from 100\% to 0\%, thus preserving privacy. Moreover, we found that this combination of defenses consistently achieves the best trade-off between privacy and model utility.},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/9CJXRUHR/Scheliga et al. - 2025 - Combining Stochastic Defenses to Resist Gradient Inversion An Ablation Study.pdf}
+}
+
+@misc{wangHearNoEvil2025,
+  title = {Hear {{No Evil}}: {{Detecting Gradient Leakage}} by {{Malicious Servers}} in {{Federated Learning}}},
+  shorttitle = {Hear {{No Evil}}},
+  author = {Wang, Fei and Li, Baochun},
+  year = 2025,
+  month = jun,
+  number = {arXiv:2506.20651},
+  eprint = {2506.20651},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2506.20651},
+  urldate = {2025-10-28},
+  abstract = {Recent work has shown that gradient updates in federated learning (FL) can unintentionally reveal sensitive information about a client's local data. This risk becomes significantly greater when a malicious server manipulates the global model to provoke information-rich updates from clients. In this paper, we adopt a defender's perspective to provide the first comprehensive analysis of malicious gradient leakage attacks and the model manipulation techniques that enable them. Our investigation reveals a core trade-off: these attacks cannot be both highly effective in reconstructing private data and sufficiently stealthy to evade detection---especially in realistic FL settings that incorporate common normalization techniques and federated averaging.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Cryptography and Security,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Machine Learning},
+  file = {/home/fdiana/Zotero/storage/44KRQBRG/Wang e Li - 2025 - Hear No Evil Detecting Gradient Leakage by Malicious Servers in Federated Learning.pdf}
+}
+
+@inproceedings{Carletti_2026,
+   title={On the Detectability of Active Gradient Inversion Attacks in Federated Learning},
+   url={http://dx.doi.org/10.1109/SP63933.2026.00193},
+   DOI={10.1109/sp63933.2026.00193},
+   booktitle={2026 IEEE Symposium on Security and Privacy (SP)},
+   publisher={IEEE},
+   author={Carletti, Vincenzo and Foggia, Pasquale and Mazzocca, Carlo and Parrella, Giuseppe and Vento, Mario},
+   year={2026},
+   month=May, pages={2346–2365} }
+
+@inproceedings{zhangCENSORDefenseGradient2025,
+  title = {{{CENSOR}}: {{Defense Against Gradient Inversion}} via {{Orthogonal Subspace Bayesian Sampling}}},
+  shorttitle = {{{CENSOR}}},
+  booktitle = {Proceedings 2025 {{Network}} and {{Distributed System Security Symposium}}},
+  author = {Zhang, Kaiyuan and Cheng, Siyuan and Shen, Guangyu and Ribeiro, Bruno and An, Shengwei and Chen, Pin-Yu and Zhang, Xiangyu and Li, Ninghui},
+  year = 2025,
+  publisher = {Internet Society},
+  address = {San Diego, CA, USA},
+  doi = {10.14722/ndss.2025.230915},
+  urldate = {2025-10-06},
+  abstract = {Federated learning collaboratively trains a neural network on a global server, where each local client receives the current global model weights and sends back parameter updates (gradients) based on its local private data. The process of sending these model updates may leak client's private data information. Existing gradient inversion attacks can exploit this vulnerability to recover private training instances from a client's gradient vectors. Recently, researchers have proposed advanced gradient inversion techniques that existing defenses struggle to handle effectively. In this work, we present a novel defense tailored for large neural network models. Our defense capitalizes on the high dimensionality of the model parameters to perturb gradients within a subspace orthogonal to the original gradient. By leveraging cold posteriors over orthogonal subspaces, our defense implements a refined gradient update mechanism. This enables the selection of an optimal gradient that not only safeguards against gradient inversion attacks but also maintains model utility. We conduct comprehensive experiments across three different datasets and evaluate our defense against various state-of-the-art attacks and defenses. Code is available at https://censor-gradient.github.io.},
+  isbn = {979-8-9894372-8-3},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/J8E4ACWB/Zhang et al. - 2025 - CENSOR Defense Against Gradient Inversion via Orthogonal Subspace Bayesian Sampling.pdf}
+}
+
+@ARTICLE{Ye_privacy2023,
+  author={Ye, Zipeng and Luo, Wenjian and Zhou, Qi and Zhu, Zhenqian and Shi, Yuhui and Jia, Yan},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  title={Gradient Inversion Attacks: Impact Factors Analyses and Privacy Enhancement}, 
+  year={2024},
+  volume={46},
+  number={12},
+  pages={9834-9850},
+  keywords={Training;Data models;Training data;Data privacy;Mathematical models;Computational modeling;Privacy;Artificial intelligence security;distributed learning;gradient inversion attacks (GIAs);privacy protection},
+  doi={10.1109/TPAMI.2024.3430533}}
+
+@inproceedings{Wudefense2024,
+author = {Wu, Jing and Hayat, Munawar and Zhou, Mingyi and Harandi, Mehrtash},
+title = {Concealing sensitive samples against gradient leakage in federated learning},
+year = {2024},
+isbn = {978-1-57735-887-9},
+publisher = {AAAI Press},
+url = {https://doi.org/10.1609/aaai.v38i19.30171},
+doi = {10.1609/aaai.v38i19.30171},
+abstract = {Federated Learning (FL) is a distributed learning paradigm that enhances users' privacy by eliminating the need for clients to share raw, private data with the server. Despite the success, recent studies expose the vulnerability of FL to model inversion attacks, where adversaries reconstruct users' private data via eavesdropping on the shared gradient information. We hypothesize that a key factor in the success of such attacks is the low entanglement among gradients per data within the batch during stochastic optimization. This creates a vulnerability that an adversary can exploit to reconstruct the sensitive data. Building upon this insight, we present a simple, yet effective defense strategy that obfuscates the gradients of the sensitive data with concealed samples. To achieve this, we propose synthesizing concealed samples to mimic the sensitive data at the gradient level while ensuring their visual dissimilarity from the actual sensitive data. Compared to the previous art, our empirical evaluations suggest that the proposed technique provides the strongest protection while simultaneously maintaining the FL performance. Code is located at https://github.com/JingWu321/DCS-2.},
+booktitle = {Proceedings of the Thirty-Eighth AAAI Conference on Artificial Intelligence and Thirty-Sixth Conference on Innovative Applications of Artificial Intelligence and Fourteenth Symposium on Educational Advances in Artificial Intelligence},
+articleno = {2423},
+numpages = {9},
+series = {AAAI'24/IAAI'24/EAAI'24}
+}
+
+@inproceedings{scheligaPRECODEGenericModel2022,
+  title = {{{PRECODE}} - {{A Generic Model Extension}} to {{Prevent Deep Gradient Leakage}}},
+  booktitle = {2022 {{IEEE}}/{{CVF Winter Conference}} on {{Applications}} of {{Computer Vision}} ({{WACV}})},
+  author = {Scheliga, Daniel and Mader, Patrick and Seeland, Marco},
+  year = 2022,
+  month = jan,
+  pages = {3605--3614},
+  publisher = {IEEE},
+  address = {Waikoloa, HI, USA},
+  doi = {10.1109/WACV51458.2022.00366},
+  urldate = {2024-09-30},
+  abstract = {Collaborative training of neural networks leverages distributed data by exchanging gradient information between different clients. Although training data entirely resides with the clients, recent work shows that training data can be reconstructed from such exchanged gradient information. To enhance privacy, gradient perturbation techniques have been proposed. However, they come at the cost of reduced model performance, increased convergence time, or increased data demand. In this paper, we introduce PRECODE, a PRivacy EnhanCing mODulE that can be used as generic extension for arbitrary model architectures. We propose a simple yet effective realization of PRECODE using variational modeling. The stochastic sampling induced by variational modeling effectively prevents privacy leakage from gradients and in turn preserves privacy of data owners. We evaluate PRECODE using state of the art gradient inversion attacks on two different model architectures trained on three datasets. In contrast to commonly used defense mechanisms, we find that our proposed modification consistently reduces the attack success rate to 0\% while having almost no negative impact on model training and final performance. As a result, PRECODE reveals a promising path towards privacy enhancing model extensions.},
+  copyright = {https://doi.org/10.15223/policy-029},
+  isbn = {978-1-6654-0915-5},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/DSTQ6Q98/Scheliga et al. - 2022 - PRECODE - A Generic Model Extension to Prevent Deep Gradient Leakage.pdf}
+}
+
+@inproceedings{jeterOASISOffsettingActive2024,
+  title = {{{OASIS}}: {{Offsetting Active Reconstruction Attacks}} in {{Federated Learning}}},
+  shorttitle = {{{OASIS}}},
+  booktitle = {2024 {{IEEE}} 44th {{International Conference}} on {{Distributed Computing Systems}} ({{ICDCS}})},
+  author = {Jeter, Tre' R. and Nguyen, Truc and Alharbi, Raed and Thai, My T.},
+  year = 2024,
+  month = jul,
+  pages = {1004--1015},
+  issn = {2575-8411},
+  doi = {10.1109/ICDCS60910.2024.00097},
+  urldate = {2024-10-01},
+  abstract = {Federated Learning (FL) has garnered significant attention for its potential to protect user privacy while enhancing model training efficiency. For that reason, FL has found its use in various domains, from health care to industrial engineering, especially where data cannot be easily exchanged due to sensitive information or privacy laws. However, recent research has demonstrated that FL protocols can be easily compromised by active reconstruction attacks executed by dishonest servers. These attacks involve the malicious modification of global model parameters, allowing the server to obtain a verbatim copy of users' private data by inverting their gradient updates. Tackling this class of attack remains a crucial challenge due to the strong threat model. In this paper, we propose a defense mechanism, namely OASIS, based on image augmentation that effectively counteracts active reconstruction attacks while preserving model performance. We first uncover the core principle of gradient inversion that enables these attacks and theoretically identify the main conditions by which the defense can be robust regardless of the attack strategies. We then construct our defense with image augmentation showing that it can undermine the attack principle. Comprehensive evaluations demonstrate the efficacy of the defense mechanism highlighting its feasibility as a solution.},
+  keywords = {Deep Neural Networks,Dishonest Servers,Federated learning,Federated Learning,Medical services,Privacy,Protocols,Reconstruction Attack,Rendering (computer graphics),Threat modeling,Training},
+  file = {/home/fdiana/Zotero/storage/FBHWD2FI/Jeter et al. - 2024 - OASIS Offsetting Active Reconstruction Attacks in Federated Learning.pdf;/home/fdiana/Zotero/storage/RXF3XHVZ/10631003.html}
+}
+
+@inproceedings{fanRefinerDataRefining,
+  author    = {Fan, Mingyuan and Chen, Cen and Wang, Chengyu and
+               Li, Xiaodan and Zhou, Wenmeng},
+  title     = {Refiner: Data Refining against Gradient Leakage
+               Attacks in Federated Learning},
+  booktitle = {34th USENIX Security Symposium},
+  pages     = {3005--3024},
+  year      = {2025},
+  publisher = {USENIX Association}
+}
+
+@inproceedings{sunSoteriaProvableDefense2021,
+  title = {Soteria: {{Provable Defense}} against {{Privacy Leakage}} in {{Federated Learning}} from {{Representation Perspective}}},
+  shorttitle = {Soteria},
+  booktitle = {2021 {{IEEE}}/{{CVF Conference}} on {{Computer Vision}} and {{Pattern Recognition}} ({{CVPR}})},
+  author = {Sun, Jingwei and Li, Ang and Wang, Binghui and Yang, Huanrui and Li, Hai and Chen, Yiran},
+  year = 2021,
+  month = jun,
+  pages = {9307--9315},
+  publisher = {IEEE},
+  address = {Nashville, TN, USA},
+  doi = {10.1109/CVPR46437.2021.00919},
+  urldate = {2024-09-30},
+  abstract = {Federated learning (FL) is a popular distributed learning framework that can reduce privacy risks by not explicitly sharing private data. However, recent works have demonstrated that sharing model updates makes FL vulnerable to inference attack. In this work, we show our key observation that the data representation leakage from gradients is the essential cause of privacy leakage in FL. We also provide an analysis of this observation to explain how the data presentation is leaked. Based on this observation, we propose a defense called Soteria against model inversion attack in FL. The key idea of our defense is learning to perturb data representation such that the quality of the reconstructed data is severely degraded, while FL performance is maintained. In addition, we derive a certified robustness guarantee to FL and a convergence guarantee to FedAvg, after applying our defense. To evaluate our defense, we conduct experiments on MNIST and CIFAR10 for defending against the DLG attack and GS attack. Without sacrificing accuracy, the results demonstrate that our proposed defense can increase the mean squared error between the reconstructed data and the raw data by as much as 160\texttimes{} for both DLG attack and GS attack, compared with baseline defense methods. Therefore, the privacy of the FL system is significantly improved. Our code can be found at https://github.com/jeremy313/Soteria.},
+  copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/IEEE.html},
+  isbn = {978-1-6654-4509-2},
+  langid = {english},
+  file = {/home/fdiana/Zotero/storage/XH4I2TH3/Sun et al. - 2021 - Soteria Provable Defense against Privacy Leakage in Federated Learning from Representation Perspect.pdf}
+}
