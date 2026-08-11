@@ -6,7 +6,13 @@
 \usepackage{import}
 \usepackage{apacite}
 \usepackage{lipsum}
+\usepackage{dsfont}
+\usepackage{booktabs}
+\usepackage{footnotehyper}
 \setlength{\headheight}{13.9186pt}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\renewcommand{\thempfootnote}{\arabic{mpfootnote}}
+\newcommand{\indicator}{\mathds{1}}
 
 \def\dataset{\ensuremath{\mathcal{D}}}
 \def\x{{\mathbf{x}}}
@@ -15,37 +21,38 @@
 \def\X{{\mathbf{X}}}
 \def\o{{\mathbf{o}}}
 \def\z{{\mathbf{z}}}
-\def\C{\ensuremath{\mathcal{C}}}
+\def\C{\ensuremath{\mathcal{U}}}
 \def\real{\mathbb{R}}
 \def\interger{\mathbb{N}}
 \def\E{\mathbb{E}}
 \def\localupdaterule{\mathrm{Local\_Update}}
 \def\dataset{\ensuremath{\mathcal{D}}}
-\def\localdataset{\dataset^u}
-\def\subclients{\ensuremath{\mathcal{C}_s}}
-\def\clients{\ensuremath{\mathcal{C}}}
+\def\localdataset{\dataset_u}
+\def\subclients{\ensuremath{\mathcal{U}_s}}
+\def\clients{\ensuremath{\mathcal{U}}}
 \def\model{\theta}
 \def\samplespace{{\mathcal{Z}}}
-\def\message{\ensuremath{\mathcal{M}}}
+\def\messages{\ensuremath{\mathcal{M}}}
 \def\roundsclient{\ensuremath{\mathcal{T}_u}}
 \def\mimicfunction{{\obs}}
-\def\model{\boldsymbol{\theta}}
-\def\localmodel{\theta_c^*}
-\def\localmodelsen{\theta_c^{*,s}}
-\def\localmodelpub{\theta_c^{*,p}}
+\def\model{\theta}
+\def\localmodel{\theta_u^*}
+\def\localmodelsen{\theta_u^{*,s}}
+\def\localmodelpub{\theta_u^{*,p}}
 \def\globallossfunction{{\loss}}
-\def\locallossfunction{{\loss^u}}
+\def\locallossfunction{{\loss_u}}
 \def\weights{w}
 \def\gradient{\mathbf{g}}
-\def\cc{\mathbf{c}}
+\def\cc{\mathbf{u}}
 \def\locallossfunctioncc{{\loss_\cc}}
-\def\locallossfunctionbc{{\loss_{\bar c}}}
+\def\locallossfunctionbc{{\loss_{\bar u}}}
 \def\localmodelcc{\theta_\cc^*}
-\def\y{\mathbf{y}_c}
-\def\xhalf{\mathbf{Z}_c}
-\def\h{\mathbf{H}}
+\def\y{\mathbf{y}_u}
+\def\xhalf{\mathbf{Z}_u}
+\def\H{\mathbf{H}}
 \def\i{\mathbf{I}}
 \def\W{\mathbf{W}}
+\def\V{\mathbf{V}}
 \def\vv{\mathbf{v}}
 \def\a{\mathbf{A}}
 \def\u{\mathbf{U}}
@@ -55,10 +62,10 @@
 \def\ga{\mathbf{\gamma}}
 \def\var{\mathbb{V}\mathrm{ar}}
 \def\distribution{\ensuremath{\mathcal{D}}}
-\def\extacc{Acc^{Ext}_c}
-\def\acc{Acc_c}
+\def\extacc{Acc^{Ext}_u}
+\def\acc{Acc_u}
 \def\algo{\ensuremath{\mathcal{A}}}
-\def\s{\mathbf{s}_c}
+\def\s{\mathbf{s}_u}
 \def\hats{\hat \s}
 \def\ham{d_{H}(\s,\hats)}
 \def\P{\mathbf{P}}
@@ -102,7 +109,6 @@
 \DeclareMathOperator{\Dist}{\textbf {Dist}}
 
 
-
 % Redefine end statements to nothing
 
 \newcommand{\eps}{\ensuremath{\varepsilon}}
@@ -142,14 +148,14 @@
   \mainmatter
 
   \input{introduction/introduction}
-  \input{info/introduction.tex}
-  \input{notations}
+  % \input{info/introduction.tex}
+  % \input{notations}
 
-  \Part{État de l'art}
-  \import{chapter_2/}{chapitre2}
-  \import{chapitre3/}{chapitre3}
+  % \Part{État de l'art}
+  \import{chapitre2/}{chapter2}
+  % \import{chapitre3/}{chapitre3}
 
-  \Part{Contributions}
+  % \Part{Contributions}
   \import{chapitre4/}{chapitre4}
   \import{chapitre5/}{chapitre5}
 
@@ -178,6 +184,5 @@
 
 
   \appendix
-  \input{annexe/annexe}
-
+  \import{appendix/}{appendix_aia}
 \end{document}

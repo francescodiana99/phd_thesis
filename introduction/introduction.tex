@@ -53,55 +53,77 @@ The local objective is typically written as an Empirical Risk Minimization (ERM)
 \end{equation}
 where $\ell(\boldsymbol{\theta};\mathbf{x}_i^u,y_i^u)$ is the loss incurred by the model with parameters $\boldsymbol{\theta}$ on the $i$-th sample of client $u$.
 
-The original algorithm proposed to solve this optimization problem is Federated Averaging (FedAvg) \cite[Algorithm~1]{pmlr-v54-mcmahan17a}, an iterative procedure performed over $T$ communication rounds. Its main steps are summarized in Algorithm~\ref{alg:fedavg}. As discussed above, the training process is coordinated by a central server, which initializes the global model $\model$ (line 1). At each communication round $t$, the server selects a subset of participating clients, denoted by $\mathcal{U}^t \subseteq \mathcal{U}$ (line 3), and sends them the current global model (line 4). After receiving the model, each selected client performs local training on its private dataset (line 6), typically by running stochastic gradient descent for a fixed number of local epochs $E$. Once local training is completed, each client sends back an updated model $\model_u^{t+1}$ (line 7). The server then aggregates the received client models to obtain the next global model $\model^{t+1}$ (line 8).
+The original algorithm proposed to solve this optimization problem is Federated Averaging (FedAvg) \cite[Algorithm~1]{pmlr-v54-mcmahan17a}, an iterative procedure performed over $T$ communication rounds. Its main steps are summarized in Algorithm~\ref{algo:fl-framework}. As discussed above, the training process is coordinated by a central server, which initializes the global model $\model$ (line 1). At each communication round $t$, the server selects a subset of participating clients, denoted by $\mathcal{U}^t \subseteq \mathcal{U}$ (line 3), and sends them the current global model (line 4). After receiving the model, each selected client performs local training on its private dataset (lines 8--11), typically by running stochastic gradient descent for a fixed number of local epochs $E$ (Algorithm~\ref{algo:fedavg}). Once local training is completed, each client sends back an updated model $\model_u^{t+1}$ (line 5). The server then aggregates the received client models to obtain the next global model $\model^{t+1}$ (line 6).
 
-FedAvg represents the canonical algorithmic formulation of federated learning. Since its introduction, many variants have been proposed, modifying different components of the protocol, including the client optimizer, the server aggregation rule, the client sampling strategy, and the communication pattern \cite{reddi2021adaptivefederatedoptimization}. This line of work shows that federated learning should not be understood as a single fixed algorithm, but rather as a flexible framework for distributed optimization under data locality constraints. At the same time, this flexibility is needed because the federated setting departs from the assumptions of conventional centralized training. Clients may hold data drawn from different distributions \cite{Li2020On, marfoq2021federated, wang_client, scaffold}, operate under different computational \cite{li2019fedmdheterogenousfederatedlearning,FjORD} and network conditions \cite{caldas2019expandingreachfederatedlearning, chen_efficient, ALMANIFI2023100742}, participate intermittently \cite{ribeiro_client_corr, rodio_clients, sun_participation}, and have different privacy requirements \cite{brendan2018learning, Fu_dp_dl_review}. As a result, federated learning introduces a set of challenges that are either absent or less pronounced in centralized learning, including statistical and system heterogeneity \cite{ye_review_het_fl}, communication efficiency \cite{ALMANIFI2023100742}, fairness \cite{Vucinich_fairness, Shi_fairness}, personalization \cite{tan_personalization}, robustness \cite{Uddin_robustness}, and privacy \cite{fu_privacy}.
+FedAvg represents the canonical algorithmic formulation of federated learning. Since its introduction, many variants have been proposed, modifying different components of the protocol, including the client optimizer, the server aggregation rule, the client sampling strategy, and the communication pattern~\cite{reddi2021adaptivefederatedoptimization}. This line of work shows that federated learning should not be understood as a single fixed algorithm, but rather as a flexible framework for distributed optimization under data locality constraints. At the same time, this flexibility is needed because the federated setting departs from the assumptions of conventional centralized training. Clients may hold data drawn from different distributions~\cite{Li2020On, marfoq2021federated, wang_client, scaffold}, operate under different computational~\cite{li2019fedmdheterogenousfederatedlearning,FjORD} and network conditions \cite{caldas2019expandingreachfederatedlearning, chen_efficient, ALMANIFI2023100742}, participate intermittently \cite{ribeiro_client_corr, rodio_clients, sun_participation}, and have different privacy requirements \cite{brendan2018learning, Fu_dp_dl_review}. As a result, federated learning introduces a set of challenges that are either absent or less pronounced in centralized learning, including statistical and system heterogeneity \cite{ye_review_het_fl}, communication efficiency \cite{ALMANIFI2023100742}, fairness \cite{Vucinich_fairness, Shi_fairness}, personalization \cite{tan_personalization}, robustness \cite{Uddin_robustness}, and privacy \cite{fu_privacy}.
 
-\begin{algorithm2e}[ht]
-\caption[FedAvg: Federated Averaging]{FedAvg: Federated Averaging}
-\label{alg:fedavg}
-\KwInput{clients $\mathcal{U}$ with local datasets $\{\mathcal{D}_u\}_{u=1}^{U}$; communication rounds $T$; local epochs $E$; mini-batch size $B$; learning rate $\eta$}
-\KwOutput{final global model $\boldsymbol{\theta}^T$}
-\textbf{server} initializes $\boldsymbol{\theta}^1$\;
+\begin{algorithm2e}[t]
+\caption{FL Framework}
+\label{algo:fl-framework}
 
-\For{$t = 1,\dots,T$}{
-    \textbf{server} selects $\mathcal{U}^t \subseteq \mathcal{U}$ clients\;
-    \textbf{server} broadcasts $\boldsymbol{\theta}^t$ to the clients in $\mathcal{U}^t$\;
-    \ForEach{$u \in \mathcal{U}^t$ \textbf{in parallel}}{
-        $\boldsymbol{\theta}^{t+1}_{u}
-        \leftarrow
-        \operatorname{ClientUpdate}(u,\boldsymbol{\theta}_t,E,B,\eta)$\;
-        \textbf{client} sends $\boldsymbol{\theta}^{t+1}_{u}$ to the \textbf{server}\;
-    }
-    \textbf{server} aggregates $\displaystyle
-    \boldsymbol{\theta}^{t+1}
-    \leftarrow
-    \sum_{u \in \mathcal{U}^t}
-    \frac{N_u}{\sum_{v \in \mathcal{U}^t} N_v}
-    \boldsymbol{\theta}^{t+1}_{u}$\;
+\KwOutput{global model $\model^T$}
+
+\textbf{Server $s$}\;
+\For{$t \in \{0,\ldots,T-1\}$}{
+    $s$ selects a subset of clients $\clients^t \subseteq \clients$\;
+    \label{algoline:select_client}
+
+    $s$ broadcasts the global model $\model^t$ to $\clients^t$\;
+    \label{algoline:broadcast}
+
+    $s$ waits for the updated models $\model_u^t$ from every client
+    $u \in \clients^t$\;
+
+    $s$ computes $\model^{t+1}$ by aggregating the received updated models\;
+    \label{algoline:aggregation}
 }
+
 \BlankLine
-\Procedure{$\operatorname{ClientUpdate}(u,\boldsymbol{\theta},E,B,\eta)$}{
-    \textbf{client} splits $\mathcal{D}_u$ into mini-batches $\mathcal{B}_u$ of size $B$\;
-    \For{$e = 1,\dots,E$}{
-        \ForEach{mini-batch $b \in \mathcal{B}_u$}{
-            \textbf{client} updates $\displaystyle
-            \boldsymbol{\theta}
-            \leftarrow
-            \boldsymbol{\theta}
-            -
-            \eta
-            \nabla_{\boldsymbol{\theta}}
-            \left(
-            \frac{1}{|b|}
-            \sum_{(\mathbf{x},y)\in b}
-            \ell(\boldsymbol{\theta};\mathbf{x},y)
-            \right)$\;
-        }
-    }
-    \Return{$\boldsymbol{\theta}$}\;
+
+\textbf{Client $u \in \clients$}\tcp*[f]{Input: $\model$; Output: $\model_u$}
+
+\While{FL training is not completed}{
+    $u$ listens for the arrival of a new global model $\model$\;
+
+    $\model_u \leftarrow
+    \localupdaterule^u(\model, \dataset_u)$\;
+    \label{algoline:updaterule}
+
+    $u$ sends $\model_u$ to the server\;
 }
 \end{algorithm2e}
+
+\begin{algorithm2e}[ht]
+  \caption{Client $u$'s local update rule in FedAvg}
+  \label{algo:fedavg}
+
+  \KwInput{server model $\model^t$; local dataset $\localdataset$;
+           batch size $B$; local epochs $E$; learning rate $\eta$}
+  \KwOutput{updated local model $\model_u^t(K)$}
+
+  $\model_u^t(0) \leftarrow \model^t$\;
+  $\mathcal{B} \leftarrow$ split $\localdataset$ into batches of size $B$\;
+  $k \leftarrow 0$\;
+
+  \For{each local epoch $e \in \{1,\ldots,E\}$}{
+      \ForEach{batch $b \in \mathcal{B}$}{
+          $\gradient(\model_u^t(k), b)
+          \leftarrow
+          \frac{1}{B}
+          \sum_{x \in b} \nabla \ell(\model_u^t(k), x)$\;
+
+          $\model_u^t(k+1)
+          \leftarrow
+          \model_u^t(k)
+          - \eta \gradient(\model_u^t(k), b)$\;
+          \label{algoline:gradient_update}
+
+          $k \leftarrow k + 1$\;
+      }
+  }
+
+  \Return{$\model_u^t(K)$, where $K = E\left\lceil \frac{S_u}{B} \right\rceil$}\;
+  \end{algorithm2e}
 
 
 \subsection{Challenges in Federated Learning}
@@ -127,9 +149,9 @@ Fairness is therefore a central challenge in FL, and different deployments may r
 
 \paragraph{Robustness} Machine learning models may be targeted by adversaries during both training and inference. At training time, \textit{poisoning attacks} aim to corrupt the learned model by injecting malicious samples into the training set or perturbing existing ones \cite{biggio_poisoning, cina_poisoning, jagielski_poisoning}. A relevant subclass is represented by \textit{backdoor attacks}, where the model behaves normally on standard inputs but produces an attacker-chosen prediction whenever a specific trigger is present \cite{cina_poisoning}. At inference time, \textit{evasion attacks} manipulate test inputs so as to induce incorrect predictions, often through small but carefully crafted perturbations \cite{biggio_evasion, carlini_wagner_robustness}.
 
-In federated learning, these threats are amplified by the distributed nature of the training process. Since the server aggregates updates produced by clients whose local data and computation are not directly observable, compromised participants can act as \textit{Byzantine} clients \cite{blanchard_byz}, i.e., clients that arbitrarily deviate from the protocol and submit malicious or corrupted updates. Such updates may aim to degrade the overall performance of the global model  \cite{pmlr-v97-bhagoji19a, alie_attack, foe_attack, fang_poisoning}, or implant a backdoor while preserving normal accuracy on clean validation data \cite{pmlr-v108-bagdasaryan20a}. Compared to centralized poisoning, the attacker does not need to contaminate a centrally collected dataset; it can directly influence the optimization process through the updates sent to the server. This has motivated a large body of work on Byzantine-resilient aggregation \cite{blanchard_byz, mhamdi2018hiddenvulnerabilitydistributedlearning} and robust distributed optimization \cite{GuerraouiGP24, Allouah_bounds, Allouah_clipping}. 
+In federated learning, these threats are amplified by the distributed nature of the training process. Since the server aggregates updates produced by clients whose local data and computation are not directly observable, compromised participants can act as \textit{Byzantine} clients \cite{blanchard_byz}, i.e., clients that arbitrarily deviate from the protocol and submit malicious or corrupted updates. Such updates may aim to degrade the overall performance of the global model  \cite{pmlr-v97-bhagoji19a, alie_attack, foe_attack, fang_poisoning}, or implant a backdoor while preserving normal accuracy on clean validation data \cite{pmlr-v108-bagdasaryan20a}. Compared to centralized poisoning, the attacker does not need to contaminate a centrally collected dataset; it can directly influence the optimization process through the updates sent to the server. This has motivated a large body of work on Byzantine-resilient aggregation \cite{blanchard_byz, mhamdi2018hiddenvulnerabilitydistributedlearning} and robust distributed optimization \cite{yin2018byzantine, GuerraouiGP24, Allouah_bounds, Allouah_clipping}. 
 
-\section{Privacy in Federated Learning}
+\section{Privacy in Federated Learning}\label{sec:privacy_in_fl}
 In Section~\ref{sec:fed_learning}, we introduced the main motivations behind federated learning, including the intuitive privacy benefit of keeping data local. However, data locality should not be confused with a privacy guarantee. It reduces the need to transfer raw records to a central repository, but it does not by itself determine what information may still be inferred during training.Privacy depends not only on where data are stored, but also on who can access the information derived from them, how this information is processed, and for which purposes it is used. This is particularly relevant in light of legal frameworks that recognize privacy and data protection as fundamental rights \cite{eu_gdpr_2016,california_ccpa_cpra}. In this context, analyzing privacy risks means asking what information about clients or their data may be exposed to the actors involved in the learning process.
 This issue is not specific to federated learning. In centralized machine learning, previous work has shown that trained models may leak information about training data\cite{shokri_mia, aia_fredrikson, carlini_extract_data, feng2024privacy}. In federated learning, however, the training protocol introduces an additional source of leakage as the messages exchanged between clients and server can be intercepted. These updates are computed from local datasets and therefore may carry traces of the private information they are meant to protect. Depending on the adversary's capabilities, such information may be observed passively or amplified through active interference with the protocol.
 A large body of work has shown that, without additional safeguards, the messages exchanged during training can reveal private or sensitive information about clients and their local datasets \cite{lyu2020threatsfederatedlearningsurvey, zhao_fl_attacks_review}. The remainder of this section reviews these risks by discussing the main classes of privacy attacks considered in the FL literature, together with the defense strategies proposed to mitigate them.
@@ -150,7 +172,7 @@ Membership inference attacks (MIAs) aim to determine whether a given data record
 \[
     \mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O}) \in \{0,1\},
 \]
-where $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=1$ indicates that the adversary infers $(\x,y) \in \dataset_{\mathrm{tr}}$, while $\mathcal{A}_{\mathrm{MIA}}((\x,y),\mathcal{O})=0$ indicates that $(\x,y) \notin \dataset_{\mathrm{tr}}$. MIAs are commonly used as an empirical tool for assessing privacy leakage, since a successful attack shows that the trained model, or the information exchanged during training, contains a distinguishable trace of individual training examples. This leakage can be sensitive even when the adversary learns only membership status. For instance, if a record is found to belong to the training set of a model trained on a specific medical condition, membership may already reveal information about the corresponding individual. Beyond privacy-risk assessment, MIAs have also been used to audit compliance with data deletion or unlearning requirements, and can serve as a preliminary step for stronger attacks, such as model extraction or attacks aiming to infer additional private information \cite{xiao_mia,hu2021sourceinferenceattacksfederated}.
+where $1$ indicates that the adversary infers membership, whereas $0$ indicates non-membership. MIAs are commonly used as an empirical tool for assessing privacy leakage, since a successful attack shows that the trained model, or the information exchanged during training, contains a distinguishable trace of individual training examples. This leakage can be sensitive even when the adversary learns only membership status. For instance, if a record is found to belong to the training set of a model trained on a specific medical condition, membership may already reveal information about the corresponding individual. Beyond privacy-risk assessment, MIAs have also been used to audit compliance with data deletion or unlearning requirements, and can serve as a preliminary step for stronger attacks, such as model extraction or attacks aiming to infer additional private information \cite{xiao_mia,hu2021sourceinferenceattacksfederated}.
 
 \begin{figure}[tbp]
     \centering
@@ -278,7 +300,7 @@ While membership inference attacks reveal whether a record was used during train
 The observation $\mathcal{O}$ depends on the setting and may correspond, for example, to the output of the trained model, its gradients, model updates, or a sequence of intermediate models.
 
 In the centralized setting, an early and influential instance of this type of attack was introduced by~\citeA{aia_fredrikson} in the medical domain. Their work studies a \textit{model inversion} attack in which the adversary uses access to a trained model, together with auxiliary information about an individual, to infer a missing sensitive attribute. A common model-based formulation of this attack consists in testing different candidate values for the sensitive attribute and selecting the one that makes the completed record most consistent with the trained model. This can be expressed as
-\begin{equation}\label{eq:aia_model_based}
+\begin{equation}\label{eq:aia_mb}
     \hat{s}
     \in
     \argmin_{s}
@@ -291,12 +313,14 @@ The intuition behind this attack is that the learned model may encode informatio
 
 Subsequent work refined both the attack objectives and the adversarial assumptions. For classification models, \citeA{mehnaz2022sensitiveattributesprivatenovel} propose black-box model inversion AIAs that use confidence scores to select the most likely sensitive attribute value, and also introduce a label-only variant that requires only the predicted class. Their work further considers a relaxed setting in which some non-sensitive attributes of the target record are also unknown to the adversary.
 
-In federated learning, the same inference goal can be pursued using information that is not available in the standard centralized setting. Since the server, or an eavesdropping adversary, may observe the model updates exchanged during training, the sensitive attributes can be treated as unknown variables that explain those updates. In particular, given the public part of the client's records and the corresponding labels, the adversary formulates the unknown sensitive attributes as optimization variables and searches for the assignment that makes the gradients computed on the completed records best align with the update observed during federated training~\cite{lyu2021novelattributereconstructionattack,chen2024practical}. More formally, for a target client $u$ and a set of observed rounds $\mathcal{T}$, the adversary can solve
+In federated learning, the same inference goal can be pursued using information that is not available in the standard centralized setting. Since the server, or an eavesdropping adversary, may observe the model updates exchanged during training, the sensitive attributes can be treated as unknown variables that explain those updates. In particular, given the public part of the client's records and the corresponding labels, the adversary formulates the unknown sensitive attributes as optimization variables and searches for the assignment that makes the gradients computed on the completed records best align with the update observed during federated training~\cite{lyu2021novelattributereconstructionattack,chen2024practical}. 
 
-\begin{equation}\label{eq:aia_gradient_based}
-  \argmax_{\{s_u(i)\}_{i=1}^{B}} \sum_{t\in \mathcal{T}}\textbf{CosSim} \left(\frac{\partial\ell(\model^t, 
-    \{(\x^p(i), s_u(i), y_u^p(i))\})}{\partial \model^t}, \model^t-\model_u^t\right), 
-\end{equation}
+% More formally, for a target client $u$ and a set of observed rounds $\mathcal{T}$, the adversary can solve
+
+% \begin{equation}\label{eq:aia_gb}
+%   \argmax_{\{s_u(i)\}_{i=1}^{B}} \sum_{t\in \mathcal{T}}\textbf{CosSim} \left(\frac{\partial\ell(\model^t, 
+%     \{(\x^p(i), s_u(i), y_u^p(i))\})}{\partial \model^t}, \model^t-\model_u^t\right), 
+% \end{equation}
 
 These attacks have been studied under both honest-but-curious and active adversaries, where the server isolates a target client in the training process to amplify leakage. A different active approach is proposed by~\citeA{Gomes_aia}, where the malicious server modifies selected neurons so that sensitive information about target records is encoded in the sign or structure of the resulting gradient update. 
 Existing AIAs in federated learning have mainly been developed for classification tasks, leaving regression comparatively underexplored despite its importance in many practical applications. Moreover, while model-based AIAs were originally studied in the centralized setting, their adaptation to federated learning has received limited attention. Chapter~\ref{chap:aia} addresses this gap by studying model-based attribute inference in federated regression tasks. In particular, it shows how an adversary can approximate the target client's local model and use it to infer sensitive attributes, overcoming limitations of gradient-based attacks in regression in both honest-but-curious and malicious settings. 

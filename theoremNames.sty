@@ -1,25 +1,65 @@
 
+\usepackage{mdframed}
+
 \AtBeginDocument{
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Environnement pour les théorèmes, définitions, exemples et autre   %
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\declaretheoremstyle[
+		headfont=\bfseries\color{citeColor},
+		bodyfont=\normalfont,
+		headpunct={\quad},
+		postheadspace=0pt,
+		mdframed={
+			backgroundcolor=citeColor!5,
+			linecolor=citeColor,
+			linewidth=2.2pt,
+			topline=false,
+			bottomline=false,
+			rightline=false,
+			innertopmargin=7pt,
+			innerbottommargin=7pt,
+			innerleftmargin=11pt,
+			innerrightmargin=11pt,
+			skipabove=10pt,
+			skipbelow=10pt
+		}
+	]{thesisstatement}
+
+	\declaretheoremstyle[
+		headfont=\bfseries\color{citeColor},
+		bodyfont=\normalfont,
+		headpunct={\quad},
+		postheadspace=0pt,
+		mdframed={
+			backgroundcolor=citeColor!5,
+			linecolor=citeColor,
+			linewidth=2.2pt,
+			topline=false,
+			bottomline=false,
+			rightline=false,
+			innertopmargin=7pt,
+			innerbottommargin=7pt,
+			innerleftmargin=11pt,
+			innerrightmargin=11pt,
+			skipabove=10pt,
+			skipbelow=10pt
+		}
+	]{thesisdefinition}
+
+	\declaretheorem[style=thesisstatement,name=Theorem,numberwithin=section]{theorem}
+	\declaretheorem[style=thesisstatement,name=Lemme,sibling=theorem]{lemma}
+	\declaretheorem[style=thesisstatement,name=Proposition,sibling=theorem]{proposition}
+	\declaretheorem[style=thesisstatement,name=Proposition,sibling=theorem]{prop}
+	\declaretheorem[style=thesisstatement,name=Corollaire,sibling=theorem]{corollary}
+	\declaretheorem[style=thesisstatement,name=Preuve,numberwithin=chapter]{preuve}
+
+	\declaretheorem[style=thesisdefinition,name=Définition,numberwithin=section]{definition}
+	\declaretheorem[style=thesisdefinition,name=Exemple,numberwithin=section]{example}
+	\declaretheorem[style=thesisdefinition,name=Remarque,numberwithin=section]{remark}
 	
-	\theoremstyle{plain}
-	\newtheorem{theorem}{Théorème}[section]
-	\newtheorem{lemma}[theorem]{Lemme}
-	\newtheorem{proposition}[theorem]{Proposition}
-	\newtheorem{corollary}[theorem]{Corollaire}
-	\newtheorem{preuve}{Preuve}[chapter]
-	
-	\theoremstyle{definition}
-	\newtheorem{definition}{Définition}[section]
-	
-	\newtheoremstyle{note}{}{}{}{}{\itshape}{~--~}{ }{\thmname{#1}\thmnumber{ #2}}
-	\theoremstyle{note}
-	\newtheorem{example}{Exemple}[section]
-	\newtheorem{remark}{Remarque}[section]
-	
-	\renewenvironment{proof}[1][Démonstration]{\noindent\textit{#1}.\nopagebreak\begin{list}{}{\setlength\leftmargin{10pt}}\item}{\end{list}$\square$\medskip}
+\renewenvironment{proof}[1][Proof]{\noindent\textit{#1}.\nopagebreak\begin{list}{}{\setlength\leftmargin{10pt}}\item}{\end{list}$\square$\medskip}
 	\newenvironment{myproof}[1][Démonstration]{\noindent\textit{#1}.\nopagebreak\begin{list}{}{\setlength\leftmargin{10pt}}\item}{\hfill$\diamond$\end{list}\smallskip}
 }
 
