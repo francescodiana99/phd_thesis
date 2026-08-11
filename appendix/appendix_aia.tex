@@ -482,59 +482,25 @@ To solve~\eqref{eq:aia_gradient_based} with the Gumbel-softmax trick, we set the
  
 In our attack with an active adversary, detailed in Algorithm~\ref{algo:active}, Adams' hyperparameters are selected following a tuning process performed using Optuna \cite{optuna} hyperparameter optimization framework. In all the experiments, values for the learning rate, $\beta_1$ and $\beta_2$ are optimized to minimize each client's training loss. Learning rate is tuned in range $[0.1, 50]$, whereas $\beta_1$ and $\beta_2$ values are tested in range $[0.6, 0.999]$. The optimal hyperparameters' set is determined after 50 trials.
 
+\subsubsection{Hypeparameters for Federated Least Squares Regression}
+
+For the federated least-squares regression experiments, we apply an additional preprocessing step to the Income-L and Income-A datasets to obtain a feature representation suitable for linear regression. Specifically, we remove the \emph{Occupation}, \emph{Relationship}, and \emph{Place of Birth} features; convert \emph{Race Code} and \emph{Marital Status} into binary features (White/Others and Married/Not married, respectively); and reduce the cardinality of \emph{Class of Worker} to three categories (Public employees/Private employees/Others).
+
+For the passive gradient-based attacks, we consider different numbers of inspected communication rounds. In particular, the candidate sets are
+\[
+    \mathcal{T}^{p}
+    =
+    \left\{
+        \{\text{first } t \text{ rounds in } \mathcal{T}_u\}
+        \;:\;
+        t \in \{1,5,10,20,50,100,150,300\}
+    \right\}.
+\]
+For \textbf{Grad}, the candidate set yielding the highest cosine similarity is selected, whereas \textbf{Grad-w-O} selects the one yielding the highest AIA accuracy.
+
+For our passive attack, Algorithm~\ref{algo:lineardecode} requires at least $d+1$ inspected communication rounds. Since the quality of the reconstructed model is affected by the conditioning of $\Theta_{\mathrm{out}}$, we randomly sample $10^7$ subsets of $d+1$ observed messages and select the subset that minimizes the condition number of $\Theta_{\mathrm{out}}$. This search is computationally inexpensive, as Algorithm~\ref{algo:lineardecode} only requires simple matrix operations. All remaining attack hyperparameters follow the configurations described above.
+
 \section{Additional Experimental Results}
-\subsection{Federated least squares regression}\label{app:linear_model}
-Here, we show the results of AIAs for federated least squares regression task, on Income-L, Income-A and Medical datasets. In all the experiments, each client trains a linear model for 300 communication rounds with 1 local epoch and batch size 32. The learning rate is set to $5\cdot10^{-3}$.  The passive adversary may eavesdrop all the exchanged messages until the end of the training. The active adversary launches the attack after 300 rounds for additional 10 and 50 rounds. All attacks are targeted at a randomly chosen single client.
-To approximate the optimal local model of the targeted client, our passive adversary applies Algorithm~\ref{algo:lineardecode} and  our active adversary applies Algorithm~\ref{algo:active}.
-
-To reduce the task difficulty by a linear model, we shrink the feature space of Income-L and Income-A. More precisely, we remove ‘Occupation', ‘Relationship', and ‘Place of Birth' features, transform ‘Race Code' and ‘Marital Status' from categorical to binary features (i.e., White/Others and Married/Not married), and reduce the cardinality of ‘Class of Worker' to 3 groups (Public employess/Private employees/Others). 
-%After the data pre-processing, ‘Race Code' indicates whether an individual is white, ‘Maritial Status' if a person is married, and ‘Class of Worker' initial 9 categories are reduced to 3 groups, representing public employees, private employees, and all the remaining categories (e.g. unemployed, self-employed, or worker without pay).
-%For the experiments on Income-A and Income-L settings, data preprocessing is different from experiments on neural network,
-
-\paragraph{Hyperparameters}
-We optimize the set of messages for both our method and gradient-based passive attacks. 
-For gradient-based attacks,  the set of inspected messages $\mathcal{T}$ is selected in $T^p = \{ \{\text{first t}$  rounds in  $\mathcal{T}_u\}$, for  $t\in \{1,5,10,20,50,100,150,300\}\}$. 
-%We set $\mathcal{F}^p = \{ \frac{1}{300}, \frac{5}{300}, \frac{10}{300}, \frac{20}{300}, \frac{50}{300}, \frac{100}{300}, \frac{150}{300} ,\frac{300}{300}\}$. 
-For our attack, we explore a much larger number of sets of messages as our attack is computationally-light, evolving only simple matrix computation. In particular, we randomly sample $10^7$ sets of size $d+1$ and choose the one which minimizes the condition number of $\Theta_{\text{out}}$, since an ill-conditioned matrix  $\Theta_{\text{out}}$ leads to a high numerical inversion error as mentioned in App.~\ref{app:toydataset}.  All other hyperparameters are consistent with those used in the neural network experiments.
-
-\begin{table}[t]
-    \centering
-    \small
-    \setlength{\tabcolsep}{6pt}
-    \renewcommand{\arraystretch}{1.08}
-    \begin{tabular}{@{}lccc@{}}
-        \toprule
-        \textbf{Attack} & \multicolumn{3}{c}{\textbf{Dataset}} \\
-        \cmidrule(l){2-4}
-        & \textbf{Income-L} & \textbf{Income-A} & \textbf{Medical} \\
-        \midrule
-        \multicolumn{4}{@{}l}{\textbf{Passive}} \\
-        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
-        \quad Grad-w-O & $58.19 \pm 0.41$          & $55.97 \pm 0.38$          & $\mathbf{94.68} \pm 0.23$ \\
-        \quad Ours     & $\mathbf{59.05} \pm 0.40$ & $\mathbf{56.56} \pm 0.41$ & $94.13 \pm 0.16$ \\
-        \midrule
-        \multicolumn{4}{@{}l}{\textbf{Active (10 rounds)}} \\
-        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
-        \quad Grad-w-O & $\mathbf{59.06} \pm 0.07$ & $\mathbf{57.18} \pm 0.39$ & $\mathbf{94.68} \pm 0.23$ \\
-        \quad Ours     & $57.99 \pm 1.71$          & $56.44 \pm 0.12$          & $90.47 \pm 5.12$ \\
-        \midrule
-        \multicolumn{4}{@{}l}{\textbf{Active (50 rounds)}} \\
-        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
-        \quad Grad-w-O & $\mathbf{60.69} \pm 0.30$ & $\mathbf{57.18} \pm 0.39$ & $\mathbf{94.68} \pm 0.23$ \\
-        \quad Ours     & $59.10 \pm 0.16$          & $56.22 \pm 0.06$          & $93.91 \pm 0.08$ \\
-        \midrule
-        Model-w-O      & $59.10 \pm 0.16$          & $56.56 \pm 0.41$          & $94.13 \pm 0.16$ \\
-        \bottomrule
-    \end{tabular}
-    \caption{The AIA accuracy over one (random chosen) targeted client local dataset, evaluated under both honest-but-curious (passive) and malicious (active) adversaries across Income L, Income-A and Medical FL datasets. The standard deviation is evaluated over three FL training runs. All clients solve a \emph{least squares regression} problem running FedAvg with 1 epoch and batch size 32. For income-L, we consider an i.i.d setting.}
-    \label{tab:attack_linear}
-\end{table}
-
-
-Results in Table~\ref{tab:attack_linear} show that our attacks outperform the baseline Grad in both passive and active scenarios on across all three datasets. Notably, our passive attack achieves improvements of over 4, 5 and 7 percentage points (p.p.) for Income-L, Income-A and Medical datasets, respectively. Even when the gradient-based method has access to an oracle, our passive attacks still achieves higher accuracy on Income-A and Income-L and comes very close on Medical dataset. 
-More importantly, our passive attack reaches already  to the performance expected from an adversary who knows the optimal local model,  demonstrating the effectiveness of our passive approach in approximating the optimal local model (Algorithm~\ref{algo:lineardecode}).
-When shifting to active attacks,  the performance gain over Grad remains largely consistent after 50 active rounds.
-
 
 \subsection{Impact of the starting round for active attack}
 \label{app:starting_points}

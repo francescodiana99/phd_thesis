@@ -286,30 +286,81 @@ We investigate two FL scenarios, named \mbox{Income-L} and Income-A, respectivel
 
 For all the datasets, each client keeps $90\%$ of its data for training and uses $10\%$ for validation.
 
+\subsection{Experimental Settings}
+Across all experiments, the adversary infers the smoking status in the Medical dataset and gender in the Income-L and Income-A datasets. We measure attack performance using the AIA accuracy, defined as the fraction of sensitive attributes correctly inferred across all samples.
 
-\subsection{FL Training and Attack Setup}
-In all the experiments, each client follows FedAvg to train a \emph{neural network} model with a single hidden layer of 128 neurons, using ReLU as activation function. 
+\subsubsection{Federated Least Squares Regression}
+In these experiments, each client trains a linear least-squares regression model through FedAvg. For Income-L and Income-A, we simplify the feature representation to make the prediction task suitable for linear least-squares regression, mainly by removing high-cardinality categorical features and aggregating some categorical values. The complete preprocessing procedure is detailed in Appendix~\ref{app:hyperparameters}.
+
+Training is performed for $T=300$ communication rounds, using one local epoch and a batch size of 32. Each client participates in all rounds, i.e., $\mathcal{T}_c=\{0,\ldots,T-1\}$, and the learning rate is fixed to $5\cdot10^{-3}$. The passive adversary may eavesdrop on all exchanged messages until the end of training, whereas the active adversary launches the attack after round $T$ for an additional 10 or 50 rounds. All attacks target a single client selected at random. To approximate the optimal local model of the targeted client, the passive adversary applies Algorithm~\ref{algo:lineardecode}, while the active adversary applies Algorithm~\ref{algo:active}. Every attack is evaluated over three FL training runs with different random seeds.
+
+\subsubsection{Nerual Networks}
+In all the experiments, each client follows FedAvg to train a neural network model with a single hidden layer of 128 neurons, using ReLU as activation function. 
 The number of communication rounds is fixed to $T = \lceil 100/E \rceil$ where $E$ is the number of local epochs. Each client participates to all rounds, i.e.,~$\mathcal{T}_c = \{0,...,T-1\}$.
 The learning rate is tuned for each training scenario (different datasets and number of local epochs), with values provided in Appendix~\ref{app:hyperparameters}. The passive adversary may eavesdrop all the exchanged messages until the end of the training. 
 The active adversary launches the attack after $T$ rounds for additional $\lceil 10/E \rceil$ and $\lceil 50/E \rceil$ rounds.
-Every attack is evaluated over FL trainings from 3 different random seeds.We also examine the impact of the attack's starting round. The results are presented in Appendix~\ref{app:starting_points}
-For Medical dataset, the adversary infers whether a person smokes or not. For Income-L and Income-A datasets, the adversary infers the gender. 
-The AIA accuracy is the fraction of the correct inferences over all the samples. 
-We have also conducted experiments for federated least squares regression on the same datasets. The results can be found in Appendix\ref{app:linear_model}. 
+Every attack is evaluated over FL trainings from 3 different random seeds.We also examine the impact of the attack's starting round. The results are presented in Appendix~\ref{app:starting_points}.
 
-\subsection{Baselines and Our Attack Implementation}\label{subsec:baseline}
-\paragraph{Gradient-Based.}
+
+\subsection{Attack Methods and Baselines}\label{subsec:baseline}
+\subsubsection{Gradient-Based}
 We compare our method with the (gradient-based) SOTA (Sec.~\ref{subsec:gradient-based}). 
 The baseline performance is affected by the set of  inspected rounds~$\mathcal{T}$ considered in~\eqref{eq:aia_gradient_based}. We select the inspected rounds $\mathcal{T}$ based on two criteria: the highest cosine similarity and the best AIA accuracy. In a real attack, the adversary is not expected to know the attack accuracy beforehand.
 %for tuning purposes. 
 Therefore,  we refer to the attack based on the highest cosine similarity as {\bf{Grad}}  and to the other as {\bf{Grad-w-O}} ({\bf Grad}ient {\bf w}ith {\bf O}racle), as it assumes the existence of an oracle that provides the attack accuracy. The details for the tuning of $\mathcal{T}$ and other hyper-parameter settings can be found in Appendix~\ref{app:hyperparameters}.
    
-\paragraph{Our Attacks.} Our attacks consist of two steps: 1) reconstructing the optimal local model, and 2) executing the model-based AIA in~\eqref{eq:aia_model_based}. For the first step, a passive adversary uses the last-returned model from the targeted client, while an active adversary  executes Alg.~\ref{algo:active}. The details of the hyperparameter settings can be found in Appendix~\ref{app:hyperparameters}.
+\subsubsection{Our Attacks} 
+Our attacks consist of two steps: 1) approximating the optimal local model of the targeted client, and 2) executing the model-based AIA in~\eqref{eq:aia_model_based} on the reconstructed model. The first step depends on the considered model. For federated least squares regression, the passive adversary reconstructs the local model using Algorithm~\ref{algo:lineardecode}, whereas for neural networks it uses the last model returned by the targeted client. In both settings, the active adversary applies Algorithm~\ref{algo:active}. Further implementation details and hyperparameter configurations are provided in Appendix~\ref{app:hyperparameters}.
 
 \paragraph{Model-Based with Oracle (Model-w-O).} 
 To provide an upper bound on the performance of our approach, we assume the existence of an oracle that provides the optimal local model for the first step of our attack. In practice, the optimal local model is determined empirically by running Adam for a very large number of iterations.
 
-\subsection{Experimental Results}
+\subsection{Experimental Results on Federated Least Squares Regression}
+
+% Results in Table~\ref{tab:attack_linear} show that our attacks outperform the baseline Grad in both passive and active scenarios on across all three datasets. Notably, our passive attack achieves improvements of over 4, 5 and 7 percentage points (p.p.) for Income-L, Income-A and Medical datasets, respectively. Even when the gradient-based method has access to an oracle, our passive attacks still achieves higher accuracy on Income-A and Income-L and comes very close on Medical dataset. 
+% More importantly, our passive attack reaches already  to the performance expected from an adversary who knows the optimal local model,  demonstrating the effectiveness of our passive approach in approximating the optimal local model (Algorithm~\ref{algo:lineardecode}).
+% When shifting to active attacks,  the performance gain over Grad remains largely consistent after 50 active rounds.
+
+Table~\ref{tab:attack_linear} reports the AIA accuracy for federated least-squares regression. We first consider the passive setting. Our attack consistently outperforms the realistic gradient-based baseline \textbf{Grad}, improving the AIA accuracy by approximately $6$, $7$, and $6$ percentage points (p.p.) on Income-L, Income-A, and Medical, respectively. Our approach also remains competitive with \textbf{Grad-w-O}, despite the latter relying on an oracle to select the attack rounds. In particular, our attack slightly outperforms Grad-w-O on Income-L and Income-A, while achieving a comparable accuracy on Medical.
+
+More importantly, these experiments validate the local-model reconstruction strategy underlying our approach. The passive attack achieves $59.05\%$, $56.56\%$, and $94.13\%$ accuracy on Income-L, Income-A, and Medical, respectively, compared with $59.10\%$, $56.56\%$, and $94.13\%$ for Model-w-O. Hence, across all three datasets, the model reconstructed from the observed FL messages through Algorithm~\ref{algo:lineardecode} is sufficient to attain essentially the same AIA accuracy as direct access to the optimal local model. This provides empirical support for the theoretical analysis of the passive reconstruction approach and shows that, in the least-squares setting, the information contained in the exchanged models can be sufficient to recover most of the privacy leakage exposed by the client's local optimum.
+
+The results also explain why granting additional capabilities to our adversary provides only limited benefits in this setting. Since the passive reconstruction already achieves near-oracle AIA performance, there is little room for the active procedure to further improve the attack. After 50 active rounds, our attack reaches $59.10\%$, $56.22\%$, and $93.91\%$ on the three datasets, remaining close to Model-w-O and approximately $6$ p.p. above the realistic Grad baseline.
+
+\begin{table}[t]
+    \centering
+    \setlength{\tabcolsep}{6pt}
+    \renewcommand{\arraystretch}{1.08}
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Attack} & \multicolumn{3}{c}{\textbf{Dataset}} \\
+        \cmidrule(l){2-4}
+        & \textbf{Income-L} & \textbf{Income-A} & \textbf{Medical} \\
+        \midrule
+        \multicolumn{4}{@{}l}{\textbf{Passive}} \\
+        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
+        \quad Grad-w-O & $58.19 \pm 0.41$          & $55.97 \pm 0.38$          & $\mathbf{94.68} \pm 0.23$ \\
+        \quad Ours     & $\mathbf{59.05} \pm 0.40$ & $\mathbf{56.56} \pm 0.41$ & $94.13 \pm 0.16$ \\
+        \midrule
+        \multicolumn{4}{@{}l}{\textbf{Active (10 rounds)}} \\
+        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
+        \quad Grad-w-O & $\mathbf{59.06} \pm 0.07$ & $\mathbf{57.18} \pm 0.39$ & $\mathbf{94.68} \pm 0.23$ \\
+        \quad Ours     & $57.99 \pm 1.71$          & $56.44 \pm 0.12$          & $90.47 \pm 5.12$ \\
+        \midrule
+        \multicolumn{4}{@{}l}{\textbf{Active (50 rounds)}} \\
+        \quad Grad     & $53.10 \pm 1.40$          & $49.74 \pm 3.17$          & $87.76 \pm 3.80$ \\
+        \quad Grad-w-O & $\mathbf{60.69} \pm 0.30$ & $\mathbf{57.18} \pm 0.39$ & $\mathbf{94.68} \pm 0.23$ \\
+        \quad Ours     & $59.10 \pm 0.16$          & $56.22 \pm 0.06$          & $93.91 \pm 0.08$ \\
+        \midrule
+        Model-w-O      & $59.10 \pm 0.16$          & $56.56 \pm 0.41$          & $94.13 \pm 0.16$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{AIA accuracy (\%) on the local dataset of a randomly selected target client under honest-but-curious (passive) and malicious (active) adversaries for federated least-squares regression on Income-L, Income-A, and Medical. Values report the mean $\pm$ standard deviation over three FL training runs with different random seeds. Clients train with FedAvg using one local epoch and a batch size of 32. For Income-L, we consider the i.i.d.\ setting.}
+    \label{tab:attack_linear}
+\end{table}
+
+
+\subsection{Experimental Results on Neural Networks}
 
 \begin{table}[t]
     \centering
@@ -360,22 +411,22 @@ Crosses represent passive attacks, while dots represent active attacks. Dashed l
     \label{fig:impact}
 \end{figure*}
 
-\paragraph{Impact of Data Heterogeneity.} 
+\subsubsection{Impact of Data Heterogeneity} 
 We simulate varying levels of heterogeneity in the Income-L dataset and illustrate how the attack performance evolves in Figure~\ref{fig:impact} (left). First, we observe that as the data is more heterogeneously split, the accuracy of AIA improves for all approaches. 
 Indeed, the data splitting strategy (Appendix~\ref{app:datasplit_incomel}) leads to a greater degree of correlation between the clients' sensitive attributes and the target variable at higher levels of heterogeneity. This intrinsic correlation facilitates the operation of all AIAs.
 We observe in these experiments, as in previous ones, that active Grad does not necessarily offer advantages over passive Grad. In the more homogeneous case (which is less realistic in an FL setting), our passive attack performs slightly worse than Grad, but its accuracy increases more rapidly with heterogeneity, resulting in an AIA accuracy advantage of over 20 p.p. in the most heterogeneous case.
 Our active attack over 50 additional rounds consistently outperforms Grad by at least 30 p.p. and is almost indistinguishable from \mbox{Model-w-O}.
 
-\paragraph{Impact of Batch Size.} 
+\subsubsection{Impact of Batch Size} 
 %We test the FedAvg training with 1 local epoch and 6 different batch sizes. 
 Figure~\ref{fig:impact} (center) shows that the performance of our attacks slightly decrease as the batch size increases.  A possible explanation for this is that a larger batch size results in fewer local updates per epoch, leading the client to return a less overfitted model. Despite this, our approach consistently outperforms Grad in all cases.
 %This is due to the fact that a larger batch size results in fewer local updates per epoch, leading to the client returning a less over-fitting model. Despite this, our approach consistently outperforms Grad in all cases.
 % NOTE: slightly reformulated to save enough space to fit in the number of pages.
-\paragraph{Impact of the Number of Local Epochs}
+\subsubsection{Impact of the Number of Local Epochs}
 %We test the FedAvg training with batch size 32 and 5 different local epochs. 
 Figure~\ref{fig:impact} (right) shows that under passive attacks our approach is not sensitive to the number of local epochs, whereas Grad's performance deteriorates to the level of random guessing as the number of local epochs increases to 5. Interestingly, active Grad significantly improves upon passive Grad as the number of local epochs increases. While our active approach progressively performs slightly worse, it still maintains an advantage of over 10 p.p.~compared to Grad.
 
-\paragraph{Impact of the Local Dataset Size.}
+\subsubsection{Impact of the Local Dataset Size}
 Figure~\ref{fig:dataset_size_effect} shows how each client's dataset size impacts individual (active) AIA accuracy in Income-A dataset. %The experiment setting is the same as in Table~\ref{tab:attacks_32} with  50 active rounds.
 We observe that for all methods, clients with smaller datasets are more vulnerable to the attacks,  
 %Because the corresponding gradients incorporate less samples and 
@@ -388,7 +439,7 @@ Moreover, for clients with over 20000 data points, Grad provides an attack perfo
     \label{fig:dataset_size_effect}
 \end{figure}
 
-\paragraph{Impact of defense.}
+\subsubsection{Impact of Differential Privacy}
 To mitigate privacy leakage, we apply a federated version of DP-SGD \cite{Abadi_dp}, providing sample-level differential privacy guarantees~\cite{Dwork, slDP}. 
 Our experiments show that, even with this defense mechanism in place, our approach still outperforms the baselines in most of the scenarios.  Results are in Appendix~\ref{app:defense}.
 
@@ -396,7 +447,7 @@ Our experiments show that, even with this defense mechanism in place, our approa
 In our work, we have demonstrated the effectiveness of using model-based AIA for federated \emph{regression} tasks, when the attacker can approximate the optimal local model. For an honest-but-curious adversary, we proposed a computationally efficient approach to reconstruct the optimal \emph{linear} local model in least squares regression. In contrast, for neural network scenarios, our passive approach involves directly utilizing the last returned model (Sec.~\ref{subsec:baseline}). We believe more sophisticated reconstruction techniques may exist, and we plan to investigate this aspect in  future work.
 
 The reader may wonder if the superiority of model-based attacks over gradient-based ones also holds for \emph{classification} tasks. Some preliminary experiments we conducted suggest that the relationship is inverted. We advance a partial explanation for this observation.
- For a linear model with binary cross-entropy loss, it can be shown that the model-based AIA  \eqref{eq:aia_model_based} on a binary sensitive attribute is equivalent to a simple label-based attack, where the attribute is uniquely reconstructed based on the label. This approach leads to poor performance because the attack relies only on general population characteristics and ignores individual specificities.
+ For a linear model with binary cross-entropy loss, it can be shown that the model-based AIA \eqref{eq:aia_model_based} on a binary sensitive attribute is equivalent to a simple label-based attack, where the attribute is uniquely reconstructed based on the label. This approach leads to poor performance because the attack relies only on general population characteristics and ignores individual specificities.
 This observation also holds experimentally for neural networks trained on the Income-L dataset, largely due to the inherent unfairness of the learned models. For example, for the same set of public features, being a man consistently results in a higher probability of being classified as wealthy compared to being a woman. As a consequence, the AIA infers gender solely based on the high or low income label. These preliminary remarks may prompt new interesting perspectives on the relationship between fairness and privacy (see for example the seminal paper~\cite{chang2021privacy}).
 
 % NOTE: Modification here, removed description of mixup and tappfl
