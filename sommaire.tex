@@ -8,6 +8,7 @@
 \usepackage{lipsum}
 \usepackage{dsfont}
 \usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{footnotehyper}
 \setlength{\headheight}{13.9186pt}
 \renewcommand{\thefootnote}{\arabic{footnote}}
@@ -21,10 +22,11 @@
 \def\X{{\mathbf{X}}}
 \def\o{{\mathbf{o}}}
 \def\z{{\mathbf{z}}}
-\def\C{\ensuremath{\mathcal{U}}}
+\def\C{\ensuremath{\mathcal{C}}}
 \def\real{\mathbb{R}}
 \def\interger{\mathbb{N}}
 \def\E{\mathbb{E}}
+\newcommand{\prob}{\mathbb{P}}
 \def\localupdaterule{\mathrm{Local\_Update}}
 \def\dataset{\ensuremath{\mathcal{D}}}
 \def\localdataset{\dataset_u}
@@ -77,21 +79,21 @@
 \def\truenegative{\ensuremath{\mathcal{N}}}
 \def\domain{\mathbb{D}}
 \def\subtime{\mathbf{T}}
-\def\Win{\W^{(1)}}
-\def\Wout{\W^{(L)}}
-\def\bin{\b^{(1)}}
-\def\bout{\b^{(L)}}
+\def\Win{\W^{a}}
+\def\Wout{\W^{L}}
+\def\bin{\b^{a}}
+\def\bout{\b^{L}}
 \def\oi{\mathbf{g}_{i}}
 \def\oj{\mathbf{g}_{j}}
 \def\ob{g_{b_{i}}}
 \def\intervals{\ensuremath{\mathcal{I}}}
 \def\obs{\ensuremath{\mathcal{G}}}
-\def\bini{b_i^{(1)}}
+\def\bini{b_i^{a}}
 \def\obsnew{\obs_{\mathrm{new}}}
 \def\loss{\ensuremath{\mathcal{L}}}
 \def\alphas{\mathbf{\alpha}}
 \def\batch{\ensuremath{\mathcal{B}}}
-\def\zini{z^{(1)}_i}
+\def\zini{z^{a}_i}
 \def\gradlossjwi{\frac{\partial \loss_j}{\partial \W_i^a}}
 \def\gradlossjbi{\frac{\partial \loss_j}{\partial b_i^a}}
 \def\gradlossjW{\frac{\partial \loss_j}{\partial \W}}
@@ -107,6 +109,8 @@
 \def\gradziwi{\frac{\partial z_i}{\partial \W_i^a}}
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator{\Dist}{\textbf {Dist}}
+
+\newcommand{\francesco}[1]{\textcolor{red}{\textbf{Francesco:} #1}}
 
 
 % Redefine end statements to nothing
@@ -153,7 +157,7 @@
 
   % \Part{État de l'art}
   \import{chapitre2/}{chapter2}
-  % \import{chapitre3/}{chapitre3}
+  \import{chapitre3/}{chapter3}
 
   % \Part{Contributions}
   \import{chapitre4/}{chapitre4}
@@ -185,4 +189,6 @@
 
   \appendix
   \import{appendix/}{appendix_aia}
+  \import{appendix/}{appendix_ctp}
+
 \end{document}

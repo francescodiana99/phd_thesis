@@ -28,6 +28,27 @@
 	]{thesisstatement}
 
 	\declaretheoremstyle[
+		headfont=\bfseries\color{linkColor},
+		bodyfont=\normalfont,
+		headpunct={\quad},
+		postheadspace=0pt,
+		mdframed={
+			backgroundcolor=linkColor!5,
+			linecolor=linkColor,
+			linewidth=2.2pt,
+			topline=false,
+			bottomline=false,
+			rightline=false,
+			innertopmargin=7pt,
+			innerbottommargin=7pt,
+			innerleftmargin=11pt,
+			innerrightmargin=11pt,
+			skipabove=10pt,
+			skipbelow=10pt
+		}
+	]{thesisassumption}
+
+	\declaretheoremstyle[
 		headfont=\bfseries\color{citeColor},
 		bodyfont=\normalfont,
 		headpunct={\quad},
@@ -54,6 +75,7 @@
 	\declaretheorem[style=thesisstatement,name=Proposition,sibling=theorem]{prop}
 	\declaretheorem[style=thesisstatement,name=Corollaire,sibling=theorem]{corollary}
 	\declaretheorem[style=thesisstatement,name=Preuve,numberwithin=chapter]{preuve}
+	\declaretheorem[style=thesisassumption,name=Assumption,numberwithin=section]{assumption}
 
 	\declaretheorem[style=thesisdefinition,name=Définition,numberwithin=section]{definition}
 	\declaretheorem[style=thesisdefinition,name=Exemple,numberwithin=section]{example}
