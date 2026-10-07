@@ -2007,17 +2007,23 @@ url={https://openreview.net/forum?id=rkE3y85ee}
 }
 
 
-@misc{GradFiltClasswiseTargeted,
-  title        = {{{GradFilt}}: {{Class-wise Targeted Data Reconstruction}} from {{Gradients}} in {{Federated Learning}}},
-  shorttitle   = {{{GradFilt}}},
-  year         = 2024,
-  doi          = {10.1145/3589335.3651514},
-  urldate      = {2026-01-06},
-  howpublished = {https://dl.acm.org/doi/epdf/10.1145/3589335.3651514},
-  langid       = {english},
-  file         = {/home/fdiana/Zotero/storage/AMIH3XPW/2024 - GradFilt Class-wise Targeted Data Reconstruction from Gradients in Federated Learning.pdf;/home/fdiana/Zotero/storage/UNWYIHG6/3589335.html}
+@inproceedings{GradFiltClasswiseTargeted,
+author = {Zhang, Rui and Guo, Song and Li, Ping},
+title = {GradFilt: Class-wise Targeted Data Reconstruction from Gradients in Federated Learning},
+year = {2024},
+isbn = {9798400701726},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3589335.3651514},
+doi = {10.1145/3589335.3651514},
+abstract = {Gradient Inversion Attacks (GIAs) have shown that private training data can be recovered from gradient updates in Federated Learning (FL). However, these GIAs can only recover the entire batch of data with limited performance or stochastically restore some random instances. In this paper, we propose a class-wise targeted attack, named GradFilt, which can reconstruct the training data of some specified class(es) from the batch-averaged gradients. By modifying the parameters of the classification layer, we create a filter within the FL model that eliminates the gradients of non-target data while preserving the gradients of target data. We evaluate GradFilt with image datasets on popular FL model architectures. The results show that GradFilt can effectively reconstruct the desired samples with higher accuracies than the existing GIAs. Moreover, we can also achieve 100\% success rate in restoring the batch labels. We hope this work can raise awareness of the privacy risks in FL and inspire effective defense mechanisms.},
+booktitle = {Companion Proceedings of the ACM Web Conference 2024},
+pages = {698–701},
+numpages = {4},
+keywords = {federated learning, gradient inversion, privacy leakage},
+location = {Singapore, Singapore},
+series = {WWW '24}
 }
-
 @inproceedings{shan2025geminio,
   title     = {Geminio: Language-Guided Gradient Inversion Attacks in Federated Learning},
   author    = {Junjie Shan and Ziqi Zhao and Jialin Lu and Rui Zhang and Siu Ming Yiu and Ka-Ho Chow},
@@ -3575,4 +3581,90 @@ pages={35–48}
   timestamp    = {Sun, 19 Jan 2025 14:36:56 +0100},
   biburl       = {https://dblp.org/rec/journals/jacm/BentleyKST78.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@inproceedings{
+Xie2020DBA,
+title={DBA: Distributed Backdoor Attacks against Federated Learning},
+author={Chulin Xie and Keli Huang and Pin-Yu Chen and Bo Li},
+booktitle={International Conference on Learning Representations},
+year={2020},
+url={https://openreview.net/forum?id=rkgyS0VFvr}
+}
+
+@misc{vgia,
+      title={No More Guessing: a Verifiable Gradient Inversion Attack in Federated Learning}, 
+      author={Francesco Diana and Chuan Xu and André Nusser and Giovanni Neglia},
+      year={2026},
+      eprint={2604.15063},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2604.15063}, 
+}
+
+@techreport{ProjectAIKYA,
+  title        = {Project AIKYA: Enhanced Anomaly Detection in Financial Transactions through Decentralized AI},
+  author       = {Sudhir Upadhyay and Sarthak Tickoo and Amit Varshney and Sayani Kundu and Jisoo Lee and Abhay Navale and Jyothsna Padmakumar and Bindu Ethan Perlmutter and Vikram Singh and Ramesh Anandhan and Anwar Beatty and Chang Yang Jiao and Suresh Shetty and Vinay Somashekar and Tulasi Movva and Umar Farooq},
+  institution  = {Kinexys by J.P. Morgan \& BNY Mellon},
+  year         = {2025},
+  month        = {August},
+  type         = {White paper},
+  url          = {https://www.jpmorgan.com/kinexys/documents/kinexys-project-aikya-enhanced-anomaly-detection-through-decentralized-ai.pdf},
+  note         = {Accessed: 2025-12-17}
+}
+
+@article{OgierduTerrail2025FedECA,
+  title   = {FedECA: federated external control arms for causal inference with time-to-event data in distributed settings},
+  author  = {Ogier du Terrail, Jean and
+             Klopfenstein, Quentin and
+             Li, Honghao and
+             Mayer, Imke and
+             Loiseau, Nicolas and
+             Hallal, Mohammad and
+             Debouver, Michael and
+             Camalon, Thibault and
+             Fouqueray, Thibault and
+             Arellano Castro, Jorge and
+             Yanes, Zahia and
+             Dahan, La{\"e}titia and
+             Taieb, Julien and
+             Laurent-Puig, Pierre and
+             Bachet, Jean-Baptiste and
+             Zhao, Shulin and
+             Nicolle, Remy and
+             Cros, J{\'e}r{\^o}me and
+             Gonzalez, Daniel and
+             Carreras-Torres, Robert and
+             Garcia Velasco, Adelaida and
+             Abdilleh, Kawther and
+             Doss, Sudheer and
+             Balazard, F{\'e}lix and
+             Andreux, Mathieu},
+  journal = {Nature Communications},
+  year    = {2025},
+  volume  = {16},
+  number  = {1},
+  pages   = {7496},
+  doi     = {10.1038/s41467-025-62525-z},
+  url     = {https://doi.org/10.1038/s41467-025-62525-z},
+  issn    = {2041-1723}
+}
+
+@misc{kingcountyhousing,
+    author       = {{harlfoxem}},
+    title        = {House Sales in King County, USA},
+    year         = {2016},
+    howpublished = {Kaggle Dataset},
+    url          = {https://www.kaggle.com/datasets/harlfoxem/housesalesprediction},
+    note         = {Accessed via OpenML, dataset ID 42092}
+}
+
+@inproceedings{
+wikitext,
+title={Pointer Sentinel Mixture Models},
+author={Stephen Merity and Caiming Xiong and James Bradbury and Richard Socher},
+booktitle={International Conference on Learning Representations},
+year={2017},
+url={https://openreview.net/forum?id=Byj72udxe}
 }

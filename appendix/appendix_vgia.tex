@@ -1,0 +1,505 @@
+\chapter{A verifiable Gradient Inversion Attack In Federated Learning}
+
+\section{Proof of Proposition \ref{prop:sample_isolation}}
+\label{app:proof_prop1}
+
+\begin{proposition}
+Consider the non-empty slice delimited at round $t$ by the hyperplanes
+$\mathbf w^\top \x+\hat b_k^t=0$ and $\mathbf w^\top \x+\hat b_{k+1}^t=0$,
+and suppose that it contains $m\le d$ linearly independent inputs. Assume that
+the common first-layer direction $\mathbf w$ is drawn once from a distribution
+absolutely continuous with respect to the Lebesgue measure. At each attack round,
+assume that the vectorized weights and biases of the layers following the
+attacked layer are redrawn independently of the past from absolutely continuous
+distributions, supported on parameters for which each downstream hidden layer
+has at least two fixed ReLU gates active on all inputs in the slice. Finally,
+assume that, for every sample $j$, all level sets of
+$\partial \loss_j/\partial z^L$ are Lebesgue-null.
+
+Then, almost surely, the span condition
+\[
+\slice_k^t
+\in
+\operatorname{span}\left(
+\slice_k^{t+1},\ldots,\slice_{k+q-2}^{t+1}
+\right)
+\]
+implies that every non-empty sub-slice induced at round $t+1$ contains exactly
+one input. Hence, when the span condition holds, the original slice contains
+as many inputs as there are non-null induced slice vectors, and therefore at
+most $q-1$ inputs.
+\end{proposition}
+
+
+
+\begin{proof}
+For each sample $j$, define
+\[
+\psi_j(z)
+:=
+\frac{1}{B}\frac{\partial \ell(z,y_j)}{\partial z}.
+\]
+Every level set $\psi_j^{-1}(c)$ has one-dimensional Lebesgue
+measure zero.
+Let $\mathcal X$ denote the non-empty slice delimited at round $t$ by the hyperplanes
+$\mathbf w \x+\hat b_k^t=0$ and $\mathbf w \x+\hat b_{k+1}^t=0$. Recall that
+\[
+\slice_k^t
+=
+\sum_{j=1}^m \beta_j^t \x_j,
+\qquad
+\beta_j^t
+=
+\psi_j(z_j^{L,t}).
+\]
+Let the round-$(t+1)$ refinement partition $\mathcal X$ into $q-1$ sub-slices
+$\{\mathcal X_r\}_{r=k}^{k+q-2}$, where $\mathcal X
+=
+\{
+\x_j :
+\mathbf w^\top \x_j+\hat b_{k+1}^t>0
+\ \text{and}\
+\mathbf w^\top \x_j+\hat b_k^t\le 0
+\}$ and $\mathcal X=\biguplus_{r=k}^{k+q-2}\mathcal X_r$,
+where $\biguplus$ denotes a disjoint union. The induced slice vectors are
+\[
+\slice_r^{t+1}
+=
+\sum_{\x_j\in\mathcal X_r}\beta_j^{t+1}\x_j,
+\qquad
+\beta_j^{t+1}=\psi_j(z_j^{L,t+1}).
+\]
+For each $j$, let $r(j)$ denote the index of the refined sub-slice containing
+$\x_j$.
+
+We first state a probabilistic fact we need later. Fix two distinct samples
+$\x_a,\x_b\in\mathcal X$. Since $\x_a-\x_b\neq 0$ and $\mathbf w$ is drawn from
+an absolutely continuous distribution, we have that $\mathbf w^\top(\x_a-\x_b)\neq 0$ almost surely. Thus the projections of $\x_a$ and $\x_b$ along $\mathbf w$ are distinct.
+
+Consider a round $\tau\in\{t,t+1\}$ in which $\x_a$ and $\x_b$ lie in the same
+queried slice. 
+For any two samples lying in the same slice, exactly one of the two boundary neurons is active for both samples. In that coordinate,
+the first-layer activations are $\mathbf w^\top \x_a+b_i^\tau$ and $\mathbf w^\top \x_b+b_i^\tau$, which are distinct. Hence the first-layer post-activation representations of
+$\x_a$ and $\x_b$ are distinct.
+
+We now show that the downstream random layers make the corresponding final
+logits jointly absolutely continuous while preserving the prescribed ReLU
+gating pattern. Fix a downstream hidden layer and let $K\subset \mathbb R_+^n$
+be a compact set containing all representations entering this layer for the
+inputs under consideration. Since these representations are outputs of ReLU
+layers, they are nonnegative coordinatewise.
+
+Let the affine map before the ReLU be
+\[
+F_{W,b}(u)=Wu+b,
+\qquad
+W\in\mathbb R^{p\times n},\quad b\in\mathbb R^p,
+\]
+with $p\ge 2$. We assume that the first two gates are prescribed to be open.
+Fix a margin $\gamma>0$. For $i=1,2$, define the activation threshold
+$\underline b_i(W_{i,:}) \coloneqq \gamma-\min_{u\in K} W_{i,:}u$.
+The attacker samples $W_{i,:}$ from an absolutely continuous distribution and,
+conditional on $W_{i,:}$, samples
+$b_i = \underline b_i(W_{i,:})+\eta_i$, where $\eta_i$ is drawn independently from an absolutely continuous
+distribution supported on an interval $I=(\eta_-,\eta_+)\subset (0,\infty)$.
+Then, for every $u\in K$,
+\[
+W_{i,:}u+b_i
+=
+W_{i,:}u
++
+\gamma-\min_{v\in K}W_{i,:}v
++
+\eta_i
+\ge
+\gamma+\eta_i
+>0.
+\]
+Hence the first two ReLU gates are strictly active for all inputs under
+consideration.
+
+Moreover, the joint distribution of $(W_{i,:},b_i)$ is absolutely continuous:
+indeed, it is obtained from the absolutely continuous pair
+$(W_{i,:},\eta_i)$ through the triangular change of variables
+\[
+(W_{i,:},\eta_i)
+\mapsto
+\left(W_{i,:},
+\underline b_i(W_{i,:})+\eta_i\right),
+\]
+whose Jacobian determinant with respect to the bias coordinate is one.
+
+Let $u_a,u_b\in K$ be two fixed distinct representations entering the layer,
+and set $\Delta:=u_a-u_b\neq 0$. Consider the determinant of the first two affine output coordinates:
+\[
+P(W,b)
+=
+\det
+\begin{pmatrix}
+(F_{W,b}(u_a))_1 & (F_{W,b}(u_b))_1\\
+(F_{W,b}(u_a))_2 & (F_{W,b}(u_b))_2
+\end{pmatrix}.
+\]
+This is a polynomial in the entries of $W$ and $b$.
+We claim that $P$ is not identically zero. Choose a row vector $r$ in the
+support of the row distribution such that $r^\top\Delta\neq 0$. Such an $r$ exists whenever the support of the row distribution contains a non-empty open set, because the set $\{r:r^\top\Delta=0\}$ is a proper hyperplane.
+Let $m_r:=\min_{u\in K} r^\top u$. Choose two distinct slack values $\eta_1,\eta_2\in I$, with $\eta_1\neq \eta_2$.
+Now define a particular parameter choice $(W_0,b_0)$ by setting
+\[
+(W_0)_{1,:}=r^\top,
+\qquad
+(W_0)_{2,:}=r^\top,
+\]
+and
+\[
+(b_0)_1=\gamma-m_r+\eta_1,
+\qquad
+(b_0)_2=\gamma-m_r+\eta_2.
+\]
+The remaining rows and biases may be chosen arbitrarily in their prescribed
+supports.
+
+This witness satisfies the open-gate constraint. Indeed, for $i=1,2$ and every
+$u\in K$,
+\[
+(W_0)_{i,:}u+(b_0)_i
+=
+r^\top u+\gamma-m_r+\eta_i
+\ge
+\gamma+\eta_i
+>0.
+\]
+Thus the first two gates are strictly active for this witness.
+
+Let
+\[
+A:=r^\top u_a+\gamma-m_r,
+\qquad
+B:=r^\top u_b+\gamma-m_r.
+\]
+Then
+\[
+(F_{W_0,b_0}(u_a))_{1:2}
+=
+\begin{pmatrix}
+A+\eta_1\\
+A+\eta_2
+\end{pmatrix},
+\qquad
+(F_{W_0,b_0}(u_b))_{1:2}
+=
+\begin{pmatrix}
+B+\eta_1\\
+B+\eta_2
+\end{pmatrix}.
+\]
+Therefore
+\[
+P(W_0,b_0)
+=
+\det
+\begin{pmatrix}
+A+\eta_1 & B+\eta_1\\
+A+\eta_2 & B+\eta_2
+\end{pmatrix}
+=
+(\eta_2-\eta_1)(A-B).
+\]
+Since
+\[
+A-B
+=
+r^\top(u_a-u_b)
+=
+r^\top\Delta
+\neq 0
+\]
+and $\eta_2-\eta_1\neq0$, we obtain $P(W_0,b_0) \neq 0$. Thus $P$ is a nonzero polynomial.
+
+The zero set of a nonzero polynomial has Lebesgue measure zero. Since the
+actual parameters $(W,b)$ are drawn from an absolutely continuous distribution,
+even after restricting the biases to satisfy the open-gate lower bounds, we
+have
+\[
+\mathbb P(P(W,b)=0)=0.
+\]
+Consequently, with probability one, the first two active affine coordinates of
+$F_{W,b}(u_a)$ and $F_{W,b}(u_b)$ are linearly independent. Since the first two
+ReLU gates are active, the corresponding post-ReLU representations are also
+linearly independent with probability one.
+
+
+
+Repeating the preceding argument over the finitely many
+downstream hidden layers shows that the penultimate representations $z_a^{L-1,\tau}$ and $z_b^{L-1,\tau}$ 
+are linearly independent almost surely.
+%
+Condition now on all layers up to layer $L-1$. The final scalar logits are
+\[
+z_a^{L,\tau}
+=
+W^{L,\tau}z_a^{L-1,\tau}+b^{L,\tau},
+\qquad
+z_b^{L,\tau}
+=
+W^{L,\tau}z_b^{L-1,\tau}+b^{L,\tau}.
+\]
+The linear map
+\[
+(W^{L,\tau},b^{L,\tau})
+\mapsto
+\left(
+W^{L,\tau}z_a^{L-1,\tau}+b^{L,\tau},
+W^{L,\tau}z_b^{L-1,\tau}+b^{L,\tau}
+\right)
+\]
+has rank two because $z_a^{L-1,\tau}$ and $z_b^{L-1,\tau}$ are linearly independent. Since $(W^{L,\tau},b^{L,\tau})$ is absolutely continuous, it follows that $(z_a^{L,\tau},z_b^{L,\tau})$ has a joint density in $\mathbb R^2$.
+In particular, each $z_j^{L,\tau}$ has a density. Since the zero level set
+$\psi_j^{-1}(0)$ has Lebesgue measure zero, we have
+\[
+\mathbb P(\beta_j^\tau=0)
+=
+\mathbb P(\psi_j(z_j^{L,\tau})=0)
+=0.
+\]
+Thus all coefficients $\beta_j^t$ and $\beta_j^{t+1}$ are nonzero almost
+surely.
+
+Next, we prove that two coefficients corresponding to two distinct samples $\x_a$ and $\x_b$ are not aligned across rounds, that is, $(\beta_a^{t+1}, \beta_b^{t+1})$ is not proportional to $(\beta_a^{t}, \beta_b^{t})$. Condition on the parameters at round $t$ and on the
+round-$(t+1)$ first-layer parameters. In particular, condition on the realized
+values
+\[
+c_a:=\beta_a^t,
+\qquad
+c_b:=\beta_b^t.
+\]
+The downstream parameters at round $t+1$ are independent of this conditioning,
+so, on the event that $\x_a$ and $\x_b$ lie in the same refined sub-slice, the
+pair $(z_a^{L,t+1},z_b^{L,t+1})$ still has a joint density.
+
+Consider the  alignment event $c_b\beta_a^{t+1}-c_a\beta_b^{t+1}=0$. Since $\beta_j^{t+1}=\psi_j(z_j^{L,t+1})$, this event is equivalent to $(z_a^{L,t+1},z_b^{L,t+1})\in S_c$, where
+\[
+S_c
+=
+\left\{
+(u,v)\in\mathbb R^2:
+c_b\psi_a(u)-c_a\psi_b(v)=0
+\right\}.
+\]
+Because $c_a$ and $c_b$ are not both zero almost surely, the set $S_c$ has
+two-dimensional Lebesgue measure zero. To see this, suppose for example that
+$c_a\neq 0$. Then for each fixed $u$, the vertical section of $S_c$ is
+\[
+\left\{
+v:
+\psi_b(v)=\frac{c_b}{c_a}\psi_a(u)
+\right\},
+\]
+which is a level set of $\psi_b$ and therefore has one-dimensional Lebesgue
+measure zero. By Fubini's theorem, $S_c$ has two-dimensional Lebesgue measure
+zero. The cases $c_a=0,c_b\neq0$ and $c_b=0,c_a\neq0$ are analogous.
+Since $(z_a^{L,t+1},z_b^{L,t+1})$ has a density, we conclude that
+\[
+\mathbb P\left[
+\beta_b^t\beta_a^{t+1}
+-
+\beta_a^t\beta_b^{t+1}
+=0
+\right]
+=0
+\]
+for every fixed pair $\x_a\neq \x_b$ that lies in the same refined sub-slice.
+
+We now prove the proposition. Assume that the span condition holds:
+\[
+\slice_k^t
+\in
+\operatorname{span}\left(
+\slice_k^{t+1},\ldots,\slice_{k+q-2}^{t+1}
+\right).
+\]
+Then there exist scalars $\{\alpha_r\}_{r=k}^{k+q-2}$ such that
+\[
+\slice_k^t
+=
+\sum_{r=k}^{k+q-2}\alpha_r\slice_r^{t+1}.
+\]
+Expanding both sides gives
+\[
+\sum_{j=1}^m \beta_j^t\x_j
+=
+\sum_{r=k}^{k+q-2}\alpha_r
+\sum_{\x_j\in\mathcal X_r}\beta_j^{t+1}\x_j
+=
+\sum_{j=1}^m
+\alpha_{r(j)}\beta_j^{t+1}\x_j.
+\]
+Since $\x_1,\ldots,\x_m$ are linearly independent, the coefficients in this
+linear expansion are unique. Therefore, for every $j$ we have $\beta_j^t = \alpha_{r(j)}\beta_j^{t+1}$.
+
+Suppose, toward a contradiction, that some refined sub-slice $\mathcal X_r$
+contains at least two samples. Choose two of them, say $\x_a,\x_b\in\mathcal X_r$.
+Then $r(a)=r(b)=r$, so the coefficient identities above give
+\[
+\beta_a^t=\alpha_r\beta_a^{t+1},
+\qquad
+\beta_b^t=\alpha_r\beta_b^{t+1}.
+\]
+Eliminating $\alpha_r$ yields
+\[
+\beta_b^t\beta_a^{t+1}
+-
+\beta_a^t\beta_b^{t+1}
+=0.
+\]
+But, as shown above, this alignment event has probability zero for any fixed
+pair of distinct samples in the same refined sub-slice. Taking a finite union
+over all pairs of samples in $\mathcal X$, we conclude that, almost surely,
+the span condition cannot hold if any refined sub-slice contains two or more
+samples.
+
+Therefore, whenever the span condition holds, every non-empty refined sub-slice
+contains at most one input. Since a non-empty sub-slice contains at least one
+input by definition, every non-empty refined sub-slice contains exactly one
+input.
+
+Finally, if $\mathcal X_r=\{\x_j\}$ is a singleton sub-slice, then $\slice_r^{t+1} = \beta_j^{t+1}\x_j$.
+As $\x_j\neq 0$ by linear independence and
+$\beta_j^{t+1}\neq 0$ almost surely, we have
+$\slice_r^{t+1}\neq 0$ almost surely. Conversely, if $\mathcal X_r=\emptyset$,
+then $\slice_r^{t+1}=0$. Hence the number of inputs in the original slice is
+equal to the number of non-null induced slice vectors. Since there are only
+$q-1$ induced sub-slices, this number is at most $q-1$.
+\end{proof}
+
+\section{Bounding the Number of Rounds}\label{app:vgia_bound}
+
+In this section we consider theoretical bounds on the number of rounds that our attack takes.
+Assume that $N/3 \geq B$, i.e., there are at least three times as many neurons in the attack layer as there are points in the batch.
+The upper bound on the number of rounds for our attack can be derived in an analogous way as for the CTP attack \cite[Appendix D]{diana2025cutting}, with two differences:
+\begin{enumerate}
+    \item As opposed to CTP, we need to re-send hyperplanes in each round, while CTP can re-use the information from previous rounds.
+    Hence our upper bound on the number of rounds has an additional factor of 3, as our approach needs 3 hyperplanes for a single isolated slice in which we want to search in the worst case, while CTP only needs a single hyperplane.
+    Note though that if we have many consecutive slices that contain points, then this constant tends to be closer to 2.
+    \item On the other hand, recall that in CTP a parameter $\eps$ that is a bound on the slice width until which we search has to be provided.
+    If $\eps$ is chosen too large in CTP, their approach fails to reconstruct part of the batch, as shown in Figs. \ref{fig:income_bad_epsilon}, \ref{fig:harus_bad_epsilon}, \ref {fig:king_county_bad_epsilon}, and \ref {fig:cifar_bad_epsilon}.
+    Hence, to make full reconstruction more probable, a small $\eps$ should be chosen.
+    This in turn leads to more rounds, as their tight bound on the number of rounds is $\left\lceil \log_2 \left(\frac{W}{N \cdot \eps}\right) \right\rceil + 1$.
+    On the other hand, our approach does not require a parameter $\eps$ but instead detects if a slice contains only a single point and hence does not search further.
+\end{enumerate}
+
+The above implies that while CTP needs $\left\lceil \log_2 \left(\frac{W}{N \cdot \eps}\right) \right\rceil + 1$ rounds in the worst case, our approach needs $3 \cdot \left(\left\lceil \log_2 \left(\frac{W}{N \cdot \eps_{\mathbf w}}\right) \right\rceil \right) + 1$ rounds in the worst case, where $\eps_{\mathbf w}$ is the minimum distance between two points after projection to the hyperplane search direction and $W$ is the width of the initial interval.
+Thus, at the latest when $\eps \leq \frac{\eps_{\mathbf w}^3 N^2}{W^2}$, our approach takes at most as many rounds as CTP and fewer if $\eps$ is chosen even smaller.
+In particular, note that $\eps$ can be arbitrarily smaller than $\eps_{\mathbf w}$ as a good value for $\eps$ cannot be known a priori and has to be guessed in CTP.
+
+
+\section{Attack Configuration}\label{app:exp_setup}
+
+To reduce the impact of numerical instabilities, all experiments are performed in double precision and gradients are computed sample-wise and then aggregated. 
+For all datasets, VGIA samples one vector $\mathbf{w}\sim\mathcal{N}\left(\mathbf{0},10^{-4}\mathbf{I}_d\right)$
+and assigns this vector to each row of the attacked weight matrix $\mathbf{W}^a$. For the classification datasets, namely HARUS, CIFAR-10, and ImageNet, all weights and biases in the intermediate layers after layer $a$ are independently sampled from $\mathcal{U}[0,1]$. For the output layer, the server independently samples $\mathbf{c}\sim\mathcal{N}\left(\mathbf{0},10^{-4}\mathbf{I}\right)$ and $
+\mathbf{u}\sim\mathcal{N}\left(\mathbf{0},10^{-4}\mathbf{I}\right),$ and sets $\mathbf{W}^{L}=\mathbf{c}\mathbf{u}^{\top}$. It also samples the output-layer biases from a zero-mean Gaussian distribution with variance $10^{-4}$. For the King County Housing and Income regression tasks, all weights and biases after the attacked layer, including those of the output layer, are independently sampled from $\mathcal{U}[0,1]$. These parameters are sampled again at each attack round.
+
+For the CTP baseline, we follow the original implementation descibed in Chapter~\ref{chap:ctp}. In all datasets, the attack direction is sampled from $\mathcal{N}(0,10^{-4})$, and intermediate-layer weights are initialized from the same distribution. Intermediate-layer biases are independently drawn from $\mathcal{N}(0,10^{-8})$, while the final-layer bias is fixed to $\mathbf{b}^{L} = 10^{30}$. For regression settings, the output-layer weights are sampled from $\mathcal{N}(0,10^{-8})$ when required by the original implementation.
+
+For the CAH baseline, attack hyperparameters are selected after a tuning process. Specifically, the random attack directions are sampled from $\mathcal{N}(0,\frac{1}{2})$ for Income, HARUS, and ImageNet, and from $\mathcal{N}(0,1)$ for King County Housing and CIFAR10. The scale factor is set to $s=0.3$ for Income and King County Housing, $s=0.99$ for HARUS and ImageNet, and $s=0.9$ for CIFAR10.
+
+All experiments were conducted on a single NVIDIA L40S GPU equipped with 48 GB of VRAM. On average, reconstructing a complete input batch required approximately 30 seconds for the tabular datasets, 56 seconds for CIFAR10, and 220 seconds for ImageNet.
+
+
+\section{Reconstruction Examples}\label{app:examples}
+Here we provide reconstructed examples of VGIA on all the tested datasets. See Tables~\ref{tab:income-reconstructed-originals},~\ref{tab:harus-reconstructed-originals},~\ref{tab:king-county-reconstructed-originals} for tabular datasets and Figures~\ref{fig:cifar10_example},~\ref{fig:imagenet_example} for image datasets.
+
+\begin{table}[h]
+\caption{VGIA Reconstructions on the ACS Income dataset for a batch of 2048 samples.}
+\centering
+\small
+\begin{tabular}{llrrrrrrrrr}
+\toprule
+Example & Sample & AGEP & SCHL & WKHP & SEX & COW & MAR & RELP & RAC1P & ST \\
+\midrule
+1 & Rec.      & 58 & 19 & 40 & 2 & 4 & 5 & 0 & 3 & 4 \\
+1 & True & 58 & 19 & 40 & 2 & 4 & 5 & 0 & 3 & 4 \\
+\midrule
+2 & Rec.      & 58 & 11 & 45 & 1 & 1 & 5 & 0 & 8 & 4 \\
+2 & True & 58 & 11 & 45 & 1 & 1 & 5 & 0 & 8 & 4 \\
+\midrule
+3 & Rec.      & 30 & 21 & 50 & 1 & 5 & 5 & 0 & 1 & 4 \\
+3 & True & 30 & 21 & 50 & 1 & 5 & 5 & 0 & 1 & 4 \\
+\midrule
+4 & Rec.      & 26 & 22 & 45 & 2 & 4 & 5 & 0 & 1 & 4 \\
+4 & True & 26 & 22 & 45 & 2 & 4 & 5 & 0 & 1 & 4 \\
+\bottomrule
+\end{tabular}
+\label{tab:income-reconstructed-originals}
+\end{table}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{assets/chapter_4/cifar/cifar_vgia_rec.png}
+    \caption{VGIA reconstruction examples on a batch of $B=2048$ images from CIFAR10.}
+    \label{fig:cifar10_example}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{assets/chapter_4/imagenet/rec_examples.png}
+    \caption{VGIA reconstruction examples on a batch of $B=1024$ images from ImageNet.}
+    \label{fig:imagenet_example}
+\end{figure}
+
+
+\begin{table}[h]
+\centering
+\small
+\caption{First 5 features from HARUS reconstructed samples from a batch of $B=2048$ records.}
+\begin{tabular}{llrrrrr}
+\toprule
+Example & Sample &
+\texttt{tBody-mean-X} &
+\texttt{tBody-mean-Y} &
+\texttt{tBody-mean-Z} &
+\texttt{tBody-std-X} &
+\texttt{tBody-std-Y} \\
+\midrule
+1 & Rec. & 0.62 & -0.0081 & -0.066 &  0.79 &  0.42 \\
+1 & True      & 0.62 & -0.0081 & -0.066 &  0.79 &  0.42 \\
+\midrule
+2 & Rec. & 0.27 & -0.032  & -0.13  & -0.28 & -0.12 \\
+2 & True      & 0.27 & -0.032  & -0.13  & -0.28 & -0.12 \\
+\midrule
+3 & Rec. & 0.33 & -0.014  & -0.075 &  0.65 &  0.53 \\
+3 & True      & 0.33 & -0.014  & -0.075 &  0.65 &  0.53 \\
+\midrule
+4 & Rec. & 0.25 & -0.026  & -0.21  &  0.66 &  0.55 \\
+4 & True      & 0.25 & -0.026  & -0.21  &  0.66 &  0.55 \\
+\bottomrule
+\end{tabular}
+\label{tab:harus-reconstructed-originals}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Reconstruction examples from a batch of 2048 samples of the KCH dataset. The table shows 8 of the 18 features of the dataset.}
+
+\small
+\begin{tabular}{llrrrrrrrr}
+\toprule
+Example & Sample & Bedrooms & Bathrooms & Sqft living & Condition & Grade & Sqft above & Sqft basement & Year built \\
+\midrule
+1 & Rec. & 6 & 4.75 & 5770 & 3 & 12 & 4500 & 1270 & 1998 \\
+1 & True      & 6 & 4.75 & 5770 & 3 & 12 & 4500 & 1270 & 1998 \\
+\midrule
+2 & Rec. & 4 & 2.50 & 3350 & 3 & 10 & 1760 & 1590 & 1995 \\
+2 & True      & 4 & 2.50 & 3350 & 3 & 10 & 1760 & 1590 & 1995 \\
+\midrule
+3 & Rec. & 2 & 1.75 & 2260 & 3 & 9  & 1890 & 370  & 2005 \\
+3 & True      & 2 & 1.75 & 2260 & 3 & 9  & 1890 & 370  & 2005 \\
+\midrule
+4 & Rec. & 5 & 2.50 & 3490 & 4 & 9  & 1840 & 1650 & 1958 \\
+4 & True      & 5 & 2.50 & 3490 & 4 & 9  & 1840 & 1650 & 1958 \\
+\bottomrule
+\end{tabular}
+\label{tab:king-county-reconstructed-originals}
+\end{table}

@@ -33,8 +33,6 @@ Our main contributions can be summarized as follows:
 \end{itemize}
 
 \section{Problem Description and Background}
-\subsection{Federated Learning}
-
 We consider here the same problem formulation described in Section~\ref{sec:fed_learning}. We denote by $\clients$ the set of all clients participating to FL. 
 Let $\localdataset = \{(\x_u(i), y_u(i)), i=1,\dots, S_u\}$ denote the local dataset of client $u\in \clients$ with size $S_u\triangleq |\localdataset|$.  Each data sample $(\x_u(i), y_u(i))$ is a pair consisting of an input $\x_u(i)$ and of an associated target value $y_u(i)$.
 In FL, clients cooperate to learn a global model, which minimizes the following empirical risk over all the data owned by clients:
@@ -48,34 +46,34 @@ where $\ell(\model, \x_u(i), y_u(i))$ measures the loss of the model $\model$ on
 
 
 Let $\model^\star = \arg\min_{\model \in \real^d} \globallossfunction(\model)$ be a global optimal model, i.e., a minimizer of Problem~\eqref{eq:globalobjective}. 
-A general framework to learn such a global model in a federated way is shown in Algorithm~\ref{algo:fl-framework}; it generalizes a large number of FL algorithms, including FedAvg~\cite{pmlr-v54-mcmahan17a}, FedProx~\cite{fedprox}, and FL with different client sampling techniques~\cite{nishio2019client, chen2020optimal, cho2020client}. The model~$\model^T$---the output of Algorithm~\ref{algo:fl-framework}---is the tentative solution of Problem~\eqref{eq:globalobjective}. Its performance depends on the specific FL algorithm, which specifies how clients are selected in line~\ref{algoline:select_client}, how the updated local models are aggregated in line~\ref{algoline:aggregation}, and how the local update rule works in line~\ref{algoline:updaterule}.
+A general framework to learn such a global model in a federated way was presented in Algorithm~\ref{algo:fl-framework}; it generalizes a large number of FL algorithms, including FedAvg~\cite{pmlr-v54-mcmahan17a}, FedProx~\cite{fedprox}, and FL with different client sampling techniques~\cite{nishio2019client, chen2020optimal, cho2020client}. The model~$\model^T$---the output of Algorithm~\ref{algo:fl-framework}---is the tentative solution of Problem~\eqref{eq:globalobjective}. Its performance depends on the specific FL algorithm, which specifies how clients are selected in line~\ref{algoline:select_client}, how the updated local models are aggregated in line~\ref{algoline:aggregation}, and how the local update rule works in line~\ref{algoline:updaterule}.
 
 \subsection{Threat Model}
-
+We consider the honest-but-curious and malicious adversarial settings introduced in Section~\ref{subsec:threatmodel}. In both settings, the adversary\footnote{In what follows, we refer to the client using female pronouns and the adversary using male pronouns, respectively.} targets a client $u$ and has white-box knowledge of the learning process, including the model architecture, the loss function, the training algorithm, and the model parameters exchanged during the rounds available to the attack.
 \subsubsection{Honest-but-Curious Adversary}
-We describe first an honest-but-curious adversary,\footnote{In what follows, we refer to the client using female pronouns and the adversary using male pronouns, respectively.} which is a standard threat model in existing literature~\cite{melis2018exploitingunintendedfeatureleakage,geiping_ig, yinSeeGradientsImage2021,Nasr2018ComprehensivePA}, including the FL one~\cite[Table~7]{kairouz_open_problems}, 
-\cite{lyu2021novelattributereconstructionattack, chen2024practical}. This \emph{passive} adversary, who could be the server itself, is 
-knowledgeable about the trained model structure, the loss function, and the training algorithm, and may eavesdrop on communication between the attacked client and the server but does not interfere with the training process. For instance, during training round $t$, the adversary can inspect the messages exchanged between the server and the attacked client (denoted by $u$), allowing him to recover the parameters of the global model $\model^t$ and the updated client model $\model_u^t(K)$. %NOTE: I removed the citation to the algorithm that we have in the Appendix. 
+
+In the passive setting, the adversary does not interfere with federated training and only uses information exposed by the normal execution of the protocol. When  the targeted client $u$ participates in round $t$, the adversary observes the global model $\model^t$ received by the client and the locally updated model $\model_u^t(K)$ returned after $K$ local optimization steps.
+
 Let $\roundsclient \subseteq \{t|u\in\clients^t, \forall t\in {0,\dots,T-1}\}$ denote the set of communication rounds during which the adversary inspects messages exchanged between the server and the attacked client and $\messages_u = \{(\model^t, \model_u^t), \forall t\in \roundsclient\}$ denote the corresponding set of messages.
 
-When it comes to defenses against such an adversary, it is crucial to understand that traditional measures like encrypted communications are ineffective if the attacker is the FL server.
-More sophisticated cryptographic techniques like secure aggregation protocols~\cite{secure_aggregation_bonawitz, kadhe2020fastsecagg} allow the server to aggregate local updates without having access to each individual update and, then, do hide the client's updated model $\model_u^t$ from the server. Nevertheless, they come with a significant computation overhead~\cite{quoc2020securetf} and are inefficient for sparse vector aggregation~\cite{kairouz_open_problems}. Moreover, they are vulnerable to poisoning attacks, as they hinder the server from detecting (and removing) potentially harmful updates from malicious clients~\cite{blanchard_byz, yin2018byzantine,mhamdi2018hiddenvulnerabilitydistributedlearning}. For instance, \citeA[Sec.~4.4]{truthSerum} introduce a new class of data poisoning attacks that succeed when training models with secure multiparty computation. Alternatively, Trusted Execution Environments (TEEs) ~\cite{TEE, tee2} provide an encrypted memory region to ensure the code has been executed faithfully and privately. They can then both conceal clients' updated models and defend against poisoning attacks. However, implementing a reliable TEE platform in FL remains an open challenge due to the infrastructure resource constraints and the required communication processes needed to connect verified codes~\cite{kairouz_open_problems}.
+Secure Aggregation mechanisms, discussed in Section~\ref{sec:privacy_mechanisms}, can prevent the server from observing such individual updates by revealing only their aggregate~\cite{secure_aggregation_bonawitz,kadhe2020fastsecagg}.
+However, Secure Aggregation introduces additional computational and communication overhead, may be inefficient for sparse updates, and can make it harder for the server to identify and discard malicious client contributions, thereby complicating defenses against poisoning attacks~\cite{quoc2020securetf,kairouz_open_problems,blanchard_byz,
+yin2018byzantine,mhamdi2018hiddenvulnerabilitydistributedlearning,truthSerum}.
+
+Trusted Execution Environments (TEEs) provide an alternative approach by executing the client or aggregation logic inside a protected environment, allowing sensitive computations to be performed without exposing their intermediate state~\cite{TEE,tee2}. In principle, TEEs can therefore conceal individual client updates while also enforcing the prescribed computation.
+Their deployment in federated learning, however, introduces additional infrastructure, attestation, and communication requirements~\cite{kairouz_open_problems}.
 
 
 \subsubsection{Malicious Adversary} 
-We also consider a stronger \emph{active} adversary who can interfere with the training process. Specifically, this adversary can modify the messages sent to the clients and have the clients update models~$\model^t$ that have been concocted to reveal more private information. 
- Let $\mathcal{T}^a_u $ be the set of rounds during which the adversary attacks client $u$ by sending a malicious model $\model^t$. 
-As above, the adversary could be the server itself. As discussed in Section~\ref{sec:privacy_in_fl}, this adversary has been widely considered in the literature on reconstruction attacks~\cite{wenFishingUserData2022a,boenischWhenCuriousAbandon2023} and membership inference attacks~\cite{mia_nguyen, Nasr2018ComprehensivePA}. Some studies have also explored the possibility of a malicious adversary modifying the model architecture during training~\cite{fowlRobbingFedDirectly2021,zhaoLOKILargescaleData2023a}, even though such attacks appear to be easily detectable. Here, we do not allow the adversary to modify the model architecture. 
-For simplicity, we will refer to these two adversaries as passive and active adversaries, respectively, throughout the rest of the chapter.
+In the active setting, the adversary has the same knowledge as in the passive setting but can additionally modify the model sent to the targeted client and control the model aggregation process. Let $\mathcal{T}^a_u$ denote the set of communication rounds in which the adversary replaces the model that client $u$ would normally receive with a maliciously chosen model. The client performs the prescribed local training procedure on the received parameters and returns the resulting updated model, which the adversary can observe.
+
+We restrict the active adversary to modifying model parameters and do not allow changes to the model architecture. We refer to the honest-but-curious and malicious settings as \emph{passive} and \emph{active}, respectively, throughout the rest of the chapter.
+
 
 \subsection{Attribute Inference Attack (AIA) for FL}
 
 As presented in Section~\ref{sec:aia}, an AIA leverages public information to infer private or sensitive attributes~\cite{kasiviswanathan2013power,aia_fredrikson, yeom2018privacyriskmachinelearning,lyu2021novelattributereconstructionattack,chen2024practical}.
-Formally, each input $\x_u(i)$ of client $u$ consists of public attributes $\x_u^p(i)$ and a sensitive attribute $s_u(i)$. The target value, assumed to be public, is denoted by $y_u^p(i)$. The adversary has access to
-\[
-    \{(\x_u^p(i),y_u^p(i))\}_{i=1}^{S_u}
-\]
-and to the exchanged messages $\messages_u$, and aims to recover the sensitive attributes $\{s_u(i)\}_{i=1}^{S_u}$. Unlike the stronger adversaries considered in~\cite{aia_fredrikson,yeom2018privacyriskmachinelearning}, we do not assume access to estimates of the marginal or joint distribution of the data.
+Formally, each input $\x_u(i)$ of client $u$ consists of public attributes $\x_u^p(i)$ and a sensitive attribute $s_u(i)$. The target value, assumed to be public, is denoted by $y_u^p(i)$. The adversary has access to $\{(\x_u^p(i),y_u^p(i))\}_{i=1}^{S_u}$ and to the exchanged messages $\messages_u$, and aims to recover the sensitive attributes $\{s_u(i)\}_{i=1}^{S_u}$. Unlike the stronger adversaries considered in~\cite{aia_fredrikson,yeom2018privacyriskmachinelearning}, we do not assume access to estimates of the marginal or joint distribution of the data.
 
 % As presented in Section~\ref{sec:aia}, AIA leverages public information to deduce private or sensitive attributes~\cite{kasiviswanathan2013power,fraia_fredrikson, yeyeom2018privacyriskmachinelearning,lyu2021novelattributereconstructionattack, chen2024practical}.
 % % For example, an AIA could reconstruct a user's gender from a recommender model by having access to the user's provided ratings.
@@ -83,7 +81,7 @@ and to the exchanged messages $\messages_u$, and aims to recover the sensitive a
 % estimates of the marginals or the joint distribution of the data samples. However, in this chapter, we do not consider such a more powerful adversary.}
 %~\cite{kasiviswanathan2013power, attribute_fl}.
 
-\subsubsection{Existing Gradient-Based AIA for FL.}\label{subsec:gradient-based}
+\subsubsection{Existing Gradient-Based AIA for FL}\label{subsec:gradient-based}
  \citeA{lyu2021novelattributereconstructionattack} and \citeA{chen2024practical} present AIAs specifically designed for the FL context and both passive and active adversaries.
 The central idea involves identifying sensitive attribute values that yield virtual gradients closely resembling the client's model updates---referred to as \emph{pseudo-gradients}---in terms of cosine similarity. F Formally, the adversary solves the following optimization problem:
  \begin{equation}\label{eq:aia_gradient_based}
@@ -104,7 +102,7 @@ For example, the attack accuracy almost halves on the Genome dataset for the cla
      \argmin_{s_u(i)} \ell(\model,(\x_u^p(i), s_u(i), y_u^p(i))),\,\,\, \forall i\in\{1,\dots,S_u\}, 
 \end{equation}
 
-Below we provide theoretical guarantees (Prop.~\ref{prop:attribute_nonprivate}) for the accuracy of model-based AIAs to least squares regression problems. %Our theoretical result supports , in an FL setting, the adversary may advantageously start by estimating the client's optimal local model, i.e., the model that minimizes the client's empirical loss.
+Below we provide theoretical guarantees (Proposition~\ref{prop:attribute_nonprivate}) for the accuracy of model-based AIAs to least squares regression problems. %Our theoretical result supports , in an FL setting, the adversary may advantageously start by estimating the client's optimal local model, i.e., the model that minimizes the client's empirical loss.
 Our theoretical result corroborates that, in an FL setting,  an adversary can benefit by first estimating the client’s optimal local model---that is, the model that minimizes the client’s empirical loss.
 
 \section{Model-Based AIA Guarantees for Least Squares Regression}

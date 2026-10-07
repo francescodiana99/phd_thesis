@@ -1,0 +1,753 @@
+\chapter{A Verifiable Gradient Inversion Attack in Federated Learning}\label{chap:vgia}
+
+The work presented in this chapter is based on the paper~\citeA{vgia}, currently under submission.
+
+\paragraph{Chapter Summary}
+
+The preceding Chapter demonstrated that a malicious server can exploit the geometry of fully connected layers to reconstruct private training data, even from large aggregated batches. However, reconstruction effectiveness alone does not resolve an important practical limitation of many gradient inversion attacks: reconstruction is not enough if an attacker is not able to understand if the reconstruction is correct. Existing attacks are commonly evaluated assuming access to the original data. Human inspection can sometimes provide an indication of reconstruction quality for images or text, but it is costly, difficult to scale, and does not provide a reliable certificate of correctness.
+To address this limitation, we introduced the Verifiable Gradient Inversion Attack (VGIA), an analytical attack that enables a malicious server to certify the isolation of individual records from aggregated gradients. Building on the hyperplane-based geometric approach developed in the previous chapter, VGIA introduces an algebraic subspace test that determines whether a region delimited by parallel hyperplanes contains exactly one input. U
+Unlike CTP, which relies on a user-chosen threshold $\varepsilon$ to terminate the refinement of non-empty regions, VGIA can identify regions whose samples have already been isolated and exclude them from further exploration, adapting the search to the actual distribution of the client's data.
+
+Experiments on image and tabular datasets, covering both regression and classification tasks, demonstrate high reconstruction rates under large-batch aggregation, including regimes where previous methods fail or cannot reliably assess reconstruction fidelity. VGIA also reduces the number of communication rounds required compared with CTP, while allowing the server to automatically distinguish certified reconstructions from unresolved candidates. 
+
+
+\section{Motivation}
+
+
+The previous chapter addressed one of the central challenges in gradient inversion attacks by developing a method for recovering individual records from increasingly large aggregated batches. Our proposed attack pushed the boundaries of existing methods, enabling the full recovery of large batches independently of their size, provided that sufficiently many communication rounds are available. Other research directions have sought to improve the practical effectiveness of reconstruction attacks focusing on other aspects, for example by increasing their robustness to noise~\cite{shiScaleMIAScalableModel2025}, reducing the detectability of malicious model modifications~\cite{garovHidingPlainSight2024}, or extending their applicability to multiple local training steps. Collectively, such advances bring gradient inversion attacks closer to realistic federated learning deployments. However, progress in recovering private data has not been accompanied by comparable attention to understanding how an attacker can determine whether a reconstructed sample actually corresponds to an original training record. Existing attacks generally lack an intrinsic mechanism for distinguishing genuine recoveries from erroneous reconstructions, leaving the adversary unable to reliably assess the correctness of individual samples in a blind setting.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.31\linewidth}
+        \centering
+        { Reconstruction}
+        \includegraphics[width=\linewidth]{assets/chapter_4/cifar_rec_lin_comb.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.31\linewidth}
+        \centering
+        {Original}
+        \includegraphics[width=\linewidth]{assets/chapter_4/cifar_rec_2.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.31\linewidth}
+        \centering
+        {Original}
+        \includegraphics[width=\linewidth]{assets/chapter_4/cifar_rec_1.png}
+    \end{minipage}
+
+    \vspace{0.4em}
+
+    \resizebox{\linewidth}{!}{%
+        \begin{tabular}{@{}lrrrrr@{}}
+            \toprule
+            Sample & Bedrooms & Sqft living & Sqft above & Sqft basement & Year built \\
+            \midrule
+            Reconstruction & 4 & 3215.00 & 2102.00 & 1113.00 & 1998 \\
+            Original       & 4 & 2900.00 & 2900.00 & 0.00    & 2005 \\
+            Original       & 4 & 3350.00 & 1760.00 & 1590.00 & 1995 \\
+            \bottomrule
+        \end{tabular}%
+    }
+    \caption[Original samples and erroneous CTP reconstructions]{Original samples and their erroneous reconstruction by CTP~\cite{ctp_paper}. Top: images from CIFAR-10~\cite{cifar10}. Bottom: tabular records from King County Housing.}
+    \label{fig:verification}
+\end{figure}
+
+Most existing works evaluate reconstruction performance using reference-based metrics, such as PSNR or SSIM. However, such measures do not provide the attacker with an intrinsic guarantee that a recovered sample corresponds to an original training record in a realistic blind scenario. In vision and language domains, this issue is partially mitigated through human inspection. For example,~\cite{aia_fredrikson} rely on Amazon Mechanical Turk to outsource the image recognition task to human evaluators. Nevertheless, in malicious-server attacks, where the adversary must make decisions during the training phase~\cite{wenFishingUserData2022a,ctp_paper} and may have only limited time between communication rounds to decide which reconstructions to trust and how to adapt subsequent queries, human inspection becomes a costly bottleneck and limits the scalability of the attack. While human assessment may still represent a slow and costly possibility for images, the problem is exacerbated for tabular data, which are central to many federated learning tasks~\cite{ProjectAIKYA, OgierduTerrail2025FedECA}, as numerical values do not offer comparable semantic validation methods~\cite[Figure~1]{veroTabLeakTabularData2023}. As noted by~\citeA[Section~3]{veroTabLeakTabularData2023}, an uninformed adversary may find it nearly impossible to assess reconstruction quality in tabular settings, substantially complicating reliable privacy risk estimation. Figure~\ref{fig:verification} illustrates the difficulty of distinguishing genuine records from erroneous reconstructions, such as combinations of multiple samples, without access to the original data.
+
+
+To rigorously audit privacy risks in FL, we present in this Chapter a novel reconstruction attack under the malicious-server threat model. By crafting specific model parameters, the server isolates individual samples within an aggregated batch, while our subspace verification test certifies when this isolation has succeeded. This shows that gradient inversion attacks can be more practically dangerous than previously suggested: the attacker can identify correct reconstructions automatically, without human inspection.
+
+Once a sample is certified, our framework analytically recovers its input features and reconstructs the corresponding target value, resulting in a complete breach of the record.
+
+\begin{itemize}
+    
+    \item We introduce VGIA, the first verifiable gradient inversion attack (VGIA) under a malicious server in FL. VGIA is an analytical  attack that  certifies whether a reconstruction is correct, establishing a more rigorous baseline for privacy auditing than heuristic validation methods.
+
+    \item We empirically validate VGIA on  tabular and image datasets, covering both regression and classification tasks. Our results demonstrate exact record recovery under large-batch aggregation across different data modalities. They also show that VGIA requires fewer attack rounds than previous geometric attacks.
+\end{itemize}
+
+\section{Problem Description and Background}
+
+We consider the same federated learning setting described in Section~\ref{sec:fed_learning}. Here, as discussed in Section~\ref{sec:dra}, data reconstruction attacks aim to recover client's private training data. Several appraoch exist, categorized in three main family: optimization-based, generative-based, and analytical-based. 
+
+
+Across these families, existing attacks still face an important limitation: the attacker may be unable to determine whether a reconstruction corresponds to a single original training record. The reasons for this uncertainty differ across attack families. Analytical attacks may fail to isolate an individual input, producing spurious reconstructions that correspond to linear combinations of multiple samples, according to Equation~\ref{eq:obs_derivation}. Optimization-based attacks, on the other hand, solve a non-convex reconstruction problem, whose optimization may converge to a suboptimal solution that does not faithfully recover the original input, making it difficult to distinguish genuine recoveries from spurious reconstructions. Similarly, generative-model-based attacks may produce inaccurate reconstructions, making it difficult to determine whether the recovered information originates from a single record or combines contributions from multiple samples. Consequently, the attacker may obtain reconstructions that contain information from several training records without being able to identify which candidates correspond to true inputs. The problem can be significant in practice. For example, \citeA[Figure~6]{shan2025geminio} report that more than 35\% of reconstructed samples are spurious for a CIFAR batch of size 256, while \citeA[Table~5]{boenischWhenCuriousAbandon2023} report more than 48\% for an ImageNet batch of size 100.
+
+
+This raises a fundamental limitation of how GIAs are typically evaluated. Prior work often reports reconstruction quality using reference-based metrics such as SSIM, PSNR, and LPIPS for image data, or BLEU and ROUGE for text data.
+These metrics require access to the corresponding ground-truth samples and, as noted by~\citeA{veroTabLeakTabularData2023}, do not reflect the attacker's perspective: without access to the original batch, the adversary lacks a per-reconstruction certificate of success. Moreover, existing metrics can be misaligned with the real reconstruction quality assessment, resulting in high metric values that do not reflect actual high image quality, indicating a poor evaluation of the actual privacy threat. As shown in Figure~\ref{fig:scale_mia_rec}, reconstructions obtained through the Scale-MIA attack demonstarte how automatic assessmenent through these metrics cannot be used as a good benchmark to evaluate the actual privacy risk posed by these attacks. In fact, we see how embedding containing information with multiple samples can produce fairly high PSNR values while conveying no useful information regarding the attacked data.
+
+\begin{figure*}
+    \centering 
+    % First row
+    \subfloat[ResNet\label{fig:non_iso_resnet}]{%
+        \includegraphics[width=0.47\linewidth]{assets/chapter_4/cifar/non_isolated_psnr_gt_18_Resnet.png}
+    }\hspace{0.025\linewidth}
+    \subfloat[ViT \label{figures/cifar/non_iso_vit}]{%
+        \includegraphics[width=0.47\linewidth]{assets/chapter_4/cifar/non_isolated_psnr_gt_18_Vit.png}
+    }\hspace{0.025\linewidth}
+    \caption[Scale-MIA reconstruction examples on CIFAR-10]{
+    Reconstruction examples from the Scale-MIA attack~\protect\cite{shiScaleMIAScalableModel2025} on a batch of $B=1024$ images from CIFAR-10. The left column shows the decoded image with the corresponding PSNR and SSIM values. The other columns show the corresponding true images isolated in the correspondent bins. In both figures, according to the proposed evaluation metric, the attack is claimed to be successful ($\mathrm{PSNR}>18$). (a) Examples of incorrect isolations from a ResNet model. (b) Examples of incorrect isolations from a ViT model.}
+ \label{fig:scale_mia_rec}
+    \end{figure*}
+
+This raises a fundamental limitation of how GIAs are typically evaluated. Prior work often reports reconstruction quality using reference-based metrics such as SSIM, PSNR, and LPIPS for image data, or BLEU and ROUGE for text data. These metrics require access to the corresponding ground-truth samples and, as noted by~\citeA{veroTabLeakTabularData2023}, do not reflect the attacker's perspective, since the adversary does not have access to the original batch and therefore cannot use them to verify the correctness of individual reconstructions. Moreover, such metrics may not always reflect the actual quality of the recovered information. A reconstruction can obtain a relatively high score while failing to faithfully represent the original input, potentially leading to an inaccurate assessment of the privacy risk posed by the attack. Figure~\ref{fig:scale_mia_rec} illustrates this limitation through reconstructions obtained through the attack proposed by~\cite{shiScaleMIAScalableModel2025} on CIFAR10 data. In the examples shown, representations containing information from multiple samples can achieve relatively high PSNR values, which, according to the reconstruction success criterion adopted in their work, would be classified as correctly recovered samples, despite failing to recover any recognizable input. Consequently, reference-based metrics alone may provide an incomplete assessment of reconstruction success and of the information actually recovered by the attacker.
+
+
+Human inspection can sometimes help identify correct reconstructions in image or text data, but it must be performed candidate by candidate and within the limited time window of the attack, making it a costly bottleneck for large batches. For tabular records, manual validation is even more difficult, since numerical values do not provide comparable semantic cues. In particular, a convex combination of continuous features may appear indistinguishable from an actual training sample without access to the original data (Figure~\ref{fig:verification}). The inability to identify genuine recoveries therefore has important implications for the practical privacy risk posed by reconstruction attacks. Even an attack that consistently recovers a small fraction of samples, e.g., $10\%$, can represent a serious privacy threat. However, if the attacker cannot distinguish correctly recovered records from spurious candidates, the reported reconstruction rate may overestimate the amount of private information that the adversary can reliably identify and exploit.
+
+
+Ideally, GIAs should therefore provide an intrinsic verification mechanism. Despite its practical importance, verifiability has been largely overlooked in the GIA literature; only a few works, mostly in the honest-but-curious setting, offer any form of verification, typically under restrictive conditions.
+
+\citeA{veroTabLeakTabularData2023} introduce an entropy-based verification score, but computing it requires solving the same optimization problem multiple times, resulting in a costly heuristic rather than a formal guarantee. Analytical attacks from ~\citeA{dimitrovSPEARExactGradient2024} and \citeA{bakarsky2025spearscalinggradientinversion} provide intrinsic verification, but require the batch size to be smaller than the input dimension—a restrictive condition for tabular data. Moreover, these verification mechanisms are tied to honest-but-curious attacks, whose reconstruction performance heavily degrades in large-batch regimes. In the malicious setting, the Cutting Thtough Privacy attack developed in Chapter~\ref{chap:ctp} prescribed tolerance and
+cannot intrinsically determine whether a sufficiently narrow non-empty
+region contains one record or several nearby records. Its success criterion therefore depends on an unknown separation between client samples and does not provide a per-reconstruction certificate. (see Section~\ref{subsec:preliminaries}).
+
+\section{A Verifiable Gradient Inversion Attack}
+\subsection{Threat Model}\label{sec:vgia_threat_model}
+Our attack considers the same malicious server setting described in Section~\ref{sec:threat}, consistent with the CTP attack setting. The server is not allowed to modify the model architecture, for example by adding layers or modules~\cite{fowlRobbingFedDirectly2021,fowlDecepticonsCorruptedTransformers2022,zhaoLOKILargescaleData2023a,shiScaleMIAScalableModel2025}, changing internal connections or routing mechanisms~\cite{fowlDecepticonsCorruptedTransformers2022,chu2023panning}, or altering activation functions~\cite{fowlRobbingFedDirectly2021}. Second, we do not assume access to auxiliary or public datasets, unlike~\cite{boenischWhenCuriousAbandon2023,ZHANG2023119421,garovHidingPlainSight2024,shiScaleMIAScalableModel2025}, nor auxiliary knowledge of the data distribution beyond known bounds on the input features, unlike~\cite{fowlRobbingFedDirectly2021,fowlDecepticonsCorruptedTransformers2022,shiScaleMIAScalableModel2025}. In the following, we focus on clients updating the global model with full-batch FedSGD. We also provide empirical results for FedAvg in Section~\ref{sec:vgia_fedavg}.
+
+\subsection{Preliminaries}\label{subsec:preliminaries}
+Our work builds upon the fundamental observation that the gradients of a fully connected (FC) layer followed by a ReLU activation can contain sufficient information to analytically recover input data, described in Section~\ref{sec:ctp_background}. Consider a model whose first (attacked) layer is a linear layer with $N$ neurons, parameterized by weights $\W^a \in \mathbb{R}^{N \times d}$ and biases $\b^a \in \mathbb{R}^N$. For neuron $i$, the post-activation output is
+\[
+z_i^a = \mathrm{ReLU}\!\left(\W_i^a \x + b_i^a\right),
+\]
+where $\x \in \mathbb{R}^d$ denotes the input to the attacked layer. As shown in Equation~\ref{eq:aggr_obs}, the attacker can retrieve a linear combination of the batch inputs, where only samples that activate neuron $i$ have a nonzero coefficient $\alpha_j$, and therefore contribute to $\o_i$. Disentangling individual samples from the aggregate $\o_i$ is the central challenge in analytic gradient inversion.
+
+To address this limitations of existing reconstruction attacks, the previous chapter introduced a geometric view of ReLU-based leakage, detailed in Section~\ref{sec:limit}, which led to the CTP attack presented in Section~\ref{sec:our_attack}. By interpreting ReLU activation boundaries as hyperplanes, CTP searches for regions containing individual inputs and reconstructs them from the corresponding gradient contributions.
+
+CTP can identify empty slices and avoid querying them further, but it cannot determine whether a non-empty slice contains one sample or several. Consequently, the algorithm continues bisecting every non-empty slice until its width falls below a user-chosen threshold $\varepsilon$. The choice of $\varepsilon$ introduces two limitations. First, if two inputs have projections along the normal direction of $\W_i^a$ that differ by less than $\varepsilon$, CTP may stop before separating them and return an incorrect reconstruction. Second, choosing $\varepsilon$ too small may lead to unnecessary rounds spent refining slices that already contain a single sample. Figure~\ref{fig:ctp_ok} illustrates a successful case, where CTP recovers three inputs after 6 rounds, using 3 hyperplanes per round and 18 hyperplanes in total. In contrast, Figure~\ref{fig:ctp_miss} shows a failure case in which two inputs remain in the same $\varepsilon$-wide slice. In a realistic blind threat model, the adversary does not know the relevant sample separations in advance and therefore cannot reliably tune $\varepsilon$.
+
+
+\begin{figure}[tb]
+    \centering
+    % All four subfloats on the same line
+    \subfloat[\label{fig:ctp_ok}]{%
+        \includegraphics[width=0.23\linewidth]{assets/chapter_4/search_example/ctp_example.pdf}
+    }\hfill 
+    \subfloat[\label{fig:new_ok}]{%
+        \includegraphics[width=0.23\linewidth]{assets/chapter_4/search_example/new_example.pdf}
+    }\hfill
+    \subfloat[\label{fig:ctp_miss}]{%
+        \includegraphics[width=0.23\linewidth]{assets/chapter_4/search_example/ctp_example_miss.pdf}
+    }\hfill
+    \subfloat[\label{fig:new_adv}]{%
+        \includegraphics[width=0.23\linewidth]{assets/chapter_4/search_example/new_example_miss.pdf}
+    }
+
+    \caption{A two-dimensional example of the search process. Figure~\ref{fig:ctp_ok} illustrates the CTP process, while Figure~\ref{fig:new_ok} depicts VGIA method. In this instance, VGIA requires fewer rounds than their approach, as we avoid searching up to $\varepsilon$ distance across the entire space. Conversely, when $\varepsilon$ is not well-tuned, Figure~\ref{fig:ctp_miss} shows that the CTP attack fails, whereas VGIA (Figure~\ref{fig:new_adv}) continues searching until all data points are exactly separated.}
+    \label{fig:main_fig}
+\end{figure}
+
+\subsection{Verifiable Isolation and Reconstruction}\label{sec:attack_method}
+
+VGIA addresses the two main limitations of CTP. First, it introduces an algebraic verification step that allows the attacker to certify when a slice contains a single input. Second, once a slice has been certified, VGIA removes it from further refinement and reallocates future hyperplane queries to unresolved regions. This avoids unnecessary dissections of already isolated samples and reduces the number of communication rounds required for full-batch reconstruction. 
+
+Figure~\ref{fig:new_ok} illustrates that, by correctly identifying slices that contain a single input, VGIA reconstructs all samples in only $4$ rounds ($12$ hyperplanes), compared to $6$ rounds ($18$ hyperplanes) for CTP (Figure~\ref{fig:ctp_ok}). Moreover, Figure~\ref{fig:new_adv} shows that VGIA's protocol adapts the number of rounds and hyperplanes to the specific batch: in this example it continues for $8$ rounds to isolate all inputs, whereas CTP (Fig.~\ref{fig:ctp_miss}) stops too early and produces an incorrect reconstruction.
+
+We first present VGIA for an $L$-layer fully connected neural network with a single scalar output and ReLU activations. In this setting, the attacked first layer is parameterized by weights $\W^a \in \real^{N\times d}$ and biases $\b^a \in \real^N$, and is followed by a ReLU activation. The last layer is parameterized by weights $\W^L \in \real^{1 \times M}$ and bias $b^{L} \in \real$, where $M$ denotes the number of neurons in layer $L-1$.
+
+We later discuss how the attack can be extended to multi-dimensional outputs, different activation functions such as SiLU and GELU, and other architectures, including convolutional neural networks and transformers.
+
+
+\subsubsection{Verifiable Isolation}
+The first step of our attack is to extract the contribution of the inputs lying between two consecutive hyperplanes.
+
+Within a single round, the attacker can test multiple parallel hyperplanes with normal vector $\mathbf w$ by targeting different neurons and setting their weight vectors to $\mathbf w$ (e.g., $\W_i^a=\W_{i'}^a=\mathbf w$ for two targeted neurons $i$ and $i'$), while assigning the corresponding neurons different biases (so $b_i^a \neq b_{i'}^a$). For simplicity, we assume that all neurons in the layer are targeted.
+
+
+We first analyze the gradient of the loss with respect to neuron $i$'s weights  $\gradlosswiatt$.
+\begin{align}
+    \gradlosswiatt &= \frac{1}{B} \sum_{j=1}^B \frac{\partial \loss_j}{\partial z_{i}^a}\, \x_j\, \indicator_{z_{i,j}^a>0} = \frac{1}{B} \sum_{j \in \activeset_i} \frac{\partial \loss_j}{\partial z_{i}^a}\, \x_j
+    =\frac{1}{B} \sum_{j \in \activeset_i}
+    \frac{\partial \loss_j}{\partial z^L}\frac{\partial z^L}{\partial z_i^a}\x_j, \label{eq:weight_gradient}
+\end{align}
+
+where the indicator function $ \indicator_{z_{i,j}>0}$ specifies whether neuron $i$ is activated by sample $\x_j$, B is the batch size, and $\activeset_i = \{j \in [B] \mid \W_i^a \x_j + b_i^a > 0\}$ denotes the set of indices that activate neuron $i$. 
+
+In general, the  partial derivative $\frac{\partial z^L}{\partial z_i^a}$  
+%from the network output to neuron $i$ in layer $a$ 
+depends on the input $\x$, because downstream ReLU gates may switch on/off as $\x$ changes. 
+%Concretely, $\frac{\partial z^L}{\partial z_i^a}(\x)$ is typically $\x$-dependent. 
+However, the malicious server can choose the parameters of the subsequent layers $(\W^{a+1:L}, \b^{a+1:L})$, so
+that the activation pattern of all ReLUs after layer $a$ is fixed for all inputs of interest.
+Once this is achieved, $z^L$ becomes an affine function of $z^a$, and the server can ensure that the Jacobian entry $\frac{\partial z^L}{\partial z_i^a}$ is a nonzero constant, denoted by $g_i$.
+
+A simple way to enforce input-independent downstream gating, when the layer inputs are non-negative, is to use positive weights and biases in the subsequent layers, so that all downstream pre-activations remain positive and all ReLUs are always active. More generally, the attacker can draw both weights and biases from a realistic-looking distribution, such as a standard Gaussian used at initialization, and still enforce a prescribed input-independent gating pattern by appropriately assigning the sampled parameters to downstream neurons, so that each downstream pre-activation stays strictly on the desired side of zero. This preserves realistic-looking parameter distributions while ensuring deterministic activation behavior. A more complete discussion on the detectability of the attack can be found in Section~\ref{sec:detectability}.
+
+Consider two consecutive bias values $\hat b_k < \hat b_{k+1}$ tested at two attacked neurons in the same round. Without loss of generality, assume these neurons are $i$ and $i+1$, and we call the region delimited by the two hyperplanes $(\mathbf w,\hat b_k)$ and $(\mathbf w,\hat b_{k+1})$ the \emph{$k$-th slice}.
+
+Dividing~\eqref{eq:weight_gradient} by the constant $g_i$ and subtracting it from the corresponding expression for neuron $i+1$, the server obtains the \emph{slice vector} $\slice_k$, a linear combination of the inputs lying in the slice between the two corresponding hyperplanes:
+\begin{align}
+   \slice_k &=  \frac{\frac{\partial \loss}{\partial \W_{i+1}^a}}{g_{i+1}} - \frac{\frac{\partial \loss}{\partial \W_{i}^a}}{g_i} = \frac{1}{B} \sum_{\x_j \in \activeset_{i+1}} \frac{\partial \loss_j}{\partial z^{L}} \x_j - \frac{1}{B} \sum_{\x_j \in \activeset_{i}} \frac{\partial \loss_j}{\partial z^{L}} \x_j  = \frac{1}{B} \sum_{j \in \activeset_{i+1} \setminus \activeset_{i} 
+    } \frac{\partial \loss_j}{\partial z^{L}} \x_j \label{eq:hp_diff}.
+\end{align}
+
+This quantity is computable by the server because it observes the client gradient and knows the constants $g_i$ and $g_{i+1}$. The rescaling plays a central role in the attack, as it removes the architecture-dependent factors $g_i$ and $g_{i+1}$ from the gradient observations, enabling the exact cancellation in~\eqref{eq:hp_diff} of the contributions from samples that activate both neurons. Without this rescaling, subtracting the gradients of consecutive neurons would retain contributions from the samples in $\activeset_i$, since the scaling factors $g_i$ and $g_{i+1}$ generally differ.
+
+When the interval between two consecutive hyperplanes contains no data point, the active sets $\activeset_i$ and $\activeset_{i+1}$ coincide, and the corresponding slice vector is zero. Such empty slices can be discarded: in subsequent rounds, the server places new hyperplanes only inside intervals with nonzero slice vectors, thereby pruning the search space.
+
+The key remaining question is whether a nonzero slice vector corresponds to a single input or to a combination of several inputs. To answer this question, the attacker refines a non-empty slice by placing $q\ge 3$ hyperplanes across it. The resulting $q-1$ sub-slice vectors allow the attacker to certify whether all samples in the parent slice have been isolated. Formally, consider a non-empty slice at round $t$, delimited by the bias values $\hat b_k^{t}$ and $\hat b_{k+1}^{t}$, with slice vector $\slice_k^t$. At round $t+1$, the attacker places $q$ bias values in $[\hat b_k^{t}, \hat b_{k+1}^t]$, that is
+$
+\hat b_{k}^{t+1} = \hat b_{k}^{t}
+< \hat b_{k+1}^{t+1}
+< \cdots
+< \hat b_{k+q-1}^{t+1}
+= \hat b_{k+1}^{t},
+$
+and computes the induced sub-slice vectors $\slice_k^{t+1}, \slice_{k+1}^{t+1}, \dots, \slice_{k+q-2}^{t+1}$. If $\slice_k^t$ is contained in the span of these $q-1$ sub-slice vectors, then each non-empty sub-slice contains exactly one sample, as stated in the following proposition.
+
+\begin{proposition}[Verifiable isolation]
+\label{prop:sample_isolation}
+Consider the non-empty slice delimited at round $t$ by the hyperplanes
+$\mathbf w^\top \x+\hat b_k^t=0$ and $\mathbf w^\top \x+\hat b_{k+1}^t=0$,
+and suppose that it contains $m\le d$ linearly independent inputs. Assume that
+the common first-layer direction $\mathbf w$ is drawn once from a distribution
+absolutely continuous with respect to the Lebesgue measure. At each attack round,
+assume that the vectorized weights and biases of the layers following the
+attacked layer are redrawn independently of the past from absolutely continuous
+distributions, supported on parameters for which each downstream hidden layer
+has at least two fixed ReLU gates active on all inputs in the slice. Finally,
+assume that, for every sample $j$, all level sets of
+$\partial \loss_j/\partial z^L$ are Lebesgue-null.
+
+Then, almost surely, the span condition
+\[
+\slice_k^t
+\in
+\operatorname{span}\left(
+\slice_k^{t+1},\ldots,\slice_{k+q-2}^{t+1}
+\right)
+\]
+implies that every non-empty sub-slice induced at round $t+1$ contains exactly
+one input. Hence, when the span condition holds, the original slice contains
+as many inputs as there are non-null induced slice vectors, and therefore at
+most $q-1$ inputs.
+\end{proposition}
+
+Note that the linear independence condition only concerns the inputs within the same slice. The assumption on  $\frac{\partial \loss_j }{\partial z^L}$ holds for any loss whose derivative varies with the activation values, such as the logistic, exponential, focal, and squared losses. 
+%It generally fails for losses whose derivative is piecewise constant over some region, such as the hinge loss.
+Proposition~\ref{prop:sample_isolation} tells the attacker whether the slice must be further explored with additional hyperplanes, or---when the condition holds---whether all samples in the slice have been correctly separated and can therefore be reconstructed using the procedure described below. 
+
+
+Figure~\ref{fig:vgia_isolation_sequence} illustrates this process over three
+successive rounds, separating the geometry of the queried slices from the
+subspace test performed on the observed gradients.
+\francesco{adjust the figure down right }
+\begin{figure}[!htbp]
+    \centering
+    \resizebox{\linewidth}{!}{\input{assets/chapter_4/search_example/isolation_verification_tikz.tex}}
+    \caption[Step-by-step isolation and verification in VGIA]{VGIA isolation and verification for two inputs in $\real^2$. The top row shows successive search rounds. The bottom row shows the corresponding slice vectors: verification fails while both inputs share a sub-slice, then succeeds when $\slice_k^{t+1}\in\operatorname{span}\{\slice_{k+1}^{t+2},\slice_k^{t+2}\}$.}
+    \label{fig:vgia_isolation_sequence}
+\end{figure}
+
+\subsubsection{Reconstruction}
+Once an isolated slice has been identified, the attacker can recover the corresponding input directly. Suppose that the slice vector $\slice_k^{t+1}$, obtained from the two hyperplanes tested at neurons $i$ and $i+1$, contains a single input $\x_j$. From~\eqref{eq:hp_diff}, we have
+$\slice_k^{t+1} = \beta_j^{t+1}\x_j$, where
+$\beta_j^{t+1} \coloneqq \frac{1}{B}\frac{\partial \loss_j}{\partial z^{L}}$.
+Recovering $\x_j$ therefore only requires estimating the scalar $\beta_j^{t+1}$.
+This coefficient can be obtained from the gradients with respect to the attacked-layer biases. Expanding $\frac{\partial \loss}{\partial b_i^a}$ as in~\eqref{eq:weight_gradient} and applying the same rescaling and subtraction as in~\eqref{eq:hp_diff} gives
+\begin{equation}
+\frac{\frac{\partial \loss}{\partial b_{i+1}^a}}{g_{i+1}}
+-
+\frac{\frac{\partial \loss}{\partial b_i^a}}{g_i}  =
+\frac{1}{B} \sum_{\ell \in \activeset_{i+1}}
+\frac{\partial \loss_\ell}{\partial z^{L}}
+-
+\frac{1}{B} \sum_{\ell \in \activeset_i}
+\frac{\partial \loss_\ell}{\partial z^{L}}  =
+\frac{1}{B}
+\sum_{\ell \in \activeset_{i+1} \setminus \activeset_i}
+\frac{\partial \loss_\ell}{\partial z^{L}} = \frac{1}{B}\frac{\partial \loss_j}{\partial z^{L}} = \beta_j^{t+1}.
+\label{eq:rec_coeff}
+\end{equation}
+%Since the slice contains only $\x_j$, the last sum reduces to $\beta_j^{t+1}$. 
+Using~\eqref{eq:hp_diff} and~\eqref{eq:rec_coeff}, the attacker therefore recovers the private input exactly as
+$\hat{\x}_j=\slice_k^{t+1}/\beta_j^{t+1}=\x_j$. 
+
+Once the input has been reconstructed, the attacker can also recover its corresponding target $y_j$. 
+In classification tasks, target inference has been widely studied~\cite{yinSeeGradientsImage2021,zhaoIDLGImprovedDeep2020,kariyappaCocktailPartyAttack2023,liE2EGIEndtoEndGradient2023}, where the finite set of possible labels makes it possible to evaluate a discrete set of candidates.
+The problem is different for regression, where the target is continuous and cannot be inferred by testing a finite set of candidate values. In VGIA, Equation~\eqref{eq:rec_coeff} provides the attacker with the derivative associated with the isolated sample,
+\[
+\frac{\partial \loss_j}{\partial z^L} = B\beta_j^{t+1}.
+\]
+
+This derivative is evaluated on the true pair $(\x_j,y_j)$ and therefore contains information about the unknown target $y_j$. Since the input $\x_j$ has already been reconstructed and the model parameters are known by the attacker, the server can then evaluate, for a candidate value $y$, the derivative that would be produced by the pair $(\x_j,y)$. Target reconstruction can therefore be formulated as the following univariate optimization problem:
+\begin{equation}
+\hat{y}_j \in
+\argmin_y
+\left(
+B\beta_j^{t+1}
+-
+\frac{\partial \loss}{\partial z^L}(\x_j,y)
+\right)^2.
+\label{eq:target_rec}
+\end{equation}
+If the derivative of the loss with respect to the network output is monotone in $y$, as for the squared loss, Problem~\eqref{eq:target_rec} admits a unique solution, allowing the attacker to reconstruct the complete private record $(\x_j,y_j)$. 
+
+\subsection{Final Algorithm}
+
+Algorithm~\ref{algo:vgia_parallelattack} presents the full VGIA procedure. As assumed in Section~\ref{sec:vgia_threat_model}, the attacker knows bounds on the input features. These bounds induce an initial interval $[l,u]$ for the projections $\mathbf w \x$, and therefore for the bias values to be queried.
+The procedure \textsc{SetHyperplanes} (Algorithm~\ref{algo:set_hp_biases}) constructs the $N$ hyperplanes queried by the attacker, one per attacked neuron. During the first communication round, the biases associated with each hyperplanes partition the initial search interval $[l,u]$ into $N-1$ slices. From the second round onward, the search focuses only on the active intervals that have not yet been resolved. Each active interval is explored using at least three hyperplanes, two placed at its endpoints, and at least one additional hyperplane placed in its interior to further refine the search space. The boundary hyperplanes must be evaluated again at each round because, unlike in CTP, the parameters $\W^{a:L}$ are not required to remain fixed throughout the attack and can be updated between rounds to reduce detectability. As a consequence, the gradients associated with the same hyperplane configuration may change across rounds, and previously observed boundary gradients cannot in general be reused in~\eqref{eq:weight_gradient}.
+
+The \textsc{CheckIsolation} procedure in Algorithm~\ref{algo:check_isolation} applies Proposition~\ref{prop:sample_isolation} to certify whether a non-empty slice contains exactly one sample. Once certified, the corresponding slice is added to $\mathcal R$ and can be reconstructed. The same procedure also identifies empty slices through a null slice vector and discards the associated search intervals.
+
+
+%Theoretically, 
+\subsection{Round Complexity}
+\francesco{Verify and integrate the new proof}
+ Under the same assumptions of Proposition~\ref{prop:sample_isolation},
+if $N \geq 3B$, our algorithm can verify all inputs in a batch with high probability in at most
+$
+3 \cdot \left\lceil \log_2 \left(\frac{W}{N \cdot \eps_{\mathbf w}}\right) \right\rceil + 1
+$
+rounds, where $\eps_{\mathbf w}$ is the minimum distance between two samples after projection onto the hyperplane search direction, and $W$ is the width of the initial search interval. The proof is in Appendix~\ref{app:bounds}.
+
+\begin{algorithm2e}[H]
+\caption{Verifiable Gradient Inversion Attack (VGIA)}
+\label{algo:vgia_parallelattack}
+\KwInput{$[l, u]$ initial search space of bias values, total attack rounds $T$}
+
+$\mathcal I \leftarrow (([l, u],))$
+\tcp*[r]{$\mathcal I$ is used to track the searched slices and corresponding slice vectors}
+Draw a vector $\mathbf{w}\in \real^d$ and set each row of $\W^a$ to $\mathbf{w}$\;
+\For{$t \in \{1,...,T\}$}{
+    $(\b^a, \mathcal I) \leftarrow$ \hyperref[algo:set_hp_biases]{$\textsc{SetHyperplanes}(\mathcal{I})$}
+    \tcp*[r]{Set malicious bias values w.r.t. $\mathcal I$}
+    \label{line:vgia_update_hyperplane}
+    Server sends malicious parameters $\theta$ to the client\;
+    Server receives gradient updates $\frac{\partial{\loss}}{\partial{\W^{a}}}$ and $\frac{\partial{\loss}}{\partial{\b^a}}$\;
+    Server computes $\slice_k^{t}$ using \eqref{eq:hp_diff} and $\beta_k^t$ using \eqref{eq:rec_coeff} for $k\in \{1,2,...,N-1\}$\;
+    $\mathcal{S} \leftarrow ( (b_1^a,b_{2}^a, \slice_1^t, \beta_1^t),\dots, (b_{N-1}^a,b_{N}^a, \slice_{N-1}^t, \beta_{N-1}^t) )$
+    \tcp*[r]{Collect all the sub-slices}
+    $(\mathcal{I}, \mathcal{R}) \leftarrow$ \hyperref[algo:check_isolation]{$\textsc{CheckIsolation}(\mathcal{I}, \mathcal{S})$}
+    \tcp*[r]{Verify slices by Prop.~\ref{prop:sample_isolation}, put verified ones to $\mathcal R$}
+    \If{$\mathcal R\not = \emptyset$}{
+        Server reconstructs the inputs and targets in $\mathcal{R}$ from \eqref{eq:hp_diff}, \eqref{eq:rec_coeff}, and \eqref{eq:target_rec}\;
+    }
+}
+\end{algorithm2e}
+
+\begin{algorithm2e}[H]
+\caption{SetHyperplanes}
+\label{algo:set_hp_biases}
+\KwInput{search intervals $\mathcal{I}=(([l_1,u_1],\slice_1),...,([l_{|\mathcal{I}|},u_{|\mathcal{I}|}],\slice_{|\mathcal{I}|}) )$}
+
+sort $\mathcal{I}$ so that $l_1 < l_2 < \dots < l_{|\mathcal I|}$\;
+$M\leftarrow \min(|\mathcal{I}|, \lfloor N / 3 \rfloor);\quad r \leftarrow N \bmod M;\quad j \leftarrow 1$\;
+\For{$k=1,\dots,M$}{
+    $q \leftarrow \lfloor N/M \rfloor + \indicator_{k\leq r}$\;
+    $\b^a_{j:j+q-1} \gets \begin{cases}
+    \{ l_{k} + i \frac{u_{k} - l_{k}}{q} | i = 1, \dots, q \} & \textbf{if}\; k > 1 \textbf{ and } l_{k} = u_{k-1}\\
+    \{ l_{k} + i \frac{u_{k} - l_{k}}{q - 1} | i = 0, \dots, q-1 \} & \textbf{otherwise}
+    \end{cases}$\;
+    $j \leftarrow j+q-1$\;
+}
+\Return{$\b^a$, $\mathcal I$}\;
+\end{algorithm2e}
+
+
+\begin{algorithm2e}[H]
+\caption{CheckIsolation}
+\label{algo:check_isolation}
+
+\KwInput{search intervals $\mathcal I$, list of sub-slices
+$\mathcal S=(\mathcal S_1,\mathcal S_2,\dots)$}
+
+$\mathcal I_{\mathrm{new}} \leftarrow (); \quad \mathcal R \leftarrow ()$\;
+
+\While{$|\mathcal S|>0$}{
+
+    $(([l,u],\slice'),\mathcal I)
+    \leftarrow
+    \left(\mathcal I_1,(\mathcal I_2,\dots,\mathcal I_{|\mathcal I|})\right)$
+    \tcp*[r]{Pop the first interval and its slice vector}
+
+    $\mathcal R_{\mathrm{temp}} \leftarrow (); \quad
+     \mathcal I_{\mathrm{temp}} \leftarrow (); \quad
+     \mathcal V_{\mathrm{temp}} \leftarrow ()$\;
+
+    $(b',b'',\slice,\beta)\leftarrow \mathcal S_1$\;
+
+    \While{$b''\in[l,u]$}{
+
+        \If{$\slice\neq \mathbf 0$}{
+
+            $\mathcal V_{\mathrm{temp}}
+            \leftarrow
+            (\mathcal V_{\mathrm{temp}},\slice)$\;
+
+            $\mathcal R_{\mathrm{temp}}
+            \leftarrow
+            (\mathcal R_{\mathrm{temp}},(b',b'',\slice,\beta))$\;
+
+            $\mathcal I_{\mathrm{temp}}
+            \leftarrow
+            (\mathcal I_{\mathrm{temp}},([b',b''],\slice))$\;
+        }
+
+        $((b',b'',\slice,\beta),\mathcal S)
+        \leftarrow
+        \left(
+        \mathcal S_1,
+        (\mathcal S_2,\dots,\mathcal S_{|\mathcal S|})
+        \right)$\;
+    }
+
+    \tcp{Collect the non-empty sub-slices contained in $[l,u]$}
+
+    \If{$|\mathcal V_{\mathrm{temp}}|>0$}{
+
+        \If{$
+        \dim\!\left(\mathrm{span}\!\left(\mathcal V_{\mathrm{temp}}\right)\right)
+        =
+        \dim\!\left(
+        \mathrm{span}\!\left(\mathcal V_{\mathrm{temp}},\slice'\right)
+        \right)
+        $}{
+
+            $\mathcal R
+            \leftarrow
+            (\mathcal R,\mathcal R_{\mathrm{temp}})$
+            \tcp*[r]{Verified isolation by Prop.~\ref{prop:sample_isolation}}
+
+        }
+        \Else{
+
+            $\mathcal I_{\mathrm{new}}
+            \leftarrow
+            (\mathcal I_{\mathrm{new}},\mathcal I_{\mathrm{temp}})$
+            \tcp*[r]{Keep unresolved sub-slices for future exploration}
+
+        }
+    }
+}
+
+\Return{$(\mathcal I,\mathcal I_{\mathrm{new}}),\mathcal R$}\;
+
+\end{algorithm2e}
+
+\subsection{VGIA for Multiclass Classification Tasks}
+
+While the proposed attack is naturally formulated for scalar-output tasks, its core mechanism can be extended to multiclass classification. In this setting, the model outputs a vector $\z^{L} \in \mathbb{R}^C$, and the loss is typically the cross-entropy between $\z^{L}$ and a one-hot target vector $\mathbf{y} \in \mathbb{R}^C$.
+
+A direct application of the attack is not possible in this case. Indeed, the gradient signal backpropagated to the attacked layer is a linear combination of error terms from all $C$ classes, weighted by the downstream network. 
+In particular, the gradient with respect to a bias $b_i^a$ for a given sample $\x_j$ takes the form
+\begin{equation}
+    \frac{\partial \mathcal{L}_j}{\partial b_i^a} = \sum_{c=1}^{C} \frac{\partial \mathcal{L}_j}{\partial z_c^{L}} g_{c,i} \indicator_{z_{i,j}^{a}>0},
+\end{equation}
+where the coefficients $g_{c,i}$ depend on both the class $c$ and the neuron $i$ through the intermediate layers.
+As a consequence, the backpropagated signal is no longer a sample-dependent scalar multiplied by a neuron-dependent factor, but rather a neuron-dependent mixture of class residuals. This breaks the cancellation mechanism in \eqref{eq:hp_diff}, which is crucial for isolating individual samples. To overcome this limitation, the attacker modifies the final classification layer so that the network behaves, during the attack phase, as a scalar-output model. Specifically, the attacker sets the last-layer weights to be rank one:
+\begin{equation}
+    \W^L=\mathbf{c}\mathbf{u}^{\top}, \quad \textrm{where} \quad 
+    \mathbf{c}\in\mathbb{R}^C\;\text{and  }\;
+    \mathbf{u}\in\mathbb{R}^{n_{L-1}} \;\text{are random vectors.}
+\end{equation}
+
+Thus, for each class $c$, for a given sample $\x_j$, the output of the model becomes:
+\begin{equation}
+    z_{j,c}^L=c_c\mathbf{u}^{\top} \z^{L-1}_j + b_c^L.
+\end{equation}
+
+Let us define the scalar projection $r_j := \mathbf{u}^{\top}\z^{L-1}_j$, then we have $z_{j,c}^L=c_cr_j+b_j^L$.
+Through our model modifications, the attacker can fix the parameters of all the intermedaiate layers to make them behave as an affine function. Hence, the map from $\z_j^a$ to $r_j$ is fixed and the derivative respect to neuron $i$ in the attack layer is the scalar:
+\begin{equation}
+    \frac{\partial \z^L_j}{\partial z_i^a}=g_i = \left[\mathbf{u}^{\top}\prod_{\ell=a+1}^{L-1}\mathbf{D}_j^{\ell}\W^{\ell} \right]_i,
+\end{equation}
+where  $\mathbf{D}_j^{(\ell)}$ is the diagonal matrix of activation derivatives at layer $\ell$ and does not depend on $\x_j$. If we denote by $\mathbf{p}_j \in \real^C$ the output of the model after the softmax layer, then
+\begin{equation}
+    \frac{\partial \loss_j}{\partial z_{j,c}^{L}} = p_{j,c}-y_{j,c},
+\end{equation}
+therefore
+\begin{equation}
+    \frac{\partial z_{j,c}^{L}}{\partial z_{j,i}^a} = c_c \frac{\partial r_j}{\partial z_{j,i}^a}= c_c g_i.
+\end{equation}
+Applying the chain rule, the gradient of the loss for sample $\x_j$ respect to $b_i$ is
+\begin{equation}
+    \frac{\partial \loss_j}{\partial b_i^a}
+    =
+    \sum_{c=1}^C
+    (p_{j,c}-y_{j,c})
+    \frac{\partial z_{j,c}^{L}}{\partial b_i^a} = g_i  \left( \sum_{c=1}^C (p_{j,c}-y_{j,c}) \right ) c_c  \indicator_{z_{i,j}^a>0}
+\end{equation}
+
+Define
+\begin{equation} \rho_j:=\sum_{c=1}^C c_c(p_{j,c}-y_{j,c})=\mathbf{c}^{\top}(\mathbf{p}_j-\mathbf{y}_j), 
+\end{equation}
+then
+\begin{equation}
+    \frac{\partial \loss_j}{\partial b_i^a}=g_i\rho_j\indicator_{z_{i,j}^a>0} \quad \mathrm{and} \quad \frac{\partial \loss_j}{\partial \W_i^a}=g_i\rho_j\x_j\indicator_{z_{i,j}^a>0}.
+\end{equation}
+
+Thus, \eqref{eq:hp_diff} becomes:
+\begin{equation}
+    \frac{1}{g_{i+1}}\frac{\partial \loss}{\partial \W_{i+1}^a}-\frac{1}{g_i}\frac{\partial \loss}{\partial \W_i^a}=\frac{1}{B}\sum_{\substack{j\in\activeset_{i+1}\\j\notin\activeset_i}} \rho_j\x_j.
+\end{equation}
+The same process applies to $\beta_j$ in \eqref{eq:rec_coeff} and allows perfect isolation and recovery of the input. Additionally, target recovery can be performed by directly solving \eqref{eq:target_rec}, evaluating each candidate label $\hat{y}_k$ and selecting the one that minimizes the reconstruction error.
+
+\section{Extension to SiLU and GELU}\label{app:silu_gelu}
+
+So far, we have considered ReLU-enabled fully-connected layers. Here, we demonstrate that our attack can be extended to smooth activation functions such as SiLU and GELU, which are commonly used in modern architectures, including Transformer-based models. Our attack, as well as other isolation-based analytical attacks~\cite{fowlRobbingFedDirectly2021, fowlDecepticonsCorruptedTransformers2022, boenischWhenCuriousAbandon2023, shiScaleMIAScalableModel2025,ctp_paper}, relies on the sparsity induced by the ReLU activation function. In particular, ReLU induces hard activation regions, which enable the exact cancellation of gradient contributions in Eq.~\eqref{eq:hp_diff}. For smooth activation functions, this exact sparsity is lost. Samples with negative pre-activation can still contribute to the aggregated gradient, and Eq.~\eqref{eq:hp_diff} no longer holds in its original form. Let $\phi$ denote a generic differentiable activation function. We have
+\begin{equation}
+\slice_k
+=
+\frac{\frac{\partial \mathcal{L}}{\partial \W_{i+1}^a}}{g_{i+1}}
+-
+\frac{\frac{\partial \mathcal{L}}{\partial \W_i^a}}{g_i}
+=
+\frac{1}{B}
+\sum_{j=1}^{B}
+\frac{\partial \mathcal{L}_j}{\partial z^L}
+\left[
+\phi'\!\left(h_{i+1,j}\right)
+-
+\phi'\!\left(h_{i,j}\right)
+\right]
+\x_j,
+\end{equation}
+where
+\begin{equation}
+h_{i,j}
+=
+\W_i^a \x_j + b_i^a.
+\end{equation}
+
+For ReLU, the term
+$\phi'(h_{i+1,j})-\phi'(h_{i,j})$
+reduces to an indicator of whether $\x_j$ lies between the two hyperplanes. Hence, only samples inside the corresponding slice contribute to $\slice_k$. For SiLU and GELU, instead, this difference can be nonzero for every sample in the batch, so even an empty slice may contain a residual contribution.
+
+The attacker first mitigates this effect by increasing the norm of the attack direction $\w$. Since SiLU and GELU behave increasingly like ReLU away from the origin, this scaling moves most pre-activations farther from the smooth transition region and reduces contributions from samples outside the slice. However, residual leakage remains; therefore, we adapt both the search process and the verification mechanism to distinguish it from the signal generated by samples inside the slice.
+
+In the ReLU case, an empty slice can be detected exactly by checking whether $\slice_k=\mathbf{0}$. For SiLU and GELU, we instead initialize a leakage calibration set from the slice norms observed during the first attack round. We sort the positive norms in logarithmic scale and identify the largest gap separating the low- and high-norm populations. Exact zero norms and values below this gap are treated as initial empty-slice observations. The split is accepted only if both populations contain sufficiently many observations; otherwise, the corresponding decisions are deferred until additional calibration data become available.
+
+For each empty slice $k$ of width $\Delta_k$, we store its width-normalized leakage
+\begin{equation}
+\eta_k
+=
+\frac{\lVert \slice_k\rVert_2}{\Delta_k}.
+\end{equation}
+The normalization accounts for the first-order dependence of the smooth-activation leakage on the slice width, since, for small $\Delta$, $\phi'(h+\Delta)-\phi'(h)\approx\phi''(h)\Delta$. The normalized leakage can nevertheless vary across the search space because $\phi''(h)$ depends on the pre-activation and is most significant close to the smooth transition region. 
+These calibration observations are retained across communication rounds. To keep the calibration representative as the search progresses, the attacker also reserves a small set of spatially distributed empty intervals as calibration probes. The motivation is that since any subinterval of a known-empty interval is also empty, the additional probing provides more precise estimations at the positions and widths explored throughout the search.
+
+For a candidate slice $k$, the attacker selects calibration observations with similar positions and widths. Let $\mathcal{N}_k$ denote this local calibration set. The corresponding empty-slice threshold is\begin{equation}
+\tau_k^{\mathrm{empty}}
+=
+\Delta_k
+Q_q
+\left(
+\left\{
+\eta_\ell:
+\ell\in\mathcal{N}_k
+\right\}
+\right),
+\end{equation}
+where $Q_q$ denotes the empirical quantile of order $q$. The slice is classified as empty if
+\begin{equation*}
+\lVert \slice_k\rVert_2
+\leq
+\tau_k^{\mathrm{empty}},
+\end{equation*}
+and as non-empty if
+\begin{equation*}
+\lVert \slice_k\rVert_2
+>
+3
+\tau_k^{\mathrm{empty}}.
+\end{equation*}
+Slices whose norms fall between these two thresholds are marked as uncertain and remain in the search. This three-way decision prevents the attacker from prematurely discarding or reconstructing slices whose signal cannot be reliably distinguished from smooth-activation leakage.
+
+The verification mechanism must also account for the leakage introduced by
+smooth activations. Consider a parent interval $k$ at round $t$. After removing
+the children classified as empty, let $n_k$ be the number of remaining
+non-empty child slices at round $t+1$. The attacker collects the non-empty child-slice
+vectors in
+\begin{equation}
+\mathbf{S}_k^{t+1}
+=
+\begin{bmatrix}
+\slice_{k,1}^{t+1}
+&
+\cdots
+&
+\slice_{k,n_k}^{t+1}
+\end{bmatrix}.
+\end{equation}
+With ReLU, empty children are exactly zero and do not introduce additional
+directions into the column space of $\mathbf{S}_k^{t+1}$. With SiLU or GELU,
+instead, smooth leakage can produce small nonzero singular directions even
+when no sample lies in the corresponding intervals. Retaining these directions
+would enlarge the estimated child subspace and could make the span test accept
+an invalid parent interval.
+
+We therefore calibrate the child-subspace threshold against an empirical reference distribution. For parent $k$, the attacker constructs a collection of null matrices
+$\mathbf{E}_{k,r}$ with the same dimensions as $\mathbf{S}_k^{t+1}$. Each null
+matrix contains one known-empty vector for each child column. The vectors are
+selected from nearby empty intervals and rescaled to the widths of the
+corresponding children. The attacker
+constructs at most $64$ sibling matrices and $64$ resampled matrices, and
+defers verification if fewer than $16$ null matrices are available.
+
+For each null matrix, the attacker records its largest singular value. The SVD
+threshold is
+\begin{equation}
+\tau_k^{\mathrm{SVD}}
+=
+Q_{0.99}
+\left(
+\left\{
+\sigma_{\max}\!\left(\mathbf{E}_{k,r}\right)
+\right\}_{r=1}^{R_k}
+\right),
+\end{equation}
+where $R_k$ is the number of available null matrices. This distribution
+represents the strongest singular direction that empty-slice leakage can
+produce. The attacker computes the SVD of $\mathbf{S}_k^{t+1}$ and retains
+only the left singular vectors whose singular values exceed
+$\tau_k^{\mathrm{SVD}}$.
+Let $\mathbf{Q}_k$ be an orthonormal basis of the retained directions.
+
+The attacker then calibrates the parent residual against an empirical
+distribution obtained from locally matched empty-slice vectors. It first requires
+\begin{equation}
+\left\|\slice_k^t\right\|_2
+>
+\tau_k^{\mathrm{empty}},
+\end{equation}
+which prevents a leakage-dominated parent from passing the test. It then
+computes the absolute parent residual
+\begin{equation}
+r_k
+=
+\left\|
+\left(
+\mathbf{I}
+-
+\mathbf{Q}_k\mathbf{Q}_k^{\top}
+\right)
+\slice_k^t
+\right\|_2.
+\end{equation}
+To calibrate this residual, the attacker selects nearby known-empty vectors,
+rescales them to the parent width, and projects them onto the same basis.
+If $\widetilde{\mathbf e}_{k,r}$ denotes one such vector, its null residual is
+\begin{equation}
+r_{k,r}^{\mathrm{null}}
+=
+\left\|
+\left(
+\mathbf{I}
+-
+\mathbf{Q}_k\mathbf{Q}_k^{\top}
+\right)
+\widetilde{\mathbf e}_{k,r}
+\right\|_2.
+\end{equation}
+The span threshold is therefore
+\begin{equation}
+\tau_k^{\mathrm{span}}
+=
+Q_{0.99}
+\left(
+\left\{
+r_{k,r}^{\mathrm{null}}
+\right\}
+\right).
+\end{equation}
+The parent is verified if
+$r_k<\tau_k^{\mathrm{span}}$,
+rejected if
+$r_k>2\tau_k^{\mathrm{span}}$,
+and marked as uncertain otherwise. 
+
+
+\subsection{Extension to FedAvg}
+
+In this setting, the client performs several local optimization steps, and each step evaluates the gradients at different parameter values. The resulting model update is therefore a sum of gradients computed along the local optimization trajectory, with the slice equation~\eqref{eq:hp_diff} no longer being exact. Consequently, an empty slice does not necessarily yield a zero slice vector, and the span relation used in Proposition~\ref{prop:sample_isolation} does not hold exactly.
+
+We account for the first effect by replacing the exact zero-slice test with an absolute norm test. Given the slice $\slice_k$, the search considers the corresponding interval as nonempty only if
+\begin{equation*}
+\left\|\slice_k\right\|_2>\tau_{\mathrm{empty}}.
+\end{equation*}
+Small differences are treated as residuals of the Gram-Schmidt orthogonalization process caused by the local updates. 
+
+
+The search accepts the approximate span relation if the norm of the residual is smaller than a fixed threshold $\tau_{\mathrm{span}}$.
+
+For multiclass classification, repeated local updates can alter the one-carrier construction described in App.~\ref{app:class_ext_detect}. Although the server initially removes the connections from the attacked neurons to the non-carrier neurons, these connections can become nonzero if the non-carrier neurons receive a gradient during local training. We therefore use the isolated construction
+\begin{equation}
+W^{a+1}_{r,i}=0,
+\qquad
+r\ne\kappa,\quad i\in\mathcal{P},
+\end{equation}
+and modify the output layer to suppress this gradient during the first local step. In the experiments, we focus on a three-layer fully connected neural network where, for every non-carrier neuron $r\ne\kappa$, the server replaces its output-layer weights with their mean:
+\begin{equation}
+W^L_{c,r}
+=
+\frac{1}{C}
+\sum_{c'=1}^{C}W^L_{c',r},
+\qquad
+c=1,\ldots,C,\quad r\ne\kappa.
+\end{equation}
+With this modification, each non-carrier neuron adds the same value to all logits without affecting the softmax probabilities. In particular, if $p_{j,c}$ is the predicted probability of class $c$ for sample $j$, then
+\begin{equation}
+\frac{\partial\loss_j}{\partial z_{j,r}^{a+1}}
+=
+\sum_{c=1}^{C}
+W^L_{c,r}
+\left(
+p_{j,c}-\indicator_{\{c=y_j\}}
+\right)
+=
+\overline{W}_r
+\left(
+\sum_{c=1}^{C}p_{j,c}-1
+\right)
+=
+0,
+\qquad r\ne\kappa.
+\end{equation}
+The gradients of the connections entering the non-carrier neurons are therefore zero during the first local step, and the connections $W^{a+1}_{r,i}$ remain zero after this step. However, the output-layer weights can change during the same update. Their values are then no longer guaranteed to be identical across classes, and the zero connections can become nonzero during subsequent local steps. Thus, the FedAvg extension replaces the exact algebraic tests with approximate tests that tolerate projection residuals introduced by local training.
+
+
+\section{Experimental Evaluation}
+
+
+\begin{figure}[p]
+\centering
+\small
+\newcommand{\vgiaPanel}[1]{%
+  \parbox[c][0.105\textheight][c]{0.26\textwidth}{%
+    \centering\includegraphics[width=0.26\textwidth,height=0.10\textheight,keepaspectratio]{#1}}}
+\setlength{\tabcolsep}{0pt}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{}}
+& CTP$_{=}$ / CAH & CTP$_{>}$ & Efficiency \\
+\vgiaDataset{ACS Income} &
+\subfloat[\label{fig:income_good_epsilon}]{\vgiaPanel{assets/chapter_4/income_california/2048_potential_income_california_.pdf}} &
+\subfloat[\label{fig:income_bad_epsilon}]{\vgiaPanel{assets/chapter_4/income_california/2048_potential_income_california_1e-4.pdf}} &
+\subfloat[\label{fig:income_efficiency}]{\vgiaPanel{assets/chapter_4/income_california/efficiency.pdf}} \\
+\vgiaDataset{CIFAR-10} &
+\subfloat[\label{fig:cifar_good_epsilon}]{\vgiaPanel{assets/chapter_4/cifar/2048_potential_cifar10_.pdf}} &
+\subfloat[\label{fig:cifar_bad_epsilon}]{\vgiaPanel{assets/chapter_4/cifar/2048_potential_cifar10_1e-4.pdf}} &
+\subfloat[\label{fig:cifar_efficiency}]{\vgiaPanel{assets/chapter_4/cifar/efficiency.pdf}} \\
+\vgiaDataset{HARUS} &
+\subfloat[\label{fig:harus_good_epsilon}]{\vgiaPanel{assets/chapter_4/harus/2048_potential_harus_.pdf}} &
+\subfloat[\label{fig:harus_bad_epsilon}]{\vgiaPanel{assets/chapter_4/harus/2048_potential_harus_1e-4.pdf}} &
+\subfloat[\label{fig:harus_efficiency}]{\vgiaPanel{assets/chapter_4/harus/efficiency.pdf}} \\
+\vgiaDataset{King County Housing} &
+\subfloat[\label{fig:king_county_good_epsilon}]{\vgiaPanel{assets/chapter_4/king_county/2048_potential_king_county_.pdf}} &
+\subfloat[\label{fig:king_county_bad_epsilon}]{\vgiaPanel{assets/chapter_4/king_county/2048_potential_king_county_1e-4.pdf}} &
+\subfloat[\label{fig:kch_efficiency}]{\vgiaPanel{assets/chapter_4/king_county/efficiency.pdf}} \\
+\vgiaDataset{ImageNet} &
+\subfloat[\label{fig:imagenet_good_epsilon}]{\vgiaPanel{assets/chapter_4/imagenet/1024_potential_imagenet_.pdf}} &
+\subfloat[\label{fig:imagenet_bad_epsilon}]{\vgiaPanel{assets/chapter_4/imagenet/1024_potential_imagenet_1e-2.pdf}} &
+\subfloat[\label{fig:imagenet_efficiency}]{\vgiaPanel{assets/chapter_4/imagenet/efficiency_imagenet.pdf}}
+\end{tabular}
+\caption[VGIA comparisons across datasets]{Attack performance of VGIA, CAH, and CTP  when the target client trains a three-layer fully connected neural network, using full-batch FedSGD, on a local dataset of $B=2048$ samples from ACS Income (top) or CIFAR10 (bottom). (a,b,d,e) Number of correct samples and reconstruction error under varying attack-round budgets. (c,f) Number of rounds required for the adversary to identify all samples (i.e., achieve verifiability) across target datasets with different values of $\varepsilon_{\mathbf w}$. CTP$_{=}$ assumes  knowledge of $\varepsilon_{\mathbf w}$. 
+%(the minimum absolute distance between the projections of any two samples along direction $\mathbf{w}$). 
+CTP$_{>}$ corresponds to an overly optimistic choice of $\varepsilon=10^{-4} > \varepsilon_{\mathbf w}$. 
+CTP$_{<}$ corresponds to a conservative choice, with $\varepsilon$ such that $\varepsilon < \varepsilon_{\mathbf w}$.}
+\label{fig:vgia_dataset_comparison}
+\end{figure}
+
+

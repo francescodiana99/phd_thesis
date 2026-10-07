@@ -9,6 +9,7 @@
 \usepackage{dsfont}
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{wrapfig}
 \usepackage{footnotehyper}
 \setlength{\headheight}{13.9186pt}
 \renewcommand{\thefootnote}{\arabic{footnote}}
@@ -109,6 +110,7 @@
 \def\gradziwi{\frac{\partial z_i}{\partial \W_i^a}}
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator{\Dist}{\textbf {Dist}}
+\def\w{\mathbf{w}}
 
 \newcommand{\francesco}[1]{\textcolor{red}{\textbf{Francesco:} #1}}
 
@@ -160,10 +162,10 @@
   \import{chapitre3/}{chapter3}
 
   % \Part{Contributions}
-  \import{chapitre4/}{chapitre4}
-  \import{chapitre5/}{chapitre5}
+  \import{chapter4/}{chapter4}
+  \import{chapter5/}{chapter5}
 
-  \input{conclusion/conclusion}
+  % \input{conclusion/conclusion}
 
   \backmatter
 
@@ -190,5 +192,5 @@
   \appendix
   \import{appendix/}{appendix_aia}
   \import{appendix/}{appendix_ctp}
-
+  \import{appendix/}{appendix_vgia}
 \end{document}
