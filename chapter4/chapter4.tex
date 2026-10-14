@@ -67,7 +67,7 @@ Once a sample is certified, our framework analytically recovers its input featur
     \item We empirically validate VGIA on  tabular and image datasets, covering both regression and classification tasks. Our results demonstrate exact record recovery under large-batch aggregation across different data modalities. They also show that VGIA requires fewer attack rounds than previous geometric attacks.
 \end{itemize}
 
-\section{Problem Description and Background}
+\section{Problem Description and Background}\label{sec:vgia_background}
 
 We consider the same federated learning setting described in Section~\ref{sec:fed_learning}. Here, as discussed in Section~\ref{sec:dra}, data reconstruction attacks aim to recover client's private training data. Several appraoch exist, categorized in three main family: optimization-based, generative-based, and analytical-based. 
 
@@ -986,7 +986,7 @@ Although spurious reconstructions may in principle arise from numerical errors, 
 VGIA provides a provable certificate of reconstruction correctness through Proposition~\ref{prop:sample_isolation}. CTP, instead, treats a sample as isolated once it lies in a slice of width at most $\varepsilon$; this criterion is sound only when $\varepsilon \leq \varepsilon_{\mathbf w}$, namely for CTP$_<$ and CTP$_=$. Finally, CAH has no intrinsic verification procedure and can only rely on human inspection.
 
 \subsection{Experimental Results}
-\subsubsection{Results on FedSGD}
+\subsubsection{Results on FedSGD}\label{sec:exp_main_vgia}
 
 We first compare VGIA and CTP under different attack-round budgets. On ACS Income and CIFAR10, using batches of $B=2048$, VGIA recovers and certifies all samples within $12$ rounds, while CTP$_{=}$, which assumes the favorable case $\varepsilon=\varepsilon_{\mathbf w}$, requires $20$ rounds (Figs.~\ref{fig:income_good_epsilon} and~\ref{fig:cifar_good_epsilon}). CTP can recover more correct samples during the first few rounds, but these reconstructions cannot be reliably distinguished from spurious ones. For example, on ACS Income, after $4$ rounds CTP reconstructs $970$ correct samples together with approximately $451$ spurious reconstructions, corresponding to a reconstruction error of  $31\%$; after $8$ rounds, it recovers $1768$ correct samples but still produces $136$ spurious ones. VGIA, in contrast, produces no spurious reconstructions in this experiment, empirically confirming the reliability of its verification procedure in the presence of numerical errors. Similar trends are observed on HARUS and King County Housing (Figs.~\ref{fig:harus_good_epsilon} and~\ref{fig:king_county_good_epsilon}): VGIA recovers most of the HARUS dataset within $11$ rounds and more than $99\%$ of King County Housing within the same budget, while CTP continues refining already isolated regions. 
 
@@ -1098,7 +1098,7 @@ VGIA consistently outperforms CTP, reconstructing at least \(7.8\times\), \(4.6\
     \resizebox{\textwidth}{!}{
     \begin{tabular}{@{}c l c c c@{}}
         \toprule
-        $E$ & Method & Batch 128 & Batch 256 & Batch 512 \\
+        $E$ & Method & $B=128$ & $B=256$ & $B=512$ \\
         \midrule
 
         1 & CTP
@@ -1163,7 +1163,7 @@ VGIA consistently outperforms CTP, reconstructing at least \(7.8\times\), \(4.6\
     \resizebox{\textwidth}{!}{
     \begin{tabular}{@{}c l c c c@{}}
         \toprule
-        $E$ & Method & Batch 128 & Batch 256 & Batch 512 \\
+        $E$ & Method & $B=128$ & $B=256$ & $B=512$ \\
         \midrule
 
         1 & CTP
@@ -1228,7 +1228,7 @@ VGIA consistently outperforms CTP, reconstructing at least \(7.8\times\), \(4.6\
     \resizebox{\textwidth}{!}{
     \begin{tabular}{@{}c l c c c@{}}
         \toprule
-        $E$ & Method & Batch 128 & Batch 256 & Batch 512 \\
+        $E$ & Method & $B=128$ & $B=256$ & $B=512$ \\
         \midrule
 
         1 & CTP
@@ -1293,7 +1293,7 @@ VGIA consistently outperforms CTP, reconstructing at least \(7.8\times\), \(4.6\
     \resizebox{\textwidth}{!}{
     \begin{tabular}{@{}c l c c c@{}}
         \toprule
-        $E$ & Method & Batch 128 & Batch 256 & Batch 512 \\
+        $E$ & Method & $B=128$ & $B=256$ & $B=512$ \\
         \midrule
 
         1 & CTP
@@ -1349,7 +1349,7 @@ VGIA consistently outperforms CTP, reconstructing at least \(7.8\times\), \(4.6\
 
 Using the authors’ implementation\footnote{\url{https://github.com/unknown123489/Scale-MIA}} and the provided encoder and decoder weights, we evaluate our attack on both ViT and ResNet architectures and compare it with Scale-MIA on CIFAR10. In all experiments, the attack layer has $N=512$ neurons.
 
-Results in Table~\ref{tab:vgia_vs_scalemia} show that VGIA correctly isolates more than $99\%$ of the original images in the embedding space for both architectures, achieving over a $6\times$ improvement compared to the baseline. In terms of reconstruction quality, VGIA improves SSIM by more than $160\%$ on ResNet and over $20\%$ on ViT. Similarly, PSNR increases by more than $20\%$ on ResNet and over $70\%$ on ViT, consistently outperforming the baseline. VGIA also increases the proportion of samples with $\text{PSNR} > 18$, the heuristic threshold used in~\cite{scalemia} to determine reconstruction success. However, this criterion remains arbitrary and does not reliably reflect true recovery. To support this claim, Figure~\ref{fig:scale_mia_rec} presents examples of baseline reconstructions with $\text{PSNR} > 18$ that would be considered successful under this metric. In practice, these outputs often correspond to pure noise for ResNet and low-quality images for ViT, lacking meaningful semantic content. Such artifacts typically arise from linear combinations of multiple samples rather than accurate reconstructions. In contrast, VGIA provides a principled and automatic verification mechanism by certifying the isolation of individual embeddings. This yields a more meaningful measure of attack success, without relying on heuristic thresholds, human inspection, or access to the original private data.
+Results in Table~\ref{tab:vgia_vs_scalemia} show that VGIA correctly isolates more than $99\%$ of the original images in the embedding space for both architectures, achieving over a $6\times$ improvement compared to the baseline. In terms of reconstruction quality, VGIA improves SSIM by more than $160\%$ on ResNet and over $20\%$ on ViT. Similarly, PSNR increases by more than $20\%$ on ResNet and over $70\%$ on ViT, consistently outperforming the baseline. VGIA also increases the proportion of samples with $\text{PSNR} > 18$, the heuristic threshold used in~\cite{shiScaleMIAScalableModel2025} to determine reconstruction success. However, this criterion remains arbitrary and does not reliably reflect true recovery. To support this claim, Figure~\ref{fig:scale_mia_rec} presents examples of baseline reconstructions with $\text{PSNR} > 18$ that would be considered successful under this metric. In practice, these outputs often correspond to pure noise for ResNet and low-quality images for ViT, lacking meaningful semantic content. Such artifacts typically arise from linear combinations of multiple samples rather than accurate reconstructions. In contrast, VGIA provides a principled and automatic verification mechanism by certifying the isolation of individual embeddings. This yields a more meaningful measure of attack success, without relying on heuristic thresholds, human inspection, or access to the original private data.
 
 Finally, Figure~\ref{fig:vgia_scale_mia_results} reports performance as the batch size increases, for $B \in \{128, 256, 512, 1024, 2048\}$. VGIA remains stable and consistently outperforms the baseline across all batch sizes, indicating that its search procedure is largely independent of the number of samples in the batch. In contrast, the performance of Scale-MIA degrades as the batch size grows. Figure~\ref{fig:rec_examples} provides our representative reconstruction examples.
 \begin{table}[t]
@@ -1518,14 +1518,807 @@ neurons.
     \label{fig:noise_effect_vgia}
 \end{figure*}
 
-\section{Future Works and Conclusion }
+\section{Detectability of VGIA}
+As discussed in Section~\ref{sec}, VGIA requires the attacker to configure the intermediate layers, from layer $a+1$ to layer $L-1$, so that the Jacobian entries $\frac{\partial z^L}{\partial z_i^a}$ are non-zero and independent of the input. When the inputs to these layers are non-negative, a simple way to satisfy this requirement is to assign positive weights and biases to all downstream layers, ensuring that every ReLU neuron remains active regardless of the input. We adopt this construction in the experiments presented in Section~\ref{sec:exp_main_vgia}.
+
+However, the resulting parameter configurations may appear suspicious to clients that inspect the models received from the server before performing local training. To investigate the detectability of VGIA under less restrictive trust assumptions, we consider two alternative configurations designed to reduce the statistical evidence of malicious modifications while preserving the gradient structure required for reconstruction.
+
+\subsection{Sampling from Realistic Distributions}
+
+A first approach consists of constructing the intermediate layers, from layer $a+1$ to layer $L-1$, using parameters sampled from a zero-centered Gaussian distribution. The sampled values are assigned so that weights have relatively small magnitudes, while biases are preferentially selected from the tails of the distribution. When the sampled bias values are insufficient to enforce the desired activation pattern, the corresponding biases are instead chosen deterministically and may therefore fall outside the sampled distribution.
+
+The attacker configures the parameters so that approximately half of the neurons in each intermediate layer remain permanently active and the other half permanently inactive, independently of the input. The resulting fixed activation pattern preserves the input-independent Jacobian required by VGIA while avoiding the uniformly positive weights and biases used in the original construction. Since the attacker knows the bounds on the input features, it can verify the activation pattern by propagating bounds through the network and checking that each pre-activation maintains the desired sign over the entire input domain.
+
+We empirically validate this initialization strategy on the ACS Income dataset. Figure~\ref{fig:weight_dist} shows that the resulting malicious parameters still follow an approximately zero-mean Gaussian distribution, while Fig.~\ref{fig:vgia_gaussian_weight} shows that this initialization strategy does not affect the reconstruction performance of VGIA.
+
+
+\begin{figure*}
+    \centering 
+    \subfloat[\label{fig:weight_dist}]{%
+        \includegraphics[width=0.45\linewidth]{assets/chapter_4/income_california/weight_dist.pdf}
+    }
+    \subfloat[\label{fig:vgia_gaussian_weight}]{%
+        \includegraphics[width=0.45\linewidth]{assets/chapter_4/income_california/vgia_gaussian_weights.png}
+    }
+    \vspace{0.025\linewidth}
+\caption{(a) Distribution of malicious parameters initialized from $\mathcal{N}(0,1)$. (b) VGIA performance on the ACS Income dataset with a batch size of 2048 under Gaussian parameter initialization.}
+\end{figure*}
+
+\subsection{Attacking a Subset of the Parameters}\label{sec:detectability}
+
+In the experiments presented in Section~\ref{sec:exp_main_vgia}, the server assigns a search hyperplane to every neuron in the attacked layer. Consequently, all neurons share the same weight vector and differ only in their biases, introducing a highly structured parameter configuration that may be easily detected by a client inspecting the received model. To reduce the extent of these modifications, we consider a variant of VGIA that targets only a subset $\mathcal{P}$ of the $N$ neurons in layer $a$, with $N_a = |\mathcal{P}| < N$. For each attacked neuron $i\in\mathcal{P}$, the server sets $\W_i^a=\mathbf{w}$, where $\mathbf{w}\in\real^d$ is shared across the attacked neurons, and adjusts the corresponding bias according to Algorithm~\ref{algo:parallelattack}. The remaining neurons retain their parameters and continue to evolve through ordinary training updates.
+
+As discussed in Section~\ref{sec:fedavg_vgia}, the gradient contributions of the attacked neurons can be factorized by routing their downstream influence through a carrier neuron. In that construction, the server establishes an isolated path through the subsequent hidden layers, disconnecting the carrier neurons from the rest of the network. For the purpose of reducing detectability, we consider a less restrictive construction that modifies only the connections between layers $a$ and $a+1$, while allowing the remaining downstream layers to retain their original parameters.
+
+Let layer $a+1$ contain $M$ neurons, with $\W^{a+1}\in\real^{M\times N}$. The server selects a carrier neuron $\kappa$ and assigns nonzero connections from each attacked neuron to the carrier, while removing the connections from non-attacked neurons:
+\begin{equation*}
+W^{a+1}_{\kappa,i}
+\begin{cases}
+\neq 0, & i\in\mathcal P,\\
+=0, & i\notin\mathcal P.
+\end{cases}
+\end{equation*}
+As in the FedAvg construction, the carrier bias is chosen so that its pre-activation remains strictly positive over the admissible input domain. The carrier therefore operates in the linear regime of the ReLU activation for every possible input.
+
+The connections from the attacked neurons to the remaining neurons of layer $a+1$ can be configured in two ways. The first follows the isolated-carrier construction introduced for FedAvg, setting $W^{a+1}_{r,i}=0$ for every $r\neq\kappa$ and $i\in\mathcal P$. Although this preserves the required gradient factorization, it introduces many zero-valued parameters that may facilitate detection.
+
+To avoid these zero connections, we consider a second construction in which the corresponding weights are proportional to the carrier connections. Specifically, for each non-carrier neuron $r\neq\kappa$, the server selects a scalar $\lambda_r$ and sets
+\begin{equation}
+W^{a+1}_{r,i}
+=
+\lambda_r W^{a+1}_{\kappa,i},
+\qquad \forall i\in\mathcal P.
+\label{eq:stealth_proportional}
+\end{equation}
+The isolated-carrier construction corresponds to the special case $\lambda_r=0$ for every $r\neq\kappa$.
+
+Under this configuration, the downstream Jacobian associated with an attacked neuron $i\in\mathcal P$ becomes
+\begin{equation}
+\frac{\partial z^L}{\partial z_i^a}
+=
+W^{a+1}_{\kappa,i}
+\left[
+\frac{\partial z^L}{\partial z_\kappa^{a+1}}
++
+\sum_{\substack{r=1\\r\neq\kappa}}^M
+\lambda_r
+\indicator_{\{z_r^{a+1}>0\}}
+\frac{\partial z^L}{\partial z_r^{a+1}}
+\right].
+\label{eq:stealth_jacobian}
+\end{equation}
+Although the terms inside the brackets may depend on the input and on the activation patterns of subsequent layers, they are shared across all attacked neurons. Consequently, for each sample $(\x_j,y_j)$, we can define the sample-dependent coefficient
+\begin{equation}
+\rho_j
+=
+\left.
+\left[
+\frac{\partial\mathcal L_j}{\partial z^L}
+\left(
+\frac{\partial z^L}{\partial z_\kappa^{a+1}}
++
+\sum_{\substack{r=1\\r\neq\kappa}}^M
+\lambda_r
+\indicator_{\{z_r^{a+1}>0\}}
+\frac{\partial z^L}{\partial z_r^{a+1}}
+\right)
+\right]\right|_{\x=\x_j},
+\end{equation}
+which is independent of the attacked-neuron index $i$. The gradient therefore factorizes as
+\begin{equation}
+\frac{\partial\mathcal L_j}{\partial z_i^a}
+=
+W^{a+1}_{\kappa,i}\rho_j.
+\label{eq:stealth_factorization}
+\end{equation}
+
+The resulting factorization has the same structure as the one derived for the FedAvg carrier construction. Hence, normalizing the weight and bias gradients of each attacked neuron by the corresponding coefficient $W^{a+1}_{\kappa,i}$ allows the server to recover the slice vectors $\slice_k$ and $\beta_k$ through the same gradient-difference procedure. In particular, the contributions of samples activating two consecutive attacked neurons cancel exactly, as in Eq.~\eqref{eq:hp_diff}. When a slice contains a single sample $\x_j$ with $\rho_j\neq 0$, its input can therefore be reconstructed exactly from $\slice_k/\beta_k$.
+
+Unlike the isolated carrier path introduced for FedAvg, the proportional construction requires no modifications beyond layer $a+1$ and does not constrain the activation patterns of the remaining downstream neurons. It also applies to both regression and multiclass classification without requiring the classification-layer modifications described in Section~\ref{sec:multiclass_vgia}.
+
+However, the additional flexibility introduces two potential limitations. First, contributions propagated through different downstream neurons may cancel, yielding $\rho_j=0$ for some samples and preventing their reconstruction. Second, the construction does not guarantee that the coefficients associated with different samples satisfy the conditions required by Proposition~\ref{prop:sample_isolation} across communication rounds. Consequently, the theoretical verification guarantees do not necessarily extend to this setting.
+
+Nevertheless, in our experiments, we did not observe zero coefficients, verification failures attributable to the modified construction, or measurable degradation in reconstruction performance.
+
+\subsection{Perturb Attack Directions}
+
+Restricting the attack to the neurons in $\mathcal P$ reduces the number of
+modified rows, and consequently, the imprint of the attack in the model parameters. However, assigning the same direction $\w$ to all attacked
+neurons still introduces a repeated structure in the attacked layer. To reduce
+this regularity, the server can apply a small, independent perturbation to the
+direction of each attacked neuron. This modification affects only the weight
+vectors of the attacked neurons, while the proportional connections introduced
+above remain unchanged.
+
+At each attack round $t$, and for each attacked neuron $i\in\mathcal P$, the
+server samples
+\begin{equation*}
+    \boldsymbol{\xi}_i
+    \sim
+    \mathcal N(\mathbf 0,\mathbf I_d),
+\end{equation*}
+and projects it onto the subspace orthogonal to the reference attack direction
+$\w$. Let
+\begin{equation*}
+    \widehat{\w}
+    =
+    \frac{\w}{\|\w\|}
+\end{equation*}
+denote the normalized attack direction. The orthogonal component is
+\begin{equation*}
+    \boldsymbol{\xi}^{\perp}_i
+    =
+    \boldsymbol{\xi}_i
+    -
+    \left(
+        \boldsymbol{\xi}_i^\top
+        \widehat{\w}
+    \right)
+    \widehat{\w}.
+\end{equation*}
+The server then normalizes this component as
+\begin{equation*}
+    \widehat{\boldsymbol{\xi}}^{\perp}_i
+    =
+    \frac{
+         \boldsymbol{\xi}^{\perp}_i
+    }{
+        \left\|
+             \boldsymbol{\xi}^{\perp}_i
+        \right\|
+    }.
+\end{equation*}
+
+Given a perturbation parameter $p\geq 0$, the server sets the weight vector of each attacked neuron $i\in\mathcal P$ to
+\begin{equation}
+\label{eq:perturbed_direction}
+\W_i^{a}
+=
+\|\w\|
+\frac{
+\widehat{\w}
++
+p \mathbf{\widehat{\boldsymbol{\xi}}^{\perp}_i}
+}{
+\sqrt{1+p^2}
+}.
+\end{equation}
+The parameter $p$ controls the magnitude of the orthogonal perturbation relative to the reference direction. Since
+$\widehat{\boldsymbol{\xi}}^{\perp \top}_i\widehat{\w}=0$ and $\|\widehat{\boldsymbol{\xi}}^{\perp}_i\|=1$, the construction preserves the norm of the original attack direction, and its cosine similarity with $\w$ is
+\begin{equation*}
+\frac{
+\left(\W_i^{a}\right)^\top\w
+}{
+\left\|\W_i^{a}\right\|
+\|\w\|
+}
+=
+\frac{1}{\sqrt{1+p^2}}.
+\end{equation*}
+Hence, the angle between each perturbed direction and the reference direction $\w$ is $\arctan(p)$. The weights of neurons outside $\mathcal P$ are left unchanged.
+
+For $p>0$, however, the hyperplanes associated with the attacked neurons are no longer exactly parallel. Consequently, the active sets $\mathcal A_i$ and $\mathcal A_{i'}$ associated with two consecutive queried neurons are no longer guaranteed to be nested. Their normalized gradient difference becomes
+\begin{equation*}
+\frac{1}{B}
+\sum_{j\in\mathcal A_{i'}\setminus\mathcal A_i}
+\rho_j\x_j
+-
+\frac{1}{B}
+\sum_{j\in\mathcal A_i\setminus\mathcal A_{i'}}
+\rho_j\x_j,
+\end{equation*}
+instead of the single set difference appearing in
+Eq.~\eqref{eq:stealth_slice}. In the parallel case, nesting of the active sets guarantees that the second term vanishes, but under direction perturbation, this property is no longer guaranteed. The VGIA search continues to select the bias values with respect to the reference direction $\w$. However, the perturbed hyperplanes can induce active sets that differ from those implied by the reference search, so the regions
+identified during the search do not necessarily coincide with the regions
+defined by the perturbed neurons. Since the perturbations are independently
+resampled across communication rounds, this mismatch can vary over time.
+As a result, reconstruction performance may degrade as the perturbation
+magnitude $p$ increases. We evaluate this trade-off empirically for different
+values of $p$.
+
+\subsection{Experiments for Stealthier Attacks}
+\label{app:exp_stealthier_attack}
+We evaluate the impact of the proposed modifications on both the reconstruction
+performance and detectability of VGIA. We first study the effect of perturbing
+the attack directions on reconstruction performance. We then assess
+detectability through hypothesis testing, evaluating whether state-of-the-art
+metrics for detecting active gradient inversion attacks~\cite{carletti2026detectability}
+can distinguish attacked models from benign ones.
+
+\subsubsection{Effect of perturbation}
+We evaluate different values of the perturbation parameter $p$, with the
+results reported in Figure~\ref{fig:perturbation_results}. As expected,
+reconstruction performance gradually decreases as the perturbation magnitude
+increases. On ACS Income, the fraction of correctly reconstructed samples decreases
+from $100\%$ for $p=0$ to $98\%$ for $p=10^{-6}$ and $66\%$ for
+$p=10^{-4}$. Similarly, on CIFAR-10, it decreases from $100\%$ for $p=0$
+to $88\%$ for $p=10^{-6}$ and $53\%$ for $p=10^{-4}$. We observe a
+similar trend across the remaining datasets.
+
+Importantly, even very small perturbations are sufficient to eliminate thex
+rank deficiency induced by the original parallel construction, yielding a
+full-rank attacked weight matrix.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth]{assets/chapter_4/iclr_version/vgia_perturbation_crr.pdf}
+\caption{Percentage of correct reconstructions for increasing values of the direction perturbation $p$. Lines show the mean over three random seeds, and shaded regions show one standard deviation. We use \(B=2048\) for all datasets except ImageNet, for which \(B=1024\). Each client computes one full-batch FedSGD gradient per communication round.}    \label{fig:perturbation_results}
+\end{figure}
+
+We next assess whether monitoring the client's training loss is sufficient to
+detect the attack. We set $N_a=100$ and let the server retain the
+client-updated values of all non-attacked parameters across communication
+rounds, modifying only the parameters required by the attack. As shown in
+Table~\ref{tab:training_loss_crr}, with
+$p=10^{-7}$ and a fixed budget of $90$ communication rounds, VGIA recovers
+nearly the entire client dataset with negligible reconstruction error while
+maintaining a full-rank attacked weight matrix. At the same time, the training
+loss continues to decrease during training, showing that loss monitoring alone
+does not provide a reliable indicator of the attack.
+
+\begin{table}[t]
+    \centering
+    \small
+    \caption{Training loss and VGIA correct reconstruction rate across communication rounds. Each cell reports the training loss (top) and the percentage of correct reconstructions (bottom), as mean $\pm$ standard deviation over three random seeds. The attacker uses $N_a=100$ neurons. Each dataset has $B=2048$ samples, except for ImageNet, for which $B=1024$.}
+    \label{tab:training_loss_crr}
+
+    \setlength{\tabcolsep}{5pt}
+    \renewcommand{\arraystretch}{1.08}
+
+    \resizebox{\linewidth}{!}{%
+    \begin{tabular}{@{}cccccc@{}}
+        \toprule
+        \textbf{Round}
+        & \textbf{ACS Income}
+        & \textbf{King County Housing}
+        & \textbf{HARUS}
+        & \textbf{CIFAR-10}
+        & \textbf{ImageNet} \\
+        \midrule
+
+        10
+        & \shortstack{$(8.06\pm9.87)\!\times\!10^{-1}$\\ $9.93\pm0.40$}
+        & \shortstack{$1.06\pm0.02$\\ $10.3\pm0.45$}
+        & \shortstack{$1.93\pm0.05$\\ $10.2\pm0.78$}
+        & \shortstack{$2.61\pm0.06$\\ $9.72\pm0.51$}
+        & \shortstack{$12.9\pm0.78$\\ $20.8\pm0.64$} \\
+
+        \addlinespace[0.35em]
+        20
+        & \shortstack{$(4.27\pm4.96)\!\times\!10^{-1}$\\ $22.0\pm0.57$}
+        & \shortstack{$1.03\pm0.03$\\ $22.2\pm0.16$}
+        & \shortstack{$1.80\pm0.05$\\ $22.9\pm0.60$}
+        & \shortstack{$2.48\pm0.03$\\ $22.4\pm0.38$}
+        & \shortstack{$12.7\pm0.77$\\ $45.4\pm1.42$} \\
+
+        \addlinespace[0.35em]
+        30
+        & \shortstack{$(1.89\pm1.79)\!\times\!10^{-1}$\\ $34.6\pm1.15$}
+        & \shortstack{$1.02\pm0.03$\\ $34.3\pm0.71$}
+        & \shortstack{$1.71\pm0.09$\\ $34.8\pm0.50$}
+        & \shortstack{$2.38\pm0.04$\\ $34.8\pm0.50$}
+        & \shortstack{$12.5\pm0.76$\\ $70.7\pm3.20$} \\
+
+        \addlinespace[0.35em]
+        40
+        & \shortstack{$(7.46\pm3.76)\!\times\!10^{-2}$\\ $47.5\pm0.77$}
+        & \shortstack{$1.00\pm0.03$\\ $46.7\pm0.66$}
+        & \shortstack{$1.65\pm0.10$\\ $47.1\pm0.52$}
+        & \shortstack{$2.34\pm0.03$\\ $46.7\pm0.57$}
+        & \shortstack{$12.1\pm0.73$\\ $96.6\pm3.57$} \\
+
+        \addlinespace[0.35em]
+        50
+        & \shortstack{$(3.65\pm0.72)\!\times\!10^{-2}$\\ $59.9\pm0.59$}
+        & \shortstack{$(9.82\pm0.34)\!\times\!10^{-1}$\\ $58.6\pm1.31$}
+        & \shortstack{$1.61\pm0.10$\\ $59.6\pm0.83$}
+        & \shortstack{$2.31\pm0.02$\\ $58.8\pm1.07$}
+        & \shortstack{$12.1\pm0.73$\\ $99.9\pm0.10$} \\
+
+        \addlinespace[0.35em]
+        60
+        & \shortstack{$(2.54\pm0.52)\!\times\!10^{-2}$\\ $72.0\pm0.76$}
+        & \shortstack{$(9.63\pm0.38)\!\times\!10^{-1}$\\ $71.1\pm1.58$}
+        & \shortstack{$1.56\pm0.09$\\ $71.9\pm0.20$}
+        & \shortstack{$2.30\pm0.02$\\ $71.1\pm0.81$}
+        & -- \\
+
+        \addlinespace[0.35em]
+        70
+        & \shortstack{$(2.14\pm0.29)\!\times\!10^{-2}$\\ $84.4\pm0.59$}
+        & \shortstack{$(9.43\pm0.41)\!\times\!10^{-1}$\\ $84.0\pm1.98$}
+        & \shortstack{$1.51\pm0.07$\\ $84.5\pm0.93$}
+        & \shortstack{$2.30\pm0.02$\\ $83.9\pm0.73$}
+        & -- \\
+
+        \addlinespace[0.35em]
+        80
+        & \shortstack{$(1.98\pm0.16)\!\times\!10^{-2}$\\ $97.7\pm1.26$}
+        & \shortstack{$(9.21\pm0.45)\!\times\!10^{-1}$\\ $96.8\pm2.74$}
+        & \shortstack{$1.46\pm0.06$\\ $98.0\pm1.39$}
+        & \shortstack{$2.29\pm0.02$\\ $96.5\pm0.99$}
+        & -- \\
+
+        \addlinespace[0.35em]
+        90
+        & \shortstack{$(1.78\pm0.09)\!\times\!10^{-2}$\\ $99.8\pm0.03$}
+        & \shortstack{$(9.24\pm0.36)\!\times\!10^{-1}$\\ $99.6\pm0.18$}
+        & \shortstack{$1.45\pm0.05$\\ $99.8\pm0.06$}
+        & \shortstack{$2.29\pm0.02$\\ $99.8\pm0.10$}
+        & -- \\
+
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+
+\subsubsection{Detectability metrics}
+
+We evaluate the detectability of VGIA using the statistical metrics proposed by~\citeA{carletti2026detectability}, which examine the rank of the weight matrix, the variability of neuron weight vectors, the entropy of quantized weight values, the ordering of neuron biases, and the differences between consecutive biases. VGIA can mitigate the last two detection criteria by assigning biases to arbitrary neuron indices and rescaling the weight vector and bias of each attacked neuron by the same positive factor, thereby preserving the corresponding hyperplane. We therefore focus on matrix rank, neuron variability, and weight entropy.
+
+We additionally investigate the mean weight value and the mean pairwise cosine similarity between neuron weight vectors. While most of these statistics characterize the model received at an individual communication round, a client may also retain and compare successive models to identify suspicious patterns across training. We consequently evaluate cosine similarity both within individual rounds and cumulatively over multiple communication rounds. Finally, we consider a simple loss-based sanity check that examines whether the training loss decreases over successive rounds.
+
+We formulate the detection problem as a binary hypothesis test, distinguishing between models generated by benign training and models modified by a malicious server:
+\begin{equation*}
+\begin{aligned}
+H_0 &: \quad \text{The received model follows the prescribed training procedure},\\
+H_1 &: \quad \text{The received model has been maliciously modified by the server}.
+\end{aligned}
+\end{equation*}
+For each detection statistic, we estimate its empirical distribution under $H_0$ by training $100$ benign models on the Income dataset for $100$ communication rounds, using standard PyTorch Kaiming initialization. We compute the corresponding statistics at each training checkpoint and use the resulting observations to characterize benign behavior.
+
+We define the acceptance region of each test as the central $95\%$ interval of the corresponding empirical null distribution, yielding a nominal false-positive rate (FPR) of $5\%$. A model is classified as suspicious when its detection statistic falls outside this interval. We then report the false-negative rate (FNR), defined as the fraction of attacked models whose statistics remain within the acceptance region. For the cross-round experiments, the null distribution is calibrated using the corresponding statistics computed over benign training trajectories.
+
+Unless otherwise specified, we consider $N_a=10$ attacked neurons and a perturbation magnitude of $p=10^{-7}$. The reference attack direction $\w$ is sampled using Kaiming initialization, and the attacked neurons are perturbed according to Equation~\eqref{eq:perturbed_direction}.
+
+We also investigate a variant that uses two opposite reference directions, $\w$ and $-\w$. In particular, the server constructs perturbed weight vectors around $\w$ for
+\begin{equation*}
+N_a' \approx \frac{N_a+\sqrt{N_a}}{2}
+\end{equation*}
+attacked neurons, and around $-\w$ for the remaining $N_a-N_a'$ neurons. The allocation approximately balances the positive and negative contributions of the attacked vectors to the average pairwise inner product, reducing the statistical signal associated with their common direction.
+
+
+\subsubsection{Rank-based detection} We first examine whether direction perturbations can eliminate the rank deficiency introduced by the parallel-hyperplane construction. As shown in Figure~\ref{fig:perturbation_results}, reconstruction performance gradually decreases as the perturbation magnitude increases. In particular, for $p=10^{-7}$, VGIA reconstructs more than $95\%$ of the samples on every dataset while maintaining a full-rank weight matrix. Thus, even a very small direction perturbation removes the rank deficiency of the parallel construction with only a limited impact on reconstruction performance.
+
+\subsubsection{Single-round detection}
+
+We next examine whether the remaining parameter statistics can distinguish benign and attacked models at individual communication rounds.
+
+Table~\ref{tab:single_round_variability_entropy} reports the results for weight variability and quantized-weight entropy. With a single attack direction, the two metrics yield FNRs of $88.16\%$ and $95.16\%$, respectively, indicating limited ability to distinguish attacked models from those obtained through benign training. The use of two opposite directions further increases the FNR of the weight-variability detector to $91.07\%$, while the entropy detector remains essentially unaffected, with an FNR of $95.05\%$. For weight entropy, the resulting detection rate is approximately $5\%$, close to the nominal FPR, suggesting little separation between the benign and attacked distributions under this statistic.
+
+% We then evaluate the detection metrics proposed by~\citeA{carletti2026detectability}. These metrics examine the rank of the weight matrix, the variability of the neuron weight vectors, the entropy of the quantized weight values, the ordering of the neuron biases, and the differences between consecutive biases. VGIA can directly avoid the last two tests. The server can assign the biases to arbitrary neuron indices and can scale the weight vector and bias of each attacked neuron by the same factor without changing its hyperplane. We therefore evaluate the matrix rank, neuron variability, and weight entropy. As shown in Figure~\ref{fig:perturbation_results}, reconstruction performance gradually decreases as the perturbation magnitude increases. In particular, for $p=10^{-7}$, VGIA reconstructs more than $95\%$ of the samples on every dataset while maintaining a full-rank weight matrix. Thus, even a very small direction perturbation removes the rank deficiency of the parallel construction with only a limited impact on reconstruction performance.
+
+
+% We evaluate the cosine-similarity test both within individual communication rounds and over the complete training trajectory, since a client must monitor all the models received during training. Finally, we consider a simple sanity check where a client just tests if the training loss is decreasing across training rounds.
+
+% The attacked weight matrix has a rank ratio equal to one for all tested perturbation levels and datasets. 
+% %In particular, for $p=10^{-7}$, VGIA reconstructs more than $95\%$ of the samples on every dataset, while the attacked weight matrix remains full rank. Thus, even a very small direction perturbation removes the rank deficiency of the parallel construction with only a limited impact on reconstruction performance. 
+% As shown in Fig.~\ref{fig:perturbation_results}, reconstruction performance gradually decreases as the perturbation magnitude increases. In particular, for $p=10^{-7}$, VGIA reconstructs more than $95\%$ of the
+% samples on every dataset while maintaining a full-rank weight matrix. Thus, even a very small direction perturbation removes the rank deficiency of the parallel construction with only a limited impact on reconstruction performance.
+
+
+% In addition to the metrics of~\citeA{carletti2026detectability}, we consider the mean
+% weight value and the mean pairwise cosine similarity between neuron weight
+% vectors. We evaluate cosine similarity both within each communication round
+% and cumulatively across the training trajectory, since a client may retain and
+% compare the sequence of models received throughout training. Finally, we
+% consider a simple loss-based sanity check that tests whether the training loss
+% decreases over successive communication rounds.
+
+% We evaluate these metrics using hypothesis tests. For each detection statistic,
+% the null hypothesis corresponds to the behavior observed under benign
+% training. We estimate its empirical null distribution by training $100$
+% benign models on the Income dataset for $100$ communication rounds using
+% standard PyTorch Kaiming initialization and computing the corresponding
+% detection statistics at each checkpoint. We define the acceptance region as
+% the central $95\%$ interval of the empirical benign distribution, yielding a
+% target false-positive rate (FPR) of $5\%$, and report the resulting
+% false-negative rate (FNR) on attacked models.
+
+% For the attacked models, we set $N_a=10$ attacked neurons and evaluate each
+% training checkpoint using the same detection procedure. The reference attack
+% direction $\w$ is sampled using Kaiming initialization and perturbed with
+% $p=10^{-7}$. We additionally evaluate a variant of VGIA that uses two
+% opposite reference directions, $\w$ and $-\w$. Specifically, the server
+% constructs perturbed vectors around $\w$ for
+% \begin{equation*}
+% N_a' \approx \frac{N_a+\sqrt{N_a}}{2}
+% \end{equation*}
+% attacked neurons and around $-\w$ for the remaining $N_a-N_a'$ neurons.
+% This allocation approximately balances the positive and negative
+% contributions of the attacked vectors to the average pairwise inner product,
+% thereby reducing the signal exposed by pairwise-similarity statistics.
+
+
+% Table~\ref{tab:single_round_variability_entropy} reports the statistics
+% obtained from the empirical benign distribution and the attacked models,
+% together with the corresponding FNR. With a single attack direction, weight variability yields an FNR of $88.16\%$, while weight entropy yields an FNR of $95.16\%$. These results indicate that both statistics provide limited separation between benign and attacked models when evaluated on weights obtained from actual training. Using two independently perturbed opposite directions further increases the
+% FNR of the weight-variability detector to $91.07\%$. Weight entropy remains
+% essentially unaffected, with an FNR of $95.05\%$. In the latter case, the
+% corresponding detection rate is approximately $5\%$, close to the nominal
+% $5\%$ FPR, indicating almost no separation between the benign and attacked
+% distributions.
+
+\begin{table*}[t]
+\centering
+\caption{Single-round detection results for weight variability and quantized-weight entropy. For each metric, we report the mean $\pm$ standard deviation for benign and attacked models, the central $95\%$ interval of the empirical benign distribution, and the resulting false-negative rate (FNR). Results are shown for VGIA with one reference direction and with two opposite reference directions, using $N_a=10$ attacked neurons and perturbation magnitude $p=10^{-7}$.}
+\label{tab:single_round_variability_entropy}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Metric
+& No. of directions
+& Benign mean \(\pm\) std
+& Benign \(95\%\) interval
+& Attacked mean \(\pm\) std
+& FNR (\%) \\
+\midrule
+Weight variability
+& \(1\)
+& \(8.16\times10^{-1} \pm 3.60\times10^{-4}\)
+& \([8.16\times10^{-1},\,8.17\times10^{-1}]\)
+& \(8.16\times10^{-1} \pm 3.77\times10^{-4}\)
+& \(88.16\) \\
+
+Weight variability
+& \(2\)
+& \(8.16\times10^{-1} \pm 3.60\times10^{-4}\)
+& \([8.16\times10^{-1},\,8.17\times10^{-1}]\)
+& \(8.16\times10^{-1} \pm 3.76\times10^{-4}\)
+& \(91.07\) \\
+
+Weight entropy
+& \(1\)
+& \(3.31 \pm 1.40\times10^{-2}\)
+& \([3.27,\,3.32]\)
+& \(3.31 \pm 1.39\times10^{-2}\)
+& \(95.16\) \\
+
+Weight entropy
+& \(2\)
+& \(3.31 \pm 1.40\times10^{-2}\)
+& \([3.27,\,3.32]\)
+& \(3.31 \pm 1.39\times10^{-2}\)
+& \(95.05\) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+We then consider the mean pairwise cosine similarity between neuron weight vectors. Unlike variability and entropy, cosine similarity directly captures the directional structure introduced by the attack. As shown in Table~\ref{tab:cumulative_cosine_single}, the single-direction construction yields an FNR of $58.50\%$, indicating that its repeated directional pattern remains partially detectable. However, using two opposite directions increases the FNR to $96.00\%$. The corresponding detection rate of $4\%$ is comparable to the nominal $5\%$ FPR, showing that the two-direction construction substantially reduces the effectiveness of the cosine-similarity detector.
+
+
+% Table~\ref{tab:single_round_cosine} reports the results for the mean pairwise
+% cosine similarity. With a single attack direction, the detector achieves an
+% FNR of $58.50\%$, indicating that the repeated directional structure remains
+% partially detectable. In contrast, using two opposite directions increases
+% the FNR to $96.00\%$. The corresponding detection rate of $4.00\%$ is close
+% to the nominal $5\%$ FPR, showing that the two-direction construction almost
+% completely removes the separation between benign and attacked models under
+% this metric.
+
+\begin{table*}[t]
+\centering
+\caption{Single-round detection results for the mean pairwise cosine similarity between neuron weight vectors. We report the mean $\pm$ standard deviation for benign and attacked models, the central $95\%$ interval of the empirical benign distribution, and the resulting false-negative rate (FNR). Results are shown for VGIA with one reference direction and with two opposite reference directions, using $N_a=10$ attacked neurons and perturbation magnitude $p=10^{-7}$.}
+\label{tab:single_round_cosine}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ccccc}
+\toprule
+No. of directions
+& Benign mean \(\pm\) std
+& Benign \(95\%\) interval
+& Attacked mean \(\pm\) std
+& FNR (\%) \\
+\midrule
+
+\(1\)
+& \(-3.73\times10^{-6} \pm 5.24\times10^{-5}\)
+& \([-9.43\times10^{-5},\,9.02\times10^{-5}]\)
+& \(7.91\times10^{-5} \pm 5.35\times10^{-5}\)
+& \(58.50\) \\
+
+\(2\)
+& \(-3.73\times10^{-6} \pm 5.24\times10^{-5}\)
+& \([-9.43\times10^{-5},\,9.02\times10^{-5}]\)
+& \(-1.09\times10^{-6} \pm 5.08\times10^{-5}\)
+& \(96.00\) \\
+
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+% We next evaluate attack detectability across multiple communication rounds
+% using the mean pairwise cosine similarity computed over a window of $T$
+% rounds. In this setting, detection becomes more challenging because benign
+% training naturally induces correlations across successive model states, making
+% it difficult to distinguish these patterns from those introduced by the attack.
+
+% Table~\ref{tab:cumulative_cosine_single} reports the detection results for the
+% single-direction construction as the attack budget is distributed over an
+% increasing number of communication rounds. When the budget is concentrated
+% over $T=10$ rounds, the cross-round cosine-similarity test yields an FNR of
+% $55\%$. Distributing the same budget over a longer horizon substantially
+% reduces detectability: the FNR increases to $86\%$ for $T=15$, reaches
+% $90\%$ for $T=20$, and further increases to $93\%$ for $T=30$. These results
+% show that spreading the attack over more communication rounds makes the
+% attack-induced correlations increasingly difficult to distinguish from those
+% arising during benign training.The previous experiments consider model parameters within a single communication round. However, a client may retain the sequence of models received during training and examine whether their evolution reveals malicious modifications. To investigate this possibility, we evaluate the mean pairwise cosine similarity computed over a window of $T$ communication rounds.
+
+We first consider the single-direction construction, distributing a fixed attack budget of $100$ attacked neurons across different numbers of communication rounds. Table~\ref{tab:cumulative_cosine_single} reports the corresponding results. When the attack budget is concentrated over $T=10$ rounds, the detector achieves an FNR of $55\%$. As the same budget is distributed over a longer training horizon, the FNR increases to $86\%$ for $T=15$, $90\%$ for $T=20$, and $93\%$ for $T=30$. With fewer neurons modified in each round, the statistical differences between benign and attacked trajectories become less pronounced. Under the considered fixed-budget setting, distributing the attack over more communication rounds therefore reduces the effectiveness of cross-round cosine-similarity detection.
+
+\begin{table*}[t]
+\centering
+\caption{Cross-round detection results for the cumulative mean pairwise cosine similarity using a single attack direction. A fixed attack budget of $100$ attacked neurons is distributed over $T$ communication rounds. We report the average number of attacked neurons per round, the mean $\pm$ standard deviation for benign and attacked trajectories, the central $95\%$ interval of the empirical benign distribution, and the resulting false-negative rate (FNR).}
+\label{tab:cumulative_cosine_single}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccc}
+\toprule
+$T$
+& $N_a$ per round
+& Benign mean $\pm$ std
+& Benign cross-round $95\%$ interval
+& Attacked mean $\pm$ std
+& FNR (\%) \\
+\midrule
+$10$
+& $10.0$
+& $8.96\times10^{-4} \pm 5.26\times10^{-5}$
+& $[8.07\times10^{-4},\,9.87\times10^{-4}]$
+& $9.79\times10^{-4} \pm 5.37\times10^{-5}$
+& $55$ \\
+
+$15$
+& $6.7$
+& $9.29\times10^{-4} \pm 5.26\times10^{-5}$
+& $[8.40\times10^{-4},\,1.02\times10^{-3}]$
+& $9.62\times10^{-4} \pm 5.22\times10^{-5}$
+& $86$ \\
+
+$20$
+& $5.0$
+& $9.46\times10^{-4} \pm 5.26\times10^{-5}$
+& $[8.57\times10^{-4},\,1.04\times10^{-3}]$
+& $9.62\times10^{-4} \pm 5.24\times10^{-5}$
+& $90$ \\
+
+$25$
+& $4.0$
+& $9.56\times10^{-4} \pm 5.25\times10^{-5}$
+& $[8.67\times10^{-4},\,1.05\times10^{-3}]$
+& $9.65\times10^{-4} \pm 5.25\times10^{-5}$
+& $92$ \\
+
+$30$
+& $3.3$
+& $9.63\times10^{-4} \pm 5.25\times10^{-5}$
+& $[8.73\times10^{-4},\,1.05\times10^{-3}]$
+& $9.68\times10^{-4} \pm 5.25\times10^{-5}$
+& $93$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+\paragraph{Cross-round detection.}
+
+The two-direction construction provides stronger resistance to the same detector, as shown in Table~\ref{tab:cumulative_cosine_two}. Across all evaluated horizons, the FNR remains between $90\%$ and $95\%$. In particular, for $T=10$, the FNR increases from $55\%$ with a single direction to $95\%$ with two opposite directions. The resulting detection rate of $5\%$ matches the nominal FPR, indicating that the cross-round cosine-similarity statistic provides little discriminatory power against the two-direction construction in the evaluated setting.
+
+% The two-direction construction is substantially more effective at reducing
+% detectability, as shown in Table~\ref{tab:cumulative_cosine_two}. The FNR
+% remains between $90\%$ and $95\%$ across all tested horizons. In particular,
+% for $T=10$, the FNR increases from $55\%$ with a single direction to $95\%$
+% with two opposite directions. The corresponding detection rate is therefore
+% $5\%$, matching the nominal FPR of the test and indicating essentially no
+% separation between benign and attacked trajectories under this metric.
+
+
+
+\begin{table*}[t]
+\centering
+\caption{Cross-round detection results for the cumulative mean pairwise cosine similarity using two opposite attack directions. A fixed attack budget of $100$ attacked neurons is distributed over $T$ communication rounds. We report the average number of attacked neurons per round, the mean $\pm$ standard deviation for benign and attacked trajectories, the central $95\%$ interval of the empirical benign distribution, and the resulting false-negative rate (FNR).}
+\label{tab:cumulative_cosine_two}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccc}
+\toprule
+$T$
+& $N_a$ per round
+& Benign mean $\pm$ std
+& Benign cross-round $95\%$ interval
+& Attacked mean $\pm$ std
+& FNR (\%) \\
+\midrule
+$1$
+& $100$
+& $-4.11\times10^{-6} \pm 5.26\times10^{-5}$
+& $[-9.34\times10^{-5},\,8.70\times10^{-5}]$
+& $-8.42\times10^{-6} \pm 4.90\times10^{-5}$
+& $93$ \\
+
+$2$
+& $50$
+& $4.96\times10^{-4} \pm 5.26\times10^{-5}$
+& $[4.07\times10^{-4},\,5.87\times10^{-4}]$
+& $4.69\times10^{-4} \pm 4.88\times10^{-5}$
+& $90$ \\
+
+$3$
+& $33$
+& $6.63\times10^{-4} \pm 5.26\times10^{-5}$
+& $[5.74\times10^{-4},\,7.54\times10^{-4}]$
+& $6.40\times10^{-4} \pm 4.82\times10^{-5}$
+& $92$ \\
+
+$4$
+& $25$
+& $7.46\times10^{-4} \pm 5.26\times10^{-5}$
+& $[6.57\times10^{-4},\,8.37\times10^{-4}]$
+& $7.26\times10^{-4} \pm 4.85\times10^{-5}$
+& $92$ \\
+
+$5$
+& $20$
+& $7.96\times10^{-4} \pm 5.26\times10^{-5}$
+& $[7.07\times10^{-4},\,8.87\times10^{-4}]$
+& $7.79\times10^{-4} \pm 4.93\times10^{-5}$
+& $91$ \\
+
+$6$
+& $17$
+& $8.29\times10^{-4} \pm 5.26\times10^{-5}$
+& $[7.40\times10^{-4},\,9.20\times10^{-4}]$
+& $8.14\times10^{-4} \pm 4.98\times10^{-5}$
+& $93$ \\
+
+$7$
+& $14$
+& $8.53\times10^{-4} \pm 5.26\times10^{-5}$
+& $[7.64\times10^{-4},\,9.44\times10^{-4}]$
+& $8.40\times10^{-4} \pm 5.04\times10^{-5}$
+& $92$ \\
+
+$8$
+& $12$
+& $8.71\times10^{-4} \pm 5.26\times10^{-5}$
+& $[7.82\times10^{-4},\,9.62\times10^{-4}]$
+& $8.59\times10^{-4} \pm 5.08\times10^{-5}$
+& $93$ \\
+
+$9$
+& $11$
+& $8.85\times10^{-4} \pm 5.26\times10^{-5}$
+& $[7.96\times10^{-4},\,9.76\times10^{-4}]$
+& $8.74\times10^{-4} \pm 5.04\times10^{-5}$
+& $94$ \\
+
+$10$
+& $10$
+& $8.96\times10^{-4} \pm 5.26\times10^{-5}$
+& $[8.07\times10^{-4},\,9.87\times10^{-4}]$
+& $8.86\times10^{-4} \pm 5.08\times10^{-5}$
+& $95$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+The experiments show that the server can substantially reduce the effectiveness of the considered parameter-based detection metrics. However, the results do not establish that VGIA is undetectable. They demonstrate the limitations of specific statistical tests under the evaluated attack configurations and motivate the investigation of more comprehensive client-side verification mechanisms.
+
+\section{VGIA vs CTP}
+The VGIA attack introduced in this Chapter builds upon the geometric reconstruction strategy developed for CTP in Chapter~\ref{chap:ctp}. Although both attacks exploit parallel hyperplanes to isolate individual samples from aggregated gradients, they differ in how they determine whether a reconstruction is correct and how they allocate their search budget. In this section, we compare the strengths and limitations of the two approaches, examining their reconstruction reliability, communication efficiency, and applicability under different conditions.
+
+ \subsection{Verifiability}
+
+ A central limitation of CTP is its inability to determine whether a reconstructed vector corresponds to an individual training sample. As discussed in Section~\ref{sec:vgia_background}, CTP relies on a stopping threshold that controls the resolution of the geometric search, without guaranteeing that a given slice contains exactly one sample. VGIA addresses this limitation through an algebraic verification procedure that identifies singleton slices with probability one under the assumptions of Proposition~\ref{prop:sample_isolation}.
+
+ An interesting question is whether CTP could achieve a similar verification property without relying in the additional mechanism introduced by VGIA. Throughout Chapters~\ref{chap:ctp} and \ref{chap:vgia}, we focused on the setting where the server runs attacks with a single attack direction. However, in principle neither atack is restricted to a single projection direction. A natural extension of CTP is therefore to conduct the search along multiple independently sampled directions and compare the resulting reconstructions. Under such a construction, the server could accept a candidate reconstruction only when the same vector is recovered from different directions.
+
+ The intuition is that, different projection directions partition the input space differently, making it unlikely that distinct groups of samples produce identical reconstructions. However, agreement between reconstruction does not automatically imply that an individual sample has been isolated.
+
+ To illustrate the limitation, recall from Equation~\ref{eq:obs_derivation} that CTP reconstructs a vector associated with a slice containing a set of samples $\mathcal A$ as
+\begin{equation}
+\mathbf{o}{\mathcal A}
+=
+\frac{
+\sum{j\in\mathcal A}\gamma_j\x_j
+}{
+\sum_{j\in\mathcal A}\gamma_j
+},
+\end{equation}
+where the coefficients $\gamma_j$ depend on the sample labels and the classification-layer parameters. Under Assumption~\ref{ass:grad}, these coefficients remain constant across the attack directions when the downstream parameters are kept fixed.
+
+Consequently, if two distinct samples $\x_1$ and $\x_2$ belong to the same slice under two different projection directions, both directions produce the same reconstruction
+\begin{equation}
+\mathbf{o}
+=
+\frac{
+\gamma_1\x_1+\gamma_2\x_2
+}{
+\gamma_1+\gamma_2
+},
+\end{equation}
+assuming $\gamma_1+\gamma_2\neq0$. Although the reconstructed vectors agree exactly, neither original sample has necessarily been recovered. Thus, comparing reconstructions across directions cannot, by itself, provide the same verification guarantee as VGIA.
+
+
+Using additional projection directions reduces the likelihood that two samples remain grouped together. Nevertheless, the probability of persistent ambiguity can be substantial when the samples are sufficiently close. We formalize this observation in the following proposition. A complete and formal statement and proof are in Appendix~\ref{app:ctp_multidir}
+
+\begin{proposition}[Persistent ambiguity under multiple projection directions]
+\label{prop:ctp_verifiability_limit}
+Let $d\geq4$ and consider two distinct samples $\x_1,\x_2\in[0,1]^d$, with Euclidean distance $r=|\x_1-\x_2|_2$. Let $\beta>0$ denote the distance from the origin to the affine line passing through the two samples.
+
+Consider $k$ independent projection directions sampled uniformly from the unit sphere, with a fixed budget of $N$ hyperplanes distributed equally among them, where $k$ divides $N$ and $N/k\geq2$. For each direction, the hyperplanes are placed at equally spaced offsets in $[-\sqrt d,\sqrt d]$.
+
+The probability that no hyperplane separates $\x_1$ and $\x_2$ satisfies
+\begin{equation}
+\label{eq:ctp_unseparability}
+\mathbb P\left(
+\text{$\x_1$ and $\x_2$ remain unseparated}
+\right)
+\geq
+\left[
+1-r\left(\frac{N}{d}+\frac{k}{\beta}\right)
+\right]+,
+\end{equation}
+where $[z]+=\max\{z,0\}$.
+\end{proposition}
+
+A proof and tighter probability bounds are provided in Appendix~\ref{app}.
+
+Proposition~\ref{prop:ctp_verifiability_limit} shows that, for a fixed number of hyperplanes and projection directions, sufficiently close samples can remain in the same slice across all directions with high probability. In particular, whenever
+\begin{equation*}
+r\left(\frac{N}{d}+\frac{k}{\beta}\right)\leq\varepsilon,
+\end{equation*}
+the probability of failing to separate the two samples is at least $1-\varepsilon$.
+
+The theoretical result shows that additional projection directions may improve the reliability of CTP reconstructions, but cannot provide the same probabilistic correctness guarantee as VGIA. Nevertheless, the absence of such a guarantee does not necessarily imply poor empirical performance. We therefore investigate whether multidirectional CTP can reliably isolate and reconstruct individual samples in practice. We evaluate CTP using two, three, and four independent projection directions under the experimental settings described in Section~\ref{sec:exp_main_vgia}, considering the ACS Income, King County Housing, HARUS, and CIFAR-10 datasets.
+
+As shown in Figure~\ref{fig}, multidirectional CTP successfully reconstructs most samples with relatively few erroneous reconstructions. However, requiring agreement across multiple directions introduces additional search overhead, making CTP slower than VGIA across all evaluated settings. Consequently, although multiple directions improve the empirical reliability of CTP, VGIA retains an advantage in terms of both reconstruction efficiency and theoretical verification guarantees. Finally, increasing the number of projection directions does not improve communication efficiency. With a fixed number of neurons in the attacked layer, the available hyperplanes must be distributed across the different directions, reducing the number of hyperplanes available to refine each search.
+
+\begin{figure}[h]
+    \centering
+    % First row
+    \subfloat[Income California\label{fig:ctp_mult_income}]{%
+        \includegraphics[width=0.4\linewidth]{assets/chapter_4/income_california/2048_figure3_income_california_vgia_ctp_directions.pdf}
+    }\hfill
+    \subfloat[King County\label{fig:ctp_mult_king_county}]{%
+        \includegraphics[width=0.4\linewidth]{assets/chapter_4/king_county/2048_figure3_king_county_vgia_ctp_directions.pdf}
+    }
+
+
+    % Second row
+    \subfloat[HARUS\label{fig:ctp_mult_harus}]{%
+        \includegraphics[width=0.4\linewidth]{assets/chapter_4/harus/2048_figure3_harus_vgia_ctp_directions.pdf}
+    }\hfill
+    \subfloat[CIFAR-10\label{fig:ctp_mult_cifar10}]{%
+        \includegraphics[width=0.4\linewidth]{assets/chapter_4/cifar/2048_figure3_cifar10_vgia_ctp_directions.pdf}
+    }
+
+    \caption{Attack performance of VGIA and CTP using multiple projection
+    directions when the target client trains a three-layer fully connected neural network suing full-batch FedSGD, on a local dataset of $B=2048$ samples from ACS Income, King County Housing, HARUS, and CIFAR10.}
+    \label{fig:multidir_ctp}
+\end{figure}
+
+
+\subsection{Detectability}
+
+In Section~\ref{sec}, we investigated how VGIA can be modified to reduce the detectability of malicious model parameters while preserving the gradient structure required for reconstruction. Applying similar modifications to CTP is more challenging because its reconstruction procedure imposes additional constraints on the model parameters.
+
+First, CTP relies on Assumption~\ref{ass:grad}, which requires the contribution of each sample to the observed gradients to remain independent of the bias values used during the search. In the original CTP implementation, the server assigns large-magnitude biases to the final classification layer to approximate this condition. Such an unusual parameter configuration may itself provide a detectable signature of the attack.
+
+A second limitation arises from the need to compare gradient observations across communication rounds. Unlike VGIA, CTP requires the sample-dependent coefficients $\alpha_j$ in Equation~\eqref{eq:obs_derivation} to remain approximately constant throughout the search. Consequently, the relevant downstream parameters, from the attacked layer to the final classification layer, must remain fixed or be modified in a way that preserves these coefficients.
+
+In its current formulation, CTP is generally more detectable than VGIA, as it requires conspicuous modifications to the classification layer and imposes stricter constraints on the evolution of downstream parameters throughout the attack.
+
+\subsection{Communication Cost}
+
+CTP and VGIA adopt different strategies for exploring the input space, leading to distinct trade-offs in communication efficiency. CTP can allocate all available hyperplanes to different search positions at each communication round, allowing it to explore the input space rapidly. However, without a verification mechanism, CTP cannot determine whether a slice contains exactly one sample and must continue refining it until its width falls below the predefined threshold $\varepsilon$. This translates in and additional cost in refining regions that already contain a single sample, introducing unnecessary search overhead. VGIA avoids this limitation by identifying singleton slices and redirecting the search toward unresolved regions. As shown in Figure~\ref{fig:vgia_dataset_comparison}, this adaptive strategy allows VGIA to reconstruct the complete batch in fewer communication rounds, despite requiring three hyperplanes per slice to define its boundaries and perform verification.
+
+Nevertheless, CTP may remain advantageous when the attacker has a limited communication budget and aims to recover as many samples as possible within the available rounds, without requiring formal verification of their correctness. In particular, its ability to explore the input space in a faster way produces a larger number of candidate reconstructions during the initial stages of the attack. Such a trade-off may be especially relevant for image and text data, where visual or semantic inspection can provide an approximate assessment of reconstruction quality, even without a formal correctness guarantee.
+
+\section{Discussion and Conclusion}
 In this Chapter we introduced VGIA, a novel analytical attack in federated learning that provides explicit algebraic certificates of reconstruction correctness, without requiring access to auxiliary datasets, statistical knowledge of the target dataset, or costly human inspection. This makes the attack broadly applicable when prior information is limited, more effective under tight time constraints, and scalable. Moreover, by ruling out empty or already certified regions, VGIA explores the search space more efficiently and requires fewer attack rounds than previous geometric approaches to reconstruct all samples.
+
 VGIA assumes knowledge of input-feature bounds, which need not be tight. Tighter bounds can reduce the required number of attack rounds, as reflected in the round-complexity bound in Section~\ref{sec:round_complexity_vgia}.
-VGIA remains applicable under secure aggregation~\cite{secure_aggregation_bonawitz} since,  similarly to the discussion in Chapter~\ref{chap:ctp},  this mechanism increases the number of samples contributing to the observed aggregate in~\eqref{eq:observation}, but does not prevent their geometric isolation given enough attack rounds.
+VGIA remains applicable under secure aggregation~\citeA{secure_aggregation_bonawitz}:  this mechanism increases the number of samples contributing to the observed aggregate in~\eqref{eq:obs_derivation}, but does not prevent their geometric isolation given enough attack rounds.
 Although a comprehensive evaluation against practical defenses remains an important direction for future work, our preliminary experiments in Section~\ref{sec:vgia_defenses} already demonstrate near-complete recovery under the tested clipping thresholds and substantial recovery under Gaussian noise.
+Our detectability experiments further show that suitable parameter configurations can evade several client-side detection rules (App.~\ref{sec:detectability}).
 Together, these results demonstrate that VGIA can remain effective under several tested defenses, while its algebraic certificates provide a principled way to assess reconstruction success under the stated assumptions.
-
-Further discussion and analysis is required to discuss the capability of the attack to evade client-side detection rules, such as the ones proposed by~\citeA{carletti2026detectability}. In the next Chapter, we give a first analysis of how in general detectability is an overlooked aspect in the study of malicious server attacks, and further provide preliminary experiments to design attack modifications that could let the attacker evade detection mechanisms.
-
-
-

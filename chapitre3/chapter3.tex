@@ -121,7 +121,7 @@ Other analytical attacks rely instead on differences between activation sets to 
 
 \section{Limitations of Existing Sparsity-Based Attacks}\label{sec:limit}
 
-The sparsity-based attacks proposed by \citeA{boenischWhenCuriousAbandon2023, ZHANG2023119421} attempt to modify the parameters of the FC layer so that each neuron in the layer is activated only by a single input.
+The sparsity-based attacks proposed by \citeA{boenischWhenCuriousAbandon2023, ZHANG2023119421} attempt to modify the parameters of the first FC layer so that each neuron in the layer is activated only by a single input.
 Given the batch  $\mathcal{B}=\{(\x_1, y_1) \dots, (\x_n, y_n)\}$, neuron $i$ is activated only from input $\x_j$ if $\W_i \x_j+b_i>0$ and $\W_i \x_k+b_i<0$ for $k \in \{1, \dots, n\}\setminus \{j\}$.
 In this section we provide a geometric interpretation of the problem and demonstrate that the accuracy of sparsity-based attacks is fundamentally constrained by the dimensionality of the input they aim to reconstruct.
 
